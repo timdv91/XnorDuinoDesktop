@@ -24,7 +24,7 @@ class Srv(BaseHTTPRequestHandler):
         rcv = XSH._sendRawData(eval(get_data.decode('ascii')))
 
         self._set_response()
-        self.wfile.write("GET request for {}".format(rcv).encode('utf-8'))
+        self.wfile.write(format(rcv).encode('ascii'))
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
@@ -34,7 +34,7 @@ class Srv(BaseHTTPRequestHandler):
         rcv = XSH._sendRawData(eval(post_data.decode('ascii')))
 
         self._set_response()
-        self.wfile.write("POST request for {}".format(rcv).encode('utf-8'))
+        self.wfile.write(format(rcv).encode('ascii'))
 
 def run(server_class=HTTPServer, handler_class=Srv, port=8080):
     logging.basicConfig(level=logging.INFO)

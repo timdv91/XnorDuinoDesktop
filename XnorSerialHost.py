@@ -58,7 +58,7 @@ class XnorSerialHost():
                     elif(errorCode == 3):
                         print("EOT error")
                     elif(errorCode > 3):
-                        print("Unknown error during serial data tranmission")
+                        print("Unknown error during serial data transmission")
                     return False
                 else:
                     time.sleep(.1) # give hardware a break
