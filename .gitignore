@@ -1,0 +1,8 @@
+*.pyc
+*.xml
+*.json
+*.___jb_old___
+*.___jb_bak___
+*.iml
+.idea/
+config/
