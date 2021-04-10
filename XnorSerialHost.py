@@ -19,16 +19,6 @@ class XnorSerialHost():
             print(" ERROR")
             quit(1)
 
-    def _sendRawData__bck(self, data):
-        print("data test:")
-        sendBytes = b'\x01'
-        sendBytes += data
-        print("sendBytes: ", sendBytes)
-        self.ser.write(sendBytes)
-        data = self.ser.read(8)
-        print(len(data))
-        print(data)
-
     def _sendRawData(self, pData, pDebug=False):
         retryCount = 3
         while(retryCount > 0):
@@ -50,10 +40,10 @@ class XnorSerialHost():
             if( ((len(rcv)) != pData[1] + 2)) and (len(pData) <= 2):   # do not check for length on write action
                 errorCode = 1
                 isSuccess = False
-            if(rcv[0] != 6):
+            elif(rcv[0] != 6):
                 errorCode = 2
                 isSuccess = False
-            if (rcv[-1] != 4):
+            elif (rcv[-1] != 4):
                 errorCode = 3
                 isSuccess = False
 
@@ -63,10 +53,12 @@ class XnorSerialHost():
                 if(retryCount <= 0):
                     if(errorCode == 1):
                         print("Read action data length error")
-                    if(errorCode == 2):
+                    elif(errorCode == 2):
                         print("ACK error")
-                    if(errorCode == 3):
+                    elif(errorCode == 3):
                         print("EOT error")
+                    elif(errorCode > 3):
+                        print("Unknown error during serial data tranmission")
                     return False
                 else:
                     time.sleep(.1) # give hardware a break
@@ -76,27 +68,27 @@ class XnorSerialHost():
                 return rcv[1:-1]  # chopchop the ACK and EOT chars
 
 
-xsh = XnorSerialHost(pPort='/dev/ttyUSB1', pBautrate=19200)
+'''
+xsh = XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=19200)
 
-xsh._sendRawData([6, 7, 2, 124, 0, 3, 0, 240, 15])
-xsh._sendRawData([6, 7, 2, 125, 0, 3, 0, 240, 15])
+xsh._sendRawData([6, 7, 2, 124, 0, 3, 0, 240, 5])
+xsh._sendRawData([6, 7, 2, 125, 0, 3, 0, 240, 5])
 
-
+dataLib = []
 eCount = 0
 sCount = 0
 startTime = time.time()
-for o in range(0, 100):
-    dataLib = []
-    for i in range(0, 100):
-        d = xsh._sendRawData([0, 6])
-        if(d != False):
-            dataLib.append(d)
-            sCount += 1
-        else:
-            eCount += 1
 
-    print(dataLib)
+for i in range(0, 100):
+    d = xsh._sendRawData([0, 6])
+    if(d != False):
+        dataLib.append(d)
+        sCount += 1
+    else:
+        eCount += 1
 
+print(dataLib)
 print("Errors: ", eCount, end=" | ")
 print("Success: ", sCount)
 print("--- %s seconds ---" % (time.time() - startTime))
+'''
