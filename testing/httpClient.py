@@ -24,6 +24,7 @@ reqT = requestTest('http://192.168.5.45:8080')
 # reqT.get('[16, 5, 2, 126, 11, 1, 2]')
 
 while True:
+    '''
     print("\n")
     # directly read all values from the termination module:
     # ========================================================
@@ -40,16 +41,17 @@ while True:
     print("Errors: ", eCount, end=" | ")
     print("Success: ", sCount)
     print("--- %s seconds ---" % (time.time() - startTime))
-    
+    '''
     
     # set led blink on two mini controller boards:
     # ========================================================
+    '''
     time.sleep(1)
     reqT.get('[16, 7, 2, 125, 0, 3, 0, 240, 5]')
     time.sleep(1)
     reqT.post('[16, 7, 2, 124, 0, 3, 0, 240, 5]')
     time.sleep(1)
-
+    '''
 
     # speedtest get:
     # ========================================================
