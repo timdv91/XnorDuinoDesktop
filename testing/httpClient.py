@@ -20,8 +20,8 @@ class requestTest():
 #reqT = requestTest('http://0.0.0.0:8080')
 reqT = requestTest('http://192.168.5.45:8080')
 
-reqT.get('[6, 7, 2, 125, 0, 3, 0, 240, 50]')
-reqT.post('[6, 7, 2, 124, 0, 3, 0, 240, 50]')
+reqT.get('[6, 7, 2, 125, 0, 3, 0, 240, 5]')
+reqT.post('[6, 7, 2, 124, 0, 3, 0, 240, 5]')
 
 
 
