@@ -9,7 +9,7 @@ class XnorSerialHost():
 
     def _connectionInit(self, pPort, pBautrate):
         print("Establishing serial connection to embedded device: ", end=" ")
-        self.ser = serial.Serial(pPort, pBautrate, timeout=.5)
+        self.ser = serial.Serial(pPort, pBautrate, timeout=1)
         time.sleep(2.5)
         self.ser.write(b'\x01')     # send SOH byte
         check = self.ser.read(2)    # check if device responds with ACK and EOT bytes
@@ -61,7 +61,7 @@ class XnorSerialHost():
                         print("Unknown error during serial data transmission")
                     return False
                 else:
-                    time.sleep(.1) # give hardware a break
+                    time.sleep(.25) # give hardware a break
 
             # if data is not corrupt, return the value
             else:
