@@ -1,7 +1,7 @@
 import serial, time
 
 class XnorSerialHost():
-    def __init__(self, pPort, pBautrate=9600):
+    def __init__(self, pPort, pBautrate=19200):
         self._connectionInit(pPort, pBautrate)
 
     def __del__(self):
