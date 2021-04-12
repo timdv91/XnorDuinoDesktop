@@ -7,6 +7,7 @@ Usage::
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
 import XnorSerialHost
+import time
 
 XSH = XnorSerialHost.XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=19200)
 
@@ -21,7 +22,12 @@ class Srv(BaseHTTPRequestHandler):
         get_data = self.rfile.read(content_length)  # <--- Gets the data itself
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n", str(self.path), str(self.headers), get_data.decode('utf-8'))
 
-        rcv = XSH._sendRawData(eval(get_data.decode('ascii')))
+        rcv = False
+        while (rcv == False):
+            rcv = XSH._sendRawData(eval(get_data.decode('ascii')))
+            if(rcv == False):
+                print("GET Communication error, retry.")
+                time.sleep(.1)
 
         self._set_response()
         self.wfile.write(format(rcv).encode('ascii'))
@@ -31,7 +37,12 @@ class Srv(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length) # <--- Gets the data itself
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n", str(self.path), str(self.headers), post_data.decode('utf-8'))
 
-        rcv = XSH._sendRawData(eval(post_data.decode('ascii')))
+        rcv = False
+        while (rcv == False):
+            rcv = XSH._sendRawData(eval(post_data.decode('ascii')))
+            if(rcv == False):
+                print("POST Communication error, retry.")
+                time.sleep(.1)
 
         self._set_response()
         self.wfile.write(format(rcv).encode('ascii'))

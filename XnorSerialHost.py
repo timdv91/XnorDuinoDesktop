@@ -28,23 +28,25 @@ class XnorSerialHost():
 
             # prepare to send data:
             sendBytes = b'\x01'
-            sendBytes += bytes(pData)
+            self.ser.write(sendBytes)
+            check = self.ser.read(1)
+            if(check != b'\x06'):
+                return False
+
+            sendBytes = bytes(pData)
             self.ser.write(sendBytes)
 
             # read received data:
-            rcv = (self.ser.read(pData[1] + 2))
+            rcv = (self.ser.read(pData[1] + 1))
 
             # check validity of received data:
             isSuccess = True
             errorCode = 0
-            if( ((len(rcv)) != pData[1] + 2)) and (len(pData) <= 2):   # do not check for length on write action
+            if( ((len(rcv)) != pData[1] + 1)) and (len(pData) <= 2):   # do not check for length on write action
                 errorCode = 1
                 isSuccess = False
-            elif(rcv[0] != 6):
-                errorCode = 2
-                isSuccess = False
             elif (rcv[-1] != 4):
-                errorCode = 3
+                errorCode = 2
                 isSuccess = False
 
             # determine what to do when data is corrupted:
@@ -54,10 +56,8 @@ class XnorSerialHost():
                     if(errorCode == 1):
                         print("Read action data length error")
                     elif(errorCode == 2):
-                        print("ACK error")
-                    elif(errorCode == 3):
                         print("EOT error")
-                    elif(errorCode > 3):
+                    elif(errorCode > 2):
                         print("Unknown error during serial data transmission")
                     return False
                 else:

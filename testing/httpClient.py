@@ -24,7 +24,7 @@ reqT = requestTest('http://192.168.5.45:8080')
 # reqT.get('[16, 5, 2, 126, 11, 1, 2]')
 
 while True:
-    '''
+
     print("\n")
     # directly read all values from the termination module:
     # ========================================================
@@ -51,7 +51,7 @@ while True:
     time.sleep(1)
     reqT.post('[16, 7, 2, 124, 0, 3, 0, 240, 5]')
     time.sleep(1)
-    '''
+
 
     # speedtest get:
     # ========================================================
