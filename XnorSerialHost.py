@@ -1,7 +1,7 @@
 import serial, time
 
 class XnorSerialHost():
-    def __init__(self, pPort, pBautrate=19200):
+    def __init__(self, pPort, pBautrate=38400):
         self._connectionInit(pPort, pBautrate)
         self.isComLocked = False
 

@@ -9,8 +9,8 @@ import logging
 import XnorSerialHost
 import time
 
-XSH = XnorSerialHost.XnorSerialHost(pPort='COM19', pBautrate=38400)
-#XSH = XnorSerialHost.XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=19200)
+#XSH = XnorSerialHost.XnorSerialHost(pPort='COM19', pBautrate=38400)
+XSH = XnorSerialHost.XnorSerialHost(pPort='/dev/ttyUSB1', pBautrate=38400)
 
 class Srv(BaseHTTPRequestHandler):
     def _set_response(self):
