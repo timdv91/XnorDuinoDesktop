@@ -3,13 +3,14 @@ import serial, time
 class XnorSerialHost():
     def __init__(self, pPort, pBautrate=19200):
         self._connectionInit(pPort, pBautrate)
+        self.isComLocked = False
 
     def __del__(self):
         self.ser.close()
 
     def _connectionInit(self, pPort, pBautrate):
         print("Establishing serial connection to embedded device: ", end=" ")
-        self.ser = serial.Serial(pPort, pBautrate, timeout=1)
+        self.ser = serial.Serial(pPort, pBautrate, timeout=.250)
         time.sleep(2.5)
         self.ser.write(b'\x01')     # send SOH byte
         check = self.ser.read(2)    # check if device responds with ACK and EOT bytes
@@ -19,55 +20,54 @@ class XnorSerialHost():
             print(" ERROR")
             quit(1)
 
+
     def _sendRawData(self, pData, pDebug=False):
-        retryCount = 3
-        while(retryCount > 0):
-            if( (len(pData) != pData[1] + 2)) and (len(pData) > 2):      # do not check for length on read action
-                print("Write action data length error")
-                return False
+        if ((len(pData) != pData[1] + 2)) and (len(pData) > 2):  # do not check for length on read action
+            print("Write action data length error!")              # Avoid writing invalid data to hardware
+            return b'\x00\x00'                                   # send ascii null null
 
-            # prepare to send data:
-            sendBytes = b'\x01'
-            self.ser.write(sendBytes)
-            check = self.ser.read(1)
-            if(check != b'\x06'):
-                return False
+        #Lock this function when active:
+        if(self.isComLocked == True):
+            print("Communication locked by another thread or process!")
+            return b'\x00\x18'                  # Send ascii null and cancel (byte 24).
 
-            sendBytes = bytes(pData)
-            self.ser.write(sendBytes)
+        self.isComLocked = True                 # Make sure each exits from this function resets this flag !!!
 
-            # read received data:
+        # Start handshaking:
+        sendBytes = b'\x01'
+        self.ser.write(sendBytes)               # Send SOT byte.
+        check = self.ser.read(1)                # Wait for ACK byte
+        if (check != b'\x06'):
+            print("No ACK received from device error!")
+            self.isComLocked = False
+            return b'\x00\x06'                  # If ACK never received, abort send ascii null and ack (ack error)
+
+
+        # Send the command data after hardware ACK response:
+        print("Sending data: ", end=": ")
+        print(pData)
+        sendBytes = bytes(pData)
+        self.ser.write(sendBytes)
+
+
+        rcv = None
+        if(len(pData) > 2): # read received data from write action:
+            rcv = (self.ser.read(2))
+        else: # read received data from data request:
             rcv = (self.ser.read(pData[1] + 1))
+        print("received data: " , end=": ")
+        print(rcv)
 
-            # check validity of received data:
-            isSuccess = True
-            errorCode = 0
-            if( ((len(rcv)) != pData[1] + 1)) and (len(pData) <= 2):   # do not check for length on write action
-                errorCode = 1
-                isSuccess = False
-            elif (rcv[-1] != 4):
-                errorCode = 2
-                isSuccess = False
+        # check for EOT byte:
+        if(rcv[-1:] != b'\x04'):
+            print("No EOT received from device error!")
+            self.isComLocked = False
+            return b'\x00\x04'                  # If EOT never received, abort send ascii null and EOT (EOT error)
 
-            # determine what to do when data is corrupted:
-            if(isSuccess == False):
-                retryCount -= 1
-                if(retryCount <= 0):
-                    if(errorCode == 1):
-                        print("Read action data length error")
-                    elif(errorCode == 2):
-                        print("EOT error")
-                    elif(errorCode > 2):
-                        print("Unknown error during serial data transmission")
-                    return False
-                else:
-                    time.sleep(.25) # give hardware a break
-
-            # if data is not corrupt, return the value
-            else:
-                return rcv[1:-1]  # chopchop the ACK and EOT chars
-
-
+        # Return received data if everything went successfully:
+        print("Request processed successfully!")
+        self.isComLocked = False
+        return rcv[:-1]                         # chopchop the EOT char
 '''
 xsh = XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=19200)
 
