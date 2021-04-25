@@ -9,11 +9,13 @@ class requestTest():
     def get(self, pData):
         # GET request:
         r = requests.get(self.URL, data=(pData))
+        #time.sleep(.02)
         return r.text
 
     def post(self, pData):
         # POST request:
         r = requests.post(self.URL, data=(pData))
+        #time.sleep(.02)
         return r.text
 
 

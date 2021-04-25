@@ -10,7 +10,7 @@ class XnorSerialHost():
 
     def _connectionInit(self, pPort, pBautrate):
         print("Establishing serial connection to embedded device: ", end=" ")
-        self.ser = serial.Serial(pPort, pBautrate, timeout=.250)
+        self.ser = serial.Serial(pPort, pBautrate, timeout=.25)
         time.sleep(2.5)
         self.ser.write(b'\x01')     # send SOH byte
         check = self.ser.read(2)    # check if device responds with ACK and EOT bytes
@@ -22,6 +22,7 @@ class XnorSerialHost():
 
 
     def _sendRawData(self, pData, pDebug=False):
+        time.sleep(.02)
         if ((len(pData) != pData[1] + 2)) and (len(pData) > 2):  # do not check for length on read action
             print("Write action data length error!")              # Avoid writing invalid data to hardware
             return b'\x00\x00'                                   # send ascii null null
