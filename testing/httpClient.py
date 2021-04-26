@@ -6,16 +6,14 @@ class requestTest():
     def __init__(self, pURL):
         self.URL = pURL
 
-    def get(self, pData):
+    def get(self, pData, pPath=""):
         # GET request:
-        r = requests.get(self.URL, data=(pData))
-        #time.sleep(.02)
+        r = requests.get(str(self.URL + "/" + pPath), data=(pData))
         return r.text
 
-    def post(self, pData):
+    def post(self, pData, pPath=""):
         # POST request:
-        r = requests.post(self.URL, data=(pData))
-        #time.sleep(.02)
+        r = requests.post(str(self.URL + "/" + pPath), data=(pData))
         return r.text
 
 
@@ -28,16 +26,31 @@ reqT = requestTest('http://127.0.0.1:8080')
 # reqT.get('[16, 5, 2, 126, 11, 1, 2]')
 
 while True:
+    print("\n\nLoopstart")
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++")
 
-    print("\n")
-    # directly read all values from the termination module:
+    # Reading slave the easy method:
+    # =====================================
+    print("\n\nReading slave modules easy")
+    eCount = 0
+    sCount = 0
+    startTime = time.time()
+    r = eval(reqT.get('[126, 0, 12]', "RS"))  # set de master for ReadSlave
+    for i in range(len(r)):
+        print(r[i], end=" ")
+    print()
+    print("Errors: ", eCount, end=" | ")
+    print("Success: ", sCount)
+    print("--- %s seconds ---" % (time.time() - startTime))
+
+
+    # Reading slave the raw method:
     # ========================================================
+    print("\n\nReading slave modules raw")
     eCount = 0
     sCount = 0
     startTime = time.time()
     reqT.get('[16, 4, 1, 126, 0, 12]')   # set de master for read
-    #time.sleep(.5)  # without a delay (such as reading the read command byte) overwrite at the start of the array seems to occur
-
     r = eval(reqT.get('[20, 12]'))       # read data received by the master
     for i in range(len(r)):
         print(r[i], end=" ")
@@ -45,72 +58,75 @@ while True:
     print("Errors: ", eCount, end=" | ")
     print("Success: ", sCount)
     print("--- %s seconds ---" % (time.time() - startTime))
-    #time.sleep(1)
 
-    '''
-    
-    # set led blink on two mini controller boards:
+
+    # Writing slave the easy method & raw method:
     # ========================================================
-    '''
-    blinkSpeed = random.uniform(5,50)
+    print("\n\nWriting to slave modulles easy & raw: ")
     startTime = time.time()
-    #time.sleep(.5)
-
-    reqT.get('[16, 6, 2, 125, 1, 3, 240, ' + str(int(blinkSpeed)) + ']')
-    #time.sleep(.5)
-    reqT.post('[16, 7, 2, 124, 0, 3, 0, 240, ' + str(int(blinkSpeed)) + ']')
-    #time.sleep(1)
+    blinkSpeed = str(int(random.uniform(5, 50)))
+    reqT.get('[124, 1, 2, 240, ' + blinkSpeed + ']', "WS")          # set the master for WriteSlave
+    reqT.get('[16, 6, 2, 125, 1, 2, 240, ' + blinkSpeed + ']')
     print("--- %s seconds ---" % (time.time() - startTime))
 
 
-    # speedtest get:
+    # Reading master the easy method (actually there is no difference to raw and easy)
     # ========================================================
-    print("\n\n GET speedtest: ")
+    print("\n\nReading master the easy method using get: ")
     dataLib = []
     eCount = 0
     sCount = 0
     startTime = time.time()
     for i in range(0, 10):
-        r = reqT.get('[0,14]')
+        r = reqT.get('[0,15]', "RM")
         if (r != False):
             dataLib.append(eval(r))
             sCount += 1
         else:
             eCount += 1
-
     for o in range(0, len(dataLib)):
         print("[", end="")
         for i in range(0, len(dataLib[o])):
             print(dataLib[o][i], end=" ")
         print("]")
-
     print("Errors: ", eCount, end=" | ")
     print("Success: ", sCount)
     print("--- %s seconds ---" % (time.time() - startTime))
-    #time.sleep(1)
 
-    # speedtest post:
+
+    # Writing to master the easy method (protocol stays the same but there is protection against overwriting read only registers)
     # ========================================================
-    print("\n\n POST speedtest: ")
+    print("\n\nWriting master the easy method using get: ")
+    dataLib = []
+    eCount = 0
+    sCount = 0
+    startTime = time.time()
+    r = reqT.get('[14,1,' + blinkSpeed + ']', "WM")
+    print(eval(r))
+    print("Errors: ", eCount, end=" | ")
+    print("Success: ", sCount)
+    print("--- %s seconds ---" % (time.time() - startTime))
+
+
+    # Reading master the easy method (actually there is no difference to raw and easy)
+    # ========================================================
+    print("\n\nReading master the easy method using post: ")
     dataLib = []
     eCount = 0
     sCount = 0
     startTime = time.time()
     for i in range(0, 10):
-        r = reqT.post('[0,14]')
+        r = reqT.post('[0,15]', "RM")
         if (r != False):
             dataLib.append(eval(r))
             sCount += 1
         else:
             eCount += 1
-
     for o in range(0, len(dataLib)):
         print("[", end="")
         for i in range(0, len(dataLib[o])):
-            print(dataLib[o][i], end=", ")
+            print(dataLib[o][i], end=" ")
         print("]")
-
     print("Errors: ", eCount, end=" | ")
     print("Success: ", sCount)
     print("--- %s seconds ---" % (time.time() - startTime))
-    #time.sleep(1)

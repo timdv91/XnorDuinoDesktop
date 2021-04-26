@@ -21,7 +21,22 @@ class XnorSerialHost():
             quit(1)
 
 
-    def _sendRawData(self, pData, pDebug=False):
+    def _communication(self, pFunction , pData, pDebug=False):
+        retVal = b'\x00\x00'
+        if(pFunction == "/"):
+            retVal = self.rawCommunication(pData)
+        elif(pFunction == "/RS"):
+            retVal = self.readSlave(pData)
+        elif(pFunction == "/RM"):
+            retVal = self.readMaster(pData)
+        elif(pFunction == "/WS"):
+            retVal = self.writeSlave(pData)
+        elif(pFunction == "/WM"):
+            retVal = self.writeMaster(pData)
+        return retVal
+
+
+    def rawCommunication(self, pData, pDebug=False):
         time.sleep(.02)
         if ((len(pData) != pData[1] + 2)) and (len(pData) > 2):  # do not check for length on read action
             print("Write action data length error!")              # Avoid writing invalid data to hardware
@@ -69,6 +84,39 @@ class XnorSerialHost():
         print("Request processed successfully!")
         self.isComLocked = False
         return rcv[:-1]                         # chopchop the EOT char
+
+
+    def readSlave(self, pData, pDebug=False):
+        # first set the masters registers to init a read request on a slave:
+        pData.insert(0, 16)     # start writing master register at index 16
+        pData.insert(1, 4)       # inform master we're gonna write 4 bytes
+        pData.insert(2, 1)      # set masters register to read request from slave
+        print(pData)
+        retval = self.rawCommunication(pData)
+
+        # second read masters data register for data received from slave:
+        print(pData[-1])
+        retval = self.rawCommunication([20, 12])
+        return retval
+
+    def readMaster(self, pData, pDebug=False):
+        return self.rawCommunication(pData)
+
+    def writeSlave(self, pData, pDebug=False):
+        # first set the masters registers to init a read request on a slave:
+        dataSize = len(pData) + 1
+        pData.insert(0, 16)  # start writing master register at index 16
+        pData.insert(1, dataSize)  # inform master we're gonna write 4 bytes
+        pData.insert(2, 2)  # set masters register to read request from slave
+        print(pData)
+        retval = self.rawCommunication(pData)
+        return retval
+
+    def writeMaster(self, pData, pDebug=False):
+        if(pData[0] <= 8):           # master is only writable starting from index 9!
+            return b'\x00\x00'
+        return self.rawCommunication(pData)
+
 '''
 xsh = XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=19200)
 
