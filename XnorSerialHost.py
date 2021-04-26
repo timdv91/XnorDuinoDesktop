@@ -96,7 +96,7 @@ class XnorSerialHost():
 
         # second read masters data register for data received from slave:
         print(pData[-1])
-        retval = self.rawCommunication([20, 12])
+        retval = self.rawCommunication([20, int(pData[-1])])
         return retval
 
     def readMaster(self, pData, pDebug=False):
