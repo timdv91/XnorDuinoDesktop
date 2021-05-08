@@ -19,11 +19,14 @@ class requestTest():
 
 #reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://0.0.0.0:8080')
-reqT = requestTest('http://192.168.5.45:8080')
+#reqT = requestTest('http://192.168.5.45:8080')
+reqT = requestTest('http://192.168.1.51:8080')
 
 # set the termination module temp offset and loop delay
 # reqT.get('[16, 6, 2, 126, 10, 2, 145, 1]')
 # reqT.get('[16, 5, 2, 126, 11, 1, 2]')
+
+#reqT.get('[127, 5, 1, 126]', "WS")  # set the master for WriteSlave
 
 while True:
     print("\n\nLoopstart")
@@ -31,7 +34,36 @@ while True:
 
     # Reading slave the easy method:
     # =====================================
-    print("\n\nReading slave modules easy")
+    print("\n\nReading psu module easy")
+    eCount = 0
+    sCount = 0
+    startTime = time.time()
+    r = eval(reqT.get('[100, 0, 15]', "RS"))  # set de master for ReadSlave
+    for i in range(len(r)):
+        print(r[i], end=" ")
+    print()
+    print("Errors: ", eCount, end=" | ")
+    print("Success: ", sCount)
+    print("--- %s seconds ---" % (time.time() - startTime))
+
+    # Reading slave the easy method:
+    # =====================================
+    print("\n\nReading psu module easy")
+    eCount = 0
+    sCount = 0
+    startTime = time.time()
+    r = eval(reqT.get('[101, 0, 15]', "RS"))  # set de master for ReadSlave
+    for i in range(len(r)):
+        print(r[i], end=" ")
+    print()
+    print("Errors: ", eCount, end=" | ")
+    print("Success: ", sCount)
+    print("--- %s seconds ---" % (time.time() - startTime))
+
+
+    # Reading slave the easy method:
+    # =====================================
+    print("\n\nReading termination module easy")
     eCount = 0
     sCount = 0
     startTime = time.time()
@@ -46,7 +78,7 @@ while True:
 
     # Reading slave the raw method:
     # ========================================================
-    print("\n\nReading slave modules raw")
+    print("\n\nReading termination module raw")
     eCount = 0
     sCount = 0
     startTime = time.time()
