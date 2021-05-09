@@ -2,7 +2,7 @@
 """
 Very simple HTTP server in python for logging requests
 Usage::
-    ./server.py [<port>]
+    ./main_server.py [<port>]
 """
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging

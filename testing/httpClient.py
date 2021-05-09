@@ -17,10 +17,10 @@ class requestTest():
         return r.text
 
 
-#reqT = requestTest('http://127.0.0.1:8080')
+reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://0.0.0.0:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
-reqT = requestTest('http://192.168.1.51:8080')
+#reqT = requestTest('http://192.168.1.51:8080')
 
 # set the termination module temp offset and loop delay
 # reqT.get('[16, 6, 2, 126, 10, 2, 145, 1]')
@@ -133,7 +133,7 @@ while True:
     eCount = 0
     sCount = 0
     startTime = time.time()
-    r = reqT.get('[14,1,' + blinkSpeed + ']', "WM")
+    r = reqT.get('[14,1,' + blinkSpeed + ']', "WM") # 14 is an unused byte inside bus_memory on the slave
     print(eval(r))
     print("Errors: ", eCount, end=" | ")
     print("Success: ", sCount)
