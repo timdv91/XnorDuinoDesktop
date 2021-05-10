@@ -2,11 +2,13 @@
 
 {% block content %}
     <h1>{% block title %} Xnorduino hardware visualizer {% endblock %}</h1>
-    {% for post in posts %}
-        <a href="#" onClick="MyWindow=window.open('device?{{ post['id'] }}', 'MyWindow', 'width=600,height=300'); return false">
-            <h2>{{ post['title'] }}</h2>
+    {% for device in posts %}
+        <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', 'MyWindow', 'width=600,height=300'); return false">
+            <h2>{{ device['DEV_TYPE'] }}</h2>
         </a>
-        <span class="badge badge-primary">{{ post['created'] }}</span>
+        <span class="badge badge-primary">I2C_ID: {{ device['I2C_ID'] }}</span>
+        <span class="badge badge-primary">HW_ID: {{ device['HW_ID'] }}</span>
+        <span class="badge badge-primary">FW_ID: {{ device['FW_ID'] }}</span>
         <hr>
     {% endfor %}
 {% endblock %}

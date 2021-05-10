@@ -12,7 +12,8 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     devIdList = XRH.initDeviceIDScan()
-    devInfoDict = XRH.getDevicesInfoDict(devIdList)
+    devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=True)
+    print(devicesDictionary)
 
     posts = []
     thisdict = {
@@ -27,30 +28,21 @@ def index():
         "id": "id=Q"
     }
     posts.append(thisdict)
-    return render_template('index.html', posts=posts)
+
+    return render_template('index.html', posts=devicesDictionary)
 
 # a simple hello world text:
-@app.route('/device', methods=('GET', 'POST'))
-def device():
+@app.route('/devices', methods=('GET', 'POST'))
+def devices():
+    print("HELLO")
     if request.method == 'GET':
-        id = request.args['id']
+        devicePage = request.args['DEV_PAGE']
+        I2C_ID = request.args['I2C_ID']
 
+    print("Test1: ", devicePage)
+    print("Test2: ", I2C_ID)
 
-        print(id)
-
-        '''
-        if not title:
-            flash('Title is required!')
-        else:
-            conn = get_db_connection()
-            conn.execute('INSERT INTO posts (title, content) VALUES (?, ?)',
-                         (title, content))
-            conn.commit()
-            conn.close()
-            return redirect(url_for('index'))
-        '''
-
-    return render_template("/devices/" + id + ".html")
+    return render_template(devicePage, posts=I2C_ID)
 
 
 # Rerouting for the about button:
