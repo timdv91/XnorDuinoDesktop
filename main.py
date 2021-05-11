@@ -1,4 +1,5 @@
 from SerialServer import main_server
+from FlaskGUI import main_flask
 from sys import argv
 
 class main():
@@ -14,9 +15,7 @@ class main():
 
     def start_flask_server(self):
         None
-        # Start manually for the moment using:
-        # 'export FLASK_APP=hello.py' (Linux) or 'set FLASK_APP=hello.py' (Windows)
-        # 'flask run' to start the server
+
 
 
 if __name__ == '__main__':

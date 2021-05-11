@@ -2,50 +2,59 @@ from FlaskGUI.API.xnorbusWebrequestor import xnorbusWebrequestor
 from FlaskGUI.API.xnorbusRequestorHelper import xnorbusRequestorHelper
 from flask import Flask, render_template
 from flask import request
+from threading import Thread
+import os
 
 XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 XRH = xnorbusRequestorHelper(XRQ)
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
 
-# Page that shows index.html, this page inherits content from the base.html file:
-@app.route('/')
-def index():
-    devIdList = XRH.initDeviceIDScan()
-    devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=True)
-    print(devicesDictionary)
+    # Page that shows index.html, this page inherits content from the base.html file:
+    @app.route("/")
+    def index():
+        devIdList = XRH.initDeviceIDScan()
+        devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=True)
+        devicesDictionaryNested = XRH.getDevicesNestingDict(devicesDictionary, pDebug=True)
 
-    posts = []
-    thisdict = {
-        "title": "testTitle1",
-        "created": "Mustang1",
-        "id": "id=A"
-    }
-    posts.append(thisdict)
-    thisdict = {
-        "title": "testTitle2",
-        "created": "Mustang2",
-        "id": "id=Q"
-    }
-    posts.append(thisdict)
+        print(devicesDictionaryNested)
 
-    return render_template('index.html', posts=devicesDictionary)
+        posts = []
+        thisdict = {
+            "title": "testTitle1",
+            "created": "Mustang1",
+            "id": "id=A"
+        }
+        posts.append(thisdict)
+        thisdict = {
+            "title": "testTitle2",
+            "created": "Mustang2",
+            "id": "id=Q"
+        }
+        posts.append(thisdict)
 
-# a simple hello world text:
-@app.route('/devices', methods=('GET', 'POST'))
-def devices():
-    print("HELLO")
-    if request.method == 'GET':
-        devicePage = request.args['DEV_PAGE']
-        I2C_ID = request.args['I2C_ID']
+        return render_template('index.html', posts=devicesDictionary)
 
-    print("Test1: ", devicePage)
-    print("Test2: ", I2C_ID)
+    # a simple hello world text:
+    @app.route('/devices', methods=('GET', 'POST'))
+    def devices():
+        print("HELLO2")
+        if request.method == 'GET':
+            devicePage = request.args['DEV_PAGE']
+            I2C_ID = request.args['I2C_ID']
 
-    return render_template(devicePage, posts=I2C_ID)
+        print("Test1: ", devicePage)
+        print("Test2: ", I2C_ID)
+
+        return render_template(devicePage, posts=I2C_ID)
 
 
-# Rerouting for the about button:
-@app.route('/about')
-def about():
-    return render_template('about.html')
+    # Rerouting for the about button:
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
+
+    return app
+
+app = create_app()

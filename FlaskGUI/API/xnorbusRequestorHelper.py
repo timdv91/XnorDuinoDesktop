@@ -1,4 +1,4 @@
-import json, os
+import json, os, time
 
 class xnorbusRequestorHelper():
     def __init__(self, pXRQ):
@@ -51,10 +51,12 @@ class xnorbusRequestorHelper():
                 combiID = str(devInfoArr).replace(' ', '')
                 deviceDict["DEV_TYPE"] = supportedDevicesDictionary["devices"][combiID]["DEV_TYPE"]
                 deviceDict["DEV_PAGE"] = supportedDevicesDictionary["devices"][combiID]["DEV_PAGE"]
+                deviceDict["DEV_NESTING"] = supportedDevicesDictionary["devices"][combiID]["DEV_NESTING"]
                 deviceDict["URL"] = "DEV_PAGE=" + deviceDict["DEV_PAGE"] + '&' + "I2C_ID=" + deviceDict["I2C_ID"]
             except KeyError:
                 deviceDict["DEV_TYPE"] = "UNKNOWN_DEVICE"
                 deviceDict["DEV_PAGE"] = "UNKNOWN_DEVICE"
+                deviceDict["DEV_NESTING"] = -1
                 deviceDict["URL"] = "DEV_PAGE=" + "devices/unsupported_device.html" + '&' + "I2C_ID=" + deviceDict["I2C_ID"]
 
 
@@ -69,3 +71,45 @@ class xnorbusRequestorHelper():
 
             returnList.append(deviceDict)
         return returnList
+
+
+    def getDevicesNestingDict(self, pDevicesDict, pDebug=False):
+        devicesDictLocal = pDevicesDict
+        for i in range(0, len(pDevicesDict)):
+            device = pDevicesDict[i]
+            print("Device:", device["DEV_TYPE"])
+            if (device["DEV_NESTING"] < 0):
+                print("\tNestign support: NO")
+                devicesDictLocal[i]["NESTED"] = "N/A"
+            else:
+                print("\tNesting support: YES")
+                cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"]), 1]
+                rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
+                print("\tConnected slave devices:", int(rcvBytes[0]))
+                if(int(rcvBytes[0]) > 0):
+                    cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"])+1, int(rcvBytes[0])]
+                    nestedDevIdList_bytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
+                    print("\tConnected slaves ID's: ", end="")
+                    nestedDevIdList = []
+                    for ids in nestedDevIdList_bytes:
+                        nestedDevIdList.append(ids)
+                        print(ids, end=' ')
+                    print()
+                    devicesDictLocal[i]["NESTED"] = nestedDevIdList
+                else:
+                    devicesDictLocal[i]["NESTED"] = "None"
+        return devicesDictLocal
+
+
+
+
+'''
+dir_path = os.path.dirname(os.path.realpath(__file__))
+dir_path = os.path.dirname(os.path.realpath(__file__))
+print(dir_path)
+with open(dir_path + '/scannedDevicesDict.json') as f:
+    supportedDevicesDictionary = json.load(f)
+
+x = xnorbusRequestorHelper()
+x.getDeviceNestingDict(supportedDevicesDictionary)
+'''
