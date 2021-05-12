@@ -38,8 +38,8 @@
             <input type='hidden' name='posts' value="{{ posts }}" />
             <input type='hidden' name='cmd' value=5,1 />
             <label for="0">Dev ID:</label><br>
-            <input type="text" id="0" name="0"><br>
-            <input type="submit" value="Submit">
+            <input type="text" id="0" name="0" value="{{ posts['I2C_ID'] }}">
+            <input type="submit" value="Set">
         </form>
     </div>
 
