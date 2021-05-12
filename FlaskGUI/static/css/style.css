@@ -1,6 +1,11 @@
-h1 {
-    border: 2px #eee solid;
-    color: brown;
-    text-align: center;
-    padding: 10px;
+.devices-larger-badge {
+    font-size: 1.3em;
+}
+
+.index_title-larger-badge {
+    font-size: 1.3em;
+}
+
+.index_scanList-larger-badge {
+    font-size: 1.15em;
 }

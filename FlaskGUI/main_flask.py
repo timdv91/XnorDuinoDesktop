@@ -26,7 +26,7 @@ THREAD_refreshDeviceList = None
 # check the serial load on serial port
 autoRefreshDevList_LockEpoch = 0
 autoRefreshDevList_LockDuration = 5
-autoRefreshDevList_isLocked = False
+autoRefreshDevList_isLocked = True
 # =========================================================
 
 def create_app():
@@ -65,7 +65,11 @@ def create_app():
     @app.route("/")
     def index():
         global commonDataStruct
-        devicesDictionary = commonDataStruct
+        global autoRefreshDevList_isLocked
+        devicesDictionary = {}
+
+        devicesDictionary['DEVICES'] = commonDataStruct
+        devicesDictionary['AUTO_UPDATE_LOCKED'] = autoRefreshDevList_isLocked
 
         return render_template('index.html', posts=devicesDictionary)
 
@@ -73,13 +77,66 @@ def create_app():
     # a simple hello world text:
     @app.route('/devices', methods=('GET', 'POST'))
     def devices():
-        devicePage = None
-        I2C_ID = None
+        DEV_PAGE = None
+        DEV_TYPE = None
+        posts = {}
         if request.method == 'GET':
-            devicePage = request.args['DEV_PAGE']
-            I2C_ID = request.args['I2C_ID']
+            DEV_PAGE = request.args['DEV_PAGE']
+            DEV_TYPE = request.args['DEV_TYPE']
+            posts['DEV_TYPE'] = request.args['DEV_TYPE']
+            posts['DEV_PAGE'] = request.args['DEV_PAGE']
+            posts['I2C_ID'] = request.args['I2C_ID']
+            posts['HW_ID'] = request.args['HW_ID']
+            posts['FW_ID'] = request.args['FW_ID']
 
-        return render_template(devicePage, posts=I2C_ID)
+        return render_template(DEV_PAGE, posts=posts, title=DEV_TYPE)
+
+    # Rerouting for form button:
+    @app.route('/devices_write')
+    def devices_write():
+        DEV_TYPE = None
+        DEV_PAGE = None
+        posts = None
+        isValid = True
+        if request.method == 'GET':
+            posts = eval(request.args.getlist('posts')[0]) # F html, css and JS! random nonsnes like this is why I prefer real programming lanuagues as C or C++!
+            print(posts)
+
+            DEV_TYPE = posts['DEV_TYPE']
+            print(DEV_TYPE)
+
+            DEV_PAGE = posts['DEV_PAGE']
+            print(DEV_PAGE)
+
+            I2C_ID = posts['I2C_ID']
+            print(I2C_ID)
+
+            send_startId = eval(request.args.getlist('cmd')[0])[0]
+            send_n = eval(request.args.getlist('cmd')[0])[1]
+            print(send_startId, " ", send_n)
+
+            sendValue = ""
+            for i in range(0, send_n):
+                nr = request.args.getlist(str(i))[0]
+                sendValue += ", " + str(nr)
+                try:
+                    if int(nr) < 0 or int(nr) > 255:
+                        isValid = False
+                except ValueError:
+                    isValid = False
+            print(sendValue)
+
+            cmd = "[" + str(I2C_ID) + "," + str(send_startId) + ", " + str(send_n) + "" + str(sendValue) + "]"
+            print(cmd) # last comma is automatically put in place!
+
+            if isValid:
+                print("Valid input!")
+                rcvBytes = XRQ.get(str(cmd), "WS")  # set de master for ReadSlave
+                print(rcvBytes)
+            else:
+                print("Invalid input!")
+
+        return render_template(DEV_PAGE, title=DEV_TYPE, posts=posts, inputIsValid=isValid)
 
 
     # Rerouting for the about button:

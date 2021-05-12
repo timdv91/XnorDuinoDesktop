@@ -45,19 +45,27 @@ class xnorbusRequestorHelper():
             deviceDict = {}
             deviceDict["I2C_ID"] = str(devId)
             deviceDict["HW_ID"] = str(devInfoArr[:-1]).replace(' ', '')
-            deviceDict["FW_ID"] = " v" + str(devInfoArr[-1]).replace(' ', '')
+            deviceDict["FW_ID"] = "v" + str(devInfoArr[-1]).replace(' ', '')
 
             try:
                 combiID = str(devInfoArr).replace(' ', '')
                 deviceDict["DEV_TYPE"] = supportedDevicesDictionary["devices"][combiID]["DEV_TYPE"]
                 deviceDict["DEV_PAGE"] = supportedDevicesDictionary["devices"][combiID]["DEV_PAGE"]
                 deviceDict["DEV_NESTING"] = supportedDevicesDictionary["devices"][combiID]["DEV_NESTING"]
-                deviceDict["URL"] = "DEV_PAGE=" + deviceDict["DEV_PAGE"] + '&' + "I2C_ID=" + deviceDict["I2C_ID"]
+                deviceDict["URL"] = "DEV_PAGE=" + deviceDict["DEV_PAGE"] \
+                                    + '&' + "I2C_ID=" + deviceDict["I2C_ID"] \
+                                    + '&' + "DEV_TYPE=" + deviceDict["DEV_TYPE"] \
+                                    + '&' + "HW_ID=" + deviceDict["HW_ID"] \
+                                    + '&' + "FW_ID=" + deviceDict["FW_ID"]
             except KeyError:
                 deviceDict["DEV_TYPE"] = "UNKNOWN_DEVICE"
                 deviceDict["DEV_PAGE"] = "UNKNOWN_DEVICE"
                 deviceDict["DEV_NESTING"] = -1
-                deviceDict["URL"] = "DEV_PAGE=" + "devices/unsupported_device.html" + '&' + "I2C_ID=" + deviceDict["I2C_ID"]
+                deviceDict["URL"] = "DEV_PAGE=" + "devices/unsupported_device.html" \
+                                    + '&' + "I2C_ID=" + deviceDict["I2C_ID"] \
+                                    + '&' + "DEV_TYPE=" + deviceDict["DEV_TYPE"] \
+                                    + '&' + "HW_ID=" + deviceDict["HW_ID"] \
+                                    + '&' + "FW_ID=" + deviceDict["FW_ID"]
 
 
 

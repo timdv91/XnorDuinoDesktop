@@ -25,22 +25,9 @@
         <h2 class="badge badge-secondary devices-larger-badge"> I2C-ID: = {{ posts['I2C_ID'] }}</h2>
         <h2 class="badge badge-secondary devices-larger-badge"> HW-ID: = {{ posts['HW_ID'] }}</h2>
         <h2 class="badge badge-secondary devices-larger-badge"> FW-V: = {{ posts['FW_ID'] }}</h2>
-    </div>
-
-    <div class="container">
         <h2 class="badge badge-info devices-larger-badge" id="ext_vcc"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="usb_vcc"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="temperature"></h2>
-    </div>
-
-    <div class="container">
-        <form action="/devices_write">
-            <input type='hidden' name='posts' value="{{ posts }}" />
-            <input type='hidden' name='cmd' value=5,1 />
-            <label for="0">Dev ID:</label><br>
-            <input type="text" id="0" name="0"><br>
-            <input type="submit" value="Submit">
-        </form>
     </div>
 
 {% endblock %}

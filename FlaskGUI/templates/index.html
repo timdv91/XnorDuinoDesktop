@@ -4,18 +4,27 @@
 
 {% block content %}
     <h1>{% block title %} Xnorduino hardware visualizer {% endblock %}</h1>
-    {% if posts|length <= 0 %}
-        <h3>Pls wait</h3>
+
+    {% if posts['AUTO_UPDATE_LOCKED'] == True %}
+        <p class="badge badge-secondary index_title-larger-badge"> Auto update: paused!</p>
+        <p class="badge badge-light"> Close device windows to reactivate auto updates.</p>
     {% else %}
-        {% for device in posts %}
-            <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ device['I2C_ID'] }}', 'width=600,height=300'); return false">
-                <h2>{{ device['DEV_TYPE'] }}</h2>
-            </a>
-            <span class="badge badge-primary">I2C_ID: {{ device['I2C_ID'] }}</span>
-            <span class="badge badge-primary">HW_ID: {{ device['HW_ID'] }}</span>
-            <span class="badge badge-primary">FW_ID: {{ device['FW_ID'] }}</span>
-            <span class="badge badge-primary">NESTED: {{ device['NESTED'] }}</span>
-            <hr>
-        {% endfor %}
+        <p class="badge badge-success index_title-larger-badge"> Auto update: Active!</p>
+        {% if posts['DEVICES']|length <= 0 %}
+            <h4 class="badge badge-info index_title-larger-badge"> Detecting devices, please wait...</h4>
+            {% endif %}
     {% endif %}
+
+
+    {% for device in posts['DEVICES'] %}
+         <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width=350,height=500'); return false">
+                <h2>{{ device['DEV_TYPE'] }}</h2>
+         </a>
+        <span class="badge badge-info index_scanList-larger-badge">I2C_ID: {{ device['I2C_ID'] }}</span>
+        <span class="badge badge-info index_scanList-larger-badge">HW_ID: {{ device['HW_ID'] }}</span>
+        <span class="badge badge-info index_scanList-larger-badge">FW_ID: {{ device['FW_ID'] }}</span>
+        <span class="badge badge-info index_scanList-larger-badge">NESTED: {{ device['NESTED'] }}</span>
+        <hr>
+    {% endfor %}
+
 {% endblock %}

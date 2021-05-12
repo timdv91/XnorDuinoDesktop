@@ -9,6 +9,21 @@
         setTimeout(Heart_Beat, 3000);
     }
     Heart_Beat();
+
+    // If server has locked the autorefresh, show on GUI:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true)
+        {
+            document.getElementById("AUTO_UPDATE_LOCKED").innerHTML = "";
+            document.getElementById("AUTO_UPDATE_UNLOCKED").innerHTML = "Bus access: Granted";
+        }
+        else
+        {
+            document.getElementById("AUTO_UPDATE_LOCKED").innerHTML = "Bus access: HOLD";
+            document.getElementById("AUTO_UPDATE_UNLOCKED").innerHTML = "";
+        }
+    });
 </script>
 
 <!doctype html>
@@ -20,12 +35,26 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/css/style.css">
 
-    <title>{% block title %} {% endblock %}</title>
+    <title> {{ title }} </title>
   </head>
   <body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+
+    </nav>
      <div class="container">
-        {% block content %} {% endblock %}
+       <h2>{{ title }} </h2>
+       <h2 class="badge badge-secondary devices-larger-badge" id="AUTO_UPDATE_LOCKED"> </h2>
+       <h2 class="badge badge-success devices-larger-badge" id="AUTO_UPDATE_UNLOCKED"> </h2>
+        {% if inputIsValid == True %}
+          <h2 class="badge badge-success devices-larger-badge" id="InputSuccess">Configuration saved!</h2>
+        {% elif inputIsValid == False %}
+          <h2 class="badge badge-danger devices-larger-badge" id="InputError">Configuration input error!</h2>
+        {% endif %}
+
+       {% block content %}
+       {% endblock %}
     </div>
 
     <!-- Optional JavaScript -->
