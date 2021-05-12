@@ -1,5 +1,4 @@
 from SerialServer import main_server
-from FlaskGUI import main_flask
 from sys import argv
 
 class main():
@@ -11,12 +10,6 @@ class main():
             main_server.run(port=int(argv[1]))
         else:
             main_server.run()
-
-
-    def start_flask_server(self):
-        None
-
-
 
 if __name__ == '__main__':
     main()

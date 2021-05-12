@@ -6,10 +6,17 @@ class xnorbusWebrequestor():
 
     def get(self, pData, pPath=""):
         # GET request:
-        r = requests.get(str(self.URL + "/" + pPath), data=(pData))
-        return r.text
+        try:
+            r = requests.get(str(self.URL + "/" + pPath), data=(pData))
+            return r.text
+        except requests.exceptions.ConnectionError:
+            return None
+
 
     def post(self, pData, pPath=""):
         # POST request:
-        r = requests.post(str(self.URL + "/" + pPath), data=(pData))
-        return r.text
+        try:
+            r = requests.post(str(self.URL + "/" + pPath), data=(pData))
+            return r.text
+        except requests.exceptions.ConnectionError:
+            return None

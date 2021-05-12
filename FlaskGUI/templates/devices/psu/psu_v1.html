@@ -1,13 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>termination_v1.html</title>
-</head>
-<body>
+{% extends '/devices/base.html' %}
+
 {% block content %}
-    <h1>{% block title %} Xnorduino psu_v1 visualizer {% endblock %}</h1>
-    <p>{{ posts }}</p>
+
+    <script>
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true)
+        {
+            socket.emit('get_value', {name: "ext_vcc+usb_vcc+temp", cmd: '[{{ posts }}, 7, 3]'});  // only send data when server has locked autoRefresh
+        }
+    });
+
+
+    socket.on("value_reply", data => {
+        console.log(data);
+        document.getElementById("ext_vcc").innerHTML = "External voltage: " + (data["value"][0]/10) + "V";
+        document.getElementById("usb_vcc").innerHTML = "USB voltage: " + (data["value"][1]*2)/100 + "V";
+        document.getElementById("temperature").innerHTML = "Temperature: " + data["value"][2] + "°C";
+    });
+    </script>
+
+    <h1>{% block title %} Xnorduino PSU v1 visualizer {% endblock %}</h1>
+    <p>I2C-ID = {{ posts }}</p>
+    <p id="ext_vcc"></p>
+    <p id="usb_vcc"></p>
+    <p id="temperature"></p>
+
 {% endblock %}
-</body>
-</html>
