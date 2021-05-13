@@ -13,17 +13,20 @@
         console.log(data);
 
         var deviceContent = document.getElementById("deviceContent");
+        var autoUpdateLockedSpinner = document.getElementById("autoUpdateLockedSpinner");
         if(data == true)
         {
             document.getElementById("AUTO_UPDATE_LOCKED").innerHTML = "";
             document.getElementById("AUTO_UPDATE_UNLOCKED").innerHTML = "Bus access: Granted";
             deviceContent.style.display = "block";
+            autoUpdateLockedSpinner.style.display = "none";
         }
         else
         {
             document.getElementById("AUTO_UPDATE_UNLOCKED").innerHTML = "";
             document.getElementById("AUTO_UPDATE_LOCKED").innerHTML = "Bus access: HOLD";
             deviceContent.style.display = "none";
+            autoUpdateLockedSpinner.style.display = "block";
         }
     });
 </script>
@@ -47,8 +50,8 @@
     </nav>
      <div class="container">
        <h2>{{ title }}</h2>
-       <h2 class="badge badge-secondary devices-larger-badge" id="AUTO_UPDATE_LOCKED"> </h2>
-       <h2 class="badge badge-success devices-larger-badge" id="AUTO_UPDATE_UNLOCKED"> </h2>
+       <p class="badge badge-secondary devices-larger-badge" id="AUTO_UPDATE_LOCKED"> </p>
+       <p class="badge badge-success devices-larger-badge" id="AUTO_UPDATE_UNLOCKED"> </p>
 
          {% if inputIsValid == True %}
             <h2 class="badge badge-success devices-larger-badge" id="InputSuccess">Configuration saved!</h2>
@@ -65,6 +68,9 @@
          <div class="container" id="deviceContent"> <!-- id is used inside javascript to show/hide the block content -->
             {% block content %}                     <!-- As usual webdevelpment does this in the most arbitrary and random way -->
             {% endblock %}
+         </div>
+         <div id="autoUpdateLockedSpinner" class="spinner-border" role="status" >
+            <span class="sr-only">Loading...</span>
          </div>
 
     </div>

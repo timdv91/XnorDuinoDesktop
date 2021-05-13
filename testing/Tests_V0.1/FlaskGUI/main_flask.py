@@ -31,7 +31,7 @@ def create_app():
 
     # ======================================================================================================
 
-    # Page that shows index.html, this page inherits content from the __devicesBase__.html file:
+    # Page that shows deviceList.html, this page inherits content from the __devicesBase__.html file:
     @app.route("/")
     def index():
         global commonDataStruct
@@ -42,7 +42,7 @@ def create_app():
             with open(dir_path + '/API/scannedDevicesDict.json', 'w') as outfile:
                 json.dump(devicesDictionary, outfile)
 
-        return render_template('index.html', posts=devicesDictionary)
+        return render_template('deviceList.html', posts=devicesDictionary)
 
     # a simple hello world text:
     @app.route('/devices', methods=('GET', 'POST'))

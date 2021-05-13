@@ -13,7 +13,7 @@ def hello_world():
 def indexOld():
     return render_template('indexOld.html')
 
-# Page that shows index.html, this page inherits content from the __devicesBase__.html file:
+# Page that shows deviceList.html, this page inherits content from the __devicesBase__.html file:
 @app.route('/')
 def index():
     posts = []
@@ -29,7 +29,7 @@ def index():
         "id": "id=Q"
     }
     posts.append(thisdict)
-    return render_template('index.html', posts=posts)
+    return render_template('deviceList.html', posts=posts)
 
 # a simple hello world text:
 @app.route('/create', methods=('GET', 'POST'))

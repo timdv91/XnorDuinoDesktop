@@ -62,10 +62,20 @@ def create_app():
 
     # ======================================================================================================
 
-
-    # Page that shows index.html, this page inherits content from the __devicesBase__.html file:
-    @app.route("/")
+    # Rerouting for the index page:
+    @app.route('/')
     def index():
+        return render_template('index.html')
+
+    # Rerouting for the about button:
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
+
+
+    # Page that shows deviceList.html, this page inherits content from the __devicesBase__.html file:
+    @app.route("/deviceList")
+    def deviceList():
         global commonDataStruct
         global autoRefreshDevList_isLocked
         devicesDictionary = {}
@@ -73,7 +83,7 @@ def create_app():
         devicesDictionary['DEVICES'] = commonDataStruct
         devicesDictionary['AUTO_UPDATE_LOCKED'] = autoRefreshDevList_isLocked
 
-        return render_template('index.html', posts=devicesDictionary)
+        return render_template('deviceList.html', posts=devicesDictionary)
 
 
     # a simple hello world text:
@@ -137,12 +147,6 @@ def create_app():
                 print("Invalid input!")
 
         return render_template(DEV_PAGE, title=DEV_TYPE, posts=posts, inputIsValid=isValid, hostIP=HOST_IP+":"+str(HOST_PORT))
-
-
-    # Rerouting for the about button:
-    @app.route('/about')
-    def about():
-        return render_template('about.html')
 
     return app
 

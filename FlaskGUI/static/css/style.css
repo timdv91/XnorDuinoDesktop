@@ -2,10 +2,11 @@
     font-size: 1.3em;
 }
 
-.index_title-larger-badge {
+.deviceList_title-larger-badge {
     font-size: 1.3em;
 }
 
-.index_scanList-larger-badge {
-    font-size: 1.15em;
+.deviceList-larger-badge {
+    font-size: 1.0em;
+    margin-top: 5px;
 }
