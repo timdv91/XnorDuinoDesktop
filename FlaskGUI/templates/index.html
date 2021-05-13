@@ -1,6 +1,6 @@
 <meta http-equiv="refresh" content="2.5; URL=/">
 
-{% extends 'base.html' %}
+{% extends '__base__.html' %}
 
 {% block content %}
     <h1>{% block title %} Xnorduino hardware visualizer {% endblock %}</h1>
@@ -17,7 +17,7 @@
 
 
     {% for device in posts['DEVICES'] %}
-         <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width=350,height=500'); return false">
+         <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width=350,height=600'); return false">
                 <h2>{{ device['DEV_TYPE'] }}</h2>
          </a>
         <span class="badge badge-info index_scanList-larger-badge">I2C_ID: {{ device['I2C_ID'] }}</span>

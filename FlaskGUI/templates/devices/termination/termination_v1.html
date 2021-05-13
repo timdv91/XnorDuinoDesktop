@@ -1,4 +1,4 @@
-{% extends '/devices/base.html' %}
+{% extends '/devices/__devicesBase__.html' %}
 
 {% block content %}
 
@@ -8,37 +8,52 @@
         console.log(data);
         if(data == true)
         {
-            socket.emit('get_value', {name: "ext_vcc+usb_vcc+temp", cmd: '[{{ posts['I2C_ID'] }}, 7, 3]'});  // only send data when server has locked autoRefresh
+            socket.emit('get_value', {name: "ext_vcc+usb_vcc+temp", cmd: '[{{ posts['I2C_ID'] }}, 7, 4]'});  // only send data when server has locked autoRefresh
         }
     });
 
 
     socket.on("value_reply", data => {
         console.log(data);
-        document.getElementById("ext_vcc").innerHTML = "External voltage: " + (data["value"][0]/10) + "V";
-        document.getElementById("usb_vcc").innerHTML = "USB voltage: " + (data["value"][1]*2)/100 + "V";
+        document.getElementById("ext_vcc").innerHTML = "External voltage: " + (data["value"][0] /10) + "V";
+        document.getElementById("usb_vcc").innerHTML = "USB voltage: " + (data["value"][1] *2)/100 + "V";
         document.getElementById("temperature").innerHTML = "Temperature: " + data["value"][2] + "°C";
+
+        if(document.getElementById("setTempOffsetText").value == "?")
+        {
+            document.getElementById("setTempOffsetText").value = data["value"][3];
+        }
     });
     </script>
 
-    <div class="container">
-        <h2 class="badge badge-secondary devices-larger-badge"> I2C-ID: = {{ posts['I2C_ID'] }}</h2>
-        <h2 class="badge badge-secondary devices-larger-badge"> HW-ID: = {{ posts['HW_ID'] }}</h2>
-        <h2 class="badge badge-secondary devices-larger-badge"> FW-V: = {{ posts['FW_ID'] }}</h2>
-    </div>
 
+    <!-- Put variable read only values here:  -->
+    <!-- These values are updated in the "socket.on("value_reply" script:  -->
     <div class="container">
         <h2 class="badge badge-info devices-larger-badge" id="ext_vcc"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="usb_vcc"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="temperature"></h2>
     </div>
 
+
+    <!-- Put variable read & write values here:  -->
+    <!-- These values use a get request to send to server:  -->
     <div class="container">
         <form action="/devices_write">
             <input type='hidden' name='posts' value="{{ posts }}" />
             <input type='hidden' name='cmd' value=5,1 />
-            <label for="0">Dev ID:</label><br>
-            <input type="text" id="0" name="0" value="{{ posts['I2C_ID'] }}">
+            <label for="setID">Dev ID:</label><br>
+            <input type="text" id="setID" name="0" value="{{ posts['I2C_ID'] }}">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=10,1 />
+            <label for="setTempOffsetText">Temperature offset:</label><br>
+            <input type="text" id="setTempOffsetText" name="0" value="?">
             <input type="submit" value="Set">
         </form>
     </div>

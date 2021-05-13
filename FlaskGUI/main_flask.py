@@ -10,6 +10,8 @@ import time
 XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 XRH = xnorbusRequestorHelper(XRQ)
 
+HOST_IP = '192.168.1.65'
+HOST_PORT = 5000
 # =========================================================
 # Delay between device list refreshes: (in sec)
 POOL_TIME = 5
@@ -25,7 +27,7 @@ THREAD_refreshDeviceList = None
 
 # check the serial load on serial port
 autoRefreshDevList_LockEpoch = 0
-autoRefreshDevList_LockDuration = 5
+autoRefreshDevList_LockDuration = 3
 autoRefreshDevList_isLocked = True
 # =========================================================
 
@@ -61,7 +63,7 @@ def create_app():
     # ======================================================================================================
 
 
-    # Page that shows index.html, this page inherits content from the base.html file:
+    # Page that shows index.html, this page inherits content from the __devicesBase__.html file:
     @app.route("/")
     def index():
         global commonDataStruct
@@ -89,7 +91,7 @@ def create_app():
             posts['HW_ID'] = request.args['HW_ID']
             posts['FW_ID'] = request.args['FW_ID']
 
-        return render_template(DEV_PAGE, posts=posts, title=DEV_TYPE)
+        return render_template(DEV_PAGE, posts=posts, title=DEV_TYPE, hostIP=HOST_IP+":"+str(HOST_PORT))
 
     # Rerouting for form button:
     @app.route('/devices_write')
@@ -100,20 +102,19 @@ def create_app():
         isValid = True
         if request.method == 'GET':
             posts = eval(request.args.getlist('posts')[0]) # F html, css and JS! random nonsnes like this is why I prefer real programming lanuagues as C or C++!
-            print(posts)
+
 
             DEV_TYPE = posts['DEV_TYPE']
-            print(DEV_TYPE)
+
 
             DEV_PAGE = posts['DEV_PAGE']
-            print(DEV_PAGE)
+
 
             I2C_ID = posts['I2C_ID']
-            print(I2C_ID)
+
 
             send_startId = eval(request.args.getlist('cmd')[0])[0]
             send_n = eval(request.args.getlist('cmd')[0])[1]
-            print(send_startId, " ", send_n)
 
             sendValue = ""
             for i in range(0, send_n):
@@ -124,9 +125,8 @@ def create_app():
                         isValid = False
                 except ValueError:
                     isValid = False
-            print(sendValue)
 
-            cmd = "[" + str(I2C_ID) + "," + str(send_startId) + ", " + str(send_n) + "" + str(sendValue) + "]"
+            cmd = "[" + str(I2C_ID) + ", " + str(send_startId) + ", " + str(send_n) + "" + str(sendValue) + "]"
             print(cmd) # last comma is automatically put in place!
 
             if isValid:
@@ -136,7 +136,7 @@ def create_app():
             else:
                 print("Invalid input!")
 
-        return render_template(DEV_PAGE, title=DEV_TYPE, posts=posts, inputIsValid=isValid)
+        return render_template(DEV_PAGE, title=DEV_TYPE, posts=posts, inputIsValid=isValid, hostIP=HOST_IP+":"+str(HOST_PORT))
 
 
     # Rerouting for the about button:
@@ -211,7 +211,7 @@ if(app.env == 'development'):
 else:
     create_thread()
 
-app.run(host='0.0.0.0', port=5000)
+app.run(host=HOST_IP, port=HOST_PORT) # set HOST_IP and HOST_PORT on top of this page!
 
 
 

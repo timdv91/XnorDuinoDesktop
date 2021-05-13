@@ -32,7 +32,7 @@ def create_app():
 
     # ======================================================================================================
 
-    # Page that shows index.html, this page inherits content from the base.html file:
+    # Page that shows index.html, this page inherits content from the __devicesBase__.html file:
     @app.route("/")
     def index():
         global commonDataStruct

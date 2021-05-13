@@ -1,27 +1,29 @@
-
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
-    var socket = io.connect('http://192.168.1.65:5000');
+    var socket = io.connect('{{ hostIP }}');
 
     function Heart_Beat(){
         socket.emit('heart_beat');
-        setTimeout(Heart_Beat, 3000);
+        setTimeout(Heart_Beat, 2000);
     }
     Heart_Beat();
 
     // If server has locked the autorefresh, show on GUI:
     socket.on("isLocked", data => {
         console.log(data);
+
+        var deviceContent = document.getElementById("deviceContent");
         if(data == true)
         {
             document.getElementById("AUTO_UPDATE_LOCKED").innerHTML = "";
             document.getElementById("AUTO_UPDATE_UNLOCKED").innerHTML = "Bus access: Granted";
+            deviceContent.style.display = "block";
         }
         else
         {
-            document.getElementById("AUTO_UPDATE_LOCKED").innerHTML = "Bus access: HOLD";
             document.getElementById("AUTO_UPDATE_UNLOCKED").innerHTML = "";
+            document.getElementById("AUTO_UPDATE_LOCKED").innerHTML = "Bus access: HOLD";
+            deviceContent.style.display = "none";
         }
     });
 </script>
@@ -44,17 +46,27 @@
 
     </nav>
      <div class="container">
-       <h2>{{ title }} </h2>
+       <h2>{{ title }}</h2>
        <h2 class="badge badge-secondary devices-larger-badge" id="AUTO_UPDATE_LOCKED"> </h2>
        <h2 class="badge badge-success devices-larger-badge" id="AUTO_UPDATE_UNLOCKED"> </h2>
-        {% if inputIsValid == True %}
-          <h2 class="badge badge-success devices-larger-badge" id="InputSuccess">Configuration saved!</h2>
-        {% elif inputIsValid == False %}
-          <h2 class="badge badge-danger devices-larger-badge" id="InputError">Configuration input error!</h2>
-        {% endif %}
 
-       {% block content %}
-       {% endblock %}
+         {% if inputIsValid == True %}
+            <h2 class="badge badge-success devices-larger-badge" id="InputSuccess">Configuration saved!</h2>
+         {% elif inputIsValid == False %}
+            <h2 class="badge badge-danger devices-larger-badge" id="InputError">Configuration input error!</h2>
+         {% endif %}
+
+         <div class="container">
+            <h2 class="badge badge-secondary devices-larger-badge"> I2C-ID: = {{ posts['I2C_ID'] }}</h2>
+            <h2 class="badge badge-secondary devices-larger-badge"> HW-ID: = {{ posts['HW_ID'] }}</h2>
+            <h2 class="badge badge-secondary devices-larger-badge"> FW-V: = {{ posts['FW_ID'] }}</h2>
+         </div>
+
+         <div class="container" id="deviceContent"> <!-- id is used inside javascript to show/hide the block content -->
+            {% block content %}                     <!-- As usual webdevelpment does this in the most arbitrary and random way -->
+            {% endblock %}
+         </div>
+
     </div>
 
     <!-- Optional JavaScript -->

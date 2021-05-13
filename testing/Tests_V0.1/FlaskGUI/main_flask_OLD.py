@@ -23,7 +23,7 @@ SerialLock = False
 def create_app():
     app = Flask(__name__)
 
-    # Page that shows index.html, this page inherits content from the base.html file:
+    # Page that shows index.html, this page inherits content from the __devicesBase__.html file:
     @app.route("/")
     def index():
         global commonDataStruct

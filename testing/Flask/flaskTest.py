@@ -13,7 +13,7 @@ def hello_world():
 def indexOld():
     return render_template('indexOld.html')
 
-# Page that shows index.html, this page inherits content from the base.html file:
+# Page that shows index.html, this page inherits content from the __devicesBase__.html file:
 @app.route('/')
 def index():
     posts = []
