@@ -6,29 +6,28 @@ import atexit, threading
 from flask_socketio import SocketIO, emit, send
 import json, os
 import time
+import copy
 
 XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 XRH = xnorbusRequestorHelper(XRQ)
 
 HOST_IP = '192.168.1.65'
 HOST_PORT = 5000
+
 # =========================================================
-# Delay between device list refreshes: (in sec)
-POOL_TIME = 5
-
 # variables that are accessible from anywhere
-commonDataStruct = {}
+POOL_TIME = 5                               # Delay between device list (thread) refreshes: (in sec)
+commonDataStruct = {}                       # global struct that stores the deviceList parameters
+dataLock = threading.Lock()                 # lock to control access to variable
 
-# lock to control access to variable
-dataLock = threading.Lock()
-
-# thread handler
-THREAD_refreshDeviceList = None
+THREAD_refreshDeviceList = None                         # thread handler
+currentlyOpenedMainPage = None                          # keeps track of the currently opened webpage
+runThreadOnLoadedPages = ['treeView', 'deviceList']     # run communication thread when one of these pages are opened
 
 # check the serial load on serial port
-autoRefreshDevList_LockEpoch = 0
-autoRefreshDevList_LockDuration = 3
-autoRefreshDevList_isLocked = True
+autoRefreshDevList_LockEpoch = 0            # contains the epoch when autorefresh of deviceList gets paused.
+autoRefreshDevList_LockDuration = 3         # contains the amount of seconds autorefresh lists should stay paused
+autoRefreshDevList_isLocked = True          # if True deviceList will extend pause state with <lockdurations> seconds
 # =========================================================
 
 def create_app():
@@ -37,6 +36,7 @@ def create_app():
     # ======================================================================================================
     socketio = SocketIO(app)
 
+    # individual device pages send a heartbeat each N'th second to keep the autorefresh state paused.
     @socketio.on('heart_beat')
     def subGUI_HeartBeat():
         global autoRefreshDevList_LockEpoch
@@ -44,12 +44,14 @@ def create_app():
         global autoRefreshDevList_isLocked
         emit('isLocked', autoRefreshDevList_isLocked)
 
+    # individual devices pages emit 'connect' when they are opend to set autorefresh state to paused.
     @socketio.on('connect')
     def subGUI_connected():
         global autoRefreshDevList_LockEpoch
         global autoRefreshDevList_LockDuration
         autoRefreshDevList_LockEpoch = int(time.time()) + autoRefreshDevList_LockDuration
 
+    # individual devices pages communication route to read slave devices.
     @socketio.on('get_value')
     def get_value(data):
         rcvBytes = XRQ.get(str(data['cmd']), "RS")  # set de master for ReadSlave
@@ -60,33 +62,77 @@ def create_app():
                 rcvList.append(rcvBytes[i])
             emit('value_reply', {"name":data['name'], "value": rcvList})
 
+
     # ======================================================================================================
 
     # Rerouting for the index page:
     @app.route('/')
     def index():
+        global currentlyOpenedMainPage
+        currentlyOpenedMainPage = 'index'
         return render_template('index.html')
 
     # Rerouting for the about button:
     @app.route('/about')
     def about():
+        global currentlyOpenedMainPage
+        currentlyOpenedMainPage = 'about'
         return render_template('about.html')
 
 
-    # Page that shows deviceList.html, this page inherits content from the __devicesBase__.html file:
+    # ======================================================================================================
+
+    # Page that shows deviceList.html, this page inherits content from the __base__.html file:
     @app.route("/deviceList")
     def deviceList():
         global commonDataStruct
         global autoRefreshDevList_isLocked
-        devicesDictionary = {}
+        global currentlyOpenedMainPage
+        currentlyOpenedMainPage = 'deviceList'
 
-        devicesDictionary['DEVICES'] = commonDataStruct
+        devicesDictionary = {}
+        devicesDictionary['DEVICES'] = copy.deepcopy(commonDataStruct)
         devicesDictionary['AUTO_UPDATE_LOCKED'] = autoRefreshDevList_isLocked
 
         return render_template('deviceList.html', posts=devicesDictionary)
 
+    # Rerouting for the about button:
+    @app.route('/treeView')
+    def treeView():
+        global currentlyOpenedMainPage
+        currentlyOpenedMainPage = 'treeView'
 
-    # a simple hello world text:
+        devicesDictionary = {}
+        devicesDictionary['DEVICES'] = copy.deepcopy(commonDataStruct)
+        devicesDictionary['AUTO_UPDATE_LOCKED'] = autoRefreshDevList_isLocked
+
+        # Clearing ugly parameters from Nested dictionary var:
+        for i in range(0, len(devicesDictionary['DEVICES'])):
+            if(str(type(devicesDictionary['DEVICES'][i]['NESTED'])) != "<class 'list'>"):
+                devicesDictionary['DEVICES'][i]['NESTED'] = ""
+
+        # adding a new parameter to dictionary var, to determine if the device has already been listed as nested device:
+        for i in range(0, len(devicesDictionary['DEVICES'])):
+           devicesDictionary['DEVICES'][i]['isNested'] = False  # set each device as not nested in list
+
+        # check what devices have previously been listed as nested devices, tag them:
+        for i in range(0, len(devicesDictionary['DEVICES'])):
+            for o in range(0,len(devicesDictionary['DEVICES'][i]['NESTED'])):
+                #print(devicesDictionary['DEVICES'][i]['NESTED'][o])
+                for p in range(0,len(devicesDictionary['DEVICES'])):
+                    #print("\t", devicesDictionary['DEVICES'][p]['I2C_ID'], end=" ")
+                    if(int(devicesDictionary['DEVICES'][i]['NESTED'][o]) == int(devicesDictionary['DEVICES'][p]['I2C_ID'])):
+                        devicesDictionary['DEVICES'][p]['isNested'] = True  # set specific devices as listed in list
+                        #print("- detected")
+                        break
+                    #print()
+
+        return render_template('treeView.html', posts=devicesDictionary)
+
+    # ======================================================================================================
+
+
+    # Page that shows individual device pages, inherits content from the __devicesBase__.html file:
     @app.route('/devices', methods=('GET', 'POST'))
     def devices():
         DEV_PAGE = None
@@ -103,7 +149,7 @@ def create_app():
 
         return render_template(DEV_PAGE, posts=posts, title=DEV_TYPE, hostIP=HOST_IP+":"+str(HOST_PORT))
 
-    # Rerouting for form button:
+    # individual devices pages communication route to write slave devices.
     @app.route('/devices_write')
     def devices_write():
         DEV_TYPE = None
@@ -113,16 +159,9 @@ def create_app():
         if request.method == 'GET':
             posts = eval(request.args.getlist('posts')[0]) # F html, css and JS! random nonsnes like this is why I prefer real programming lanuagues as C or C++!
 
-
             DEV_TYPE = posts['DEV_TYPE']
-
-
             DEV_PAGE = posts['DEV_PAGE']
-
-
             I2C_ID = posts['I2C_ID']
-
-
             send_startId = eval(request.args.getlist('cmd')[0])[0]
             send_n = eval(request.args.getlist('cmd')[0])[1]
 
@@ -137,7 +176,7 @@ def create_app():
                     isValid = False
 
             cmd = "[" + str(I2C_ID) + ", " + str(send_startId) + ", " + str(send_n) + "" + str(sendValue) + "]"
-            print(cmd) # last comma is automatically put in place!
+            print(cmd)                                                                # last comma is automatically put in place!
 
             if isValid:
                 print("Valid input!")
@@ -150,8 +189,9 @@ def create_app():
 
     return app
 
-
 #=======================================================================================================
+
+
 class create_thread():
     def __init__(self):
         print("Starting thread creation")
@@ -179,22 +219,26 @@ class create_thread():
         global THREAD_refreshDeviceList
         global autoRefreshDevList_LockEpoch
         global autoRefreshDevList_isLocked
+        global currentlyOpenedMainPage, runThreadOnLoadedPages
         with dataLock:
         # Do your stuff with commonDataStruct Here
             print("Thread started: ", threading.get_ident())
 
-            if autoRefreshDevList_LockEpoch < int(time.time()):
-                print("Hardware communication: Started")
-                autoRefreshDevList_isLocked = False
-                devIdList = XRH.initDeviceIDScan()
-                devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
-                devicesDictionaryNested = XRH.getDevicesNestingDict(devicesDictionary, pDebug=False)
-                print("Hardware communication: Completed")
+            if(currentlyOpenedMainPage in runThreadOnLoadedPages):            # prevent loading deviceList when page is not loaded
+                if autoRefreshDevList_LockEpoch < int(time.time()): # prevent loading deviceList when device is opened
+                    print("Hardware communication: Started")
+                    autoRefreshDevList_isLocked = False
+                    devIdList = XRH.initDeviceIDScan()
+                    devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
+                    devicesDictionaryNested = XRH.getDevicesNestingDict(devicesDictionary, pDebug=False)
+                    print("Hardware communication: Completed")
 
-                commonDataStruct = devicesDictionaryNested
+                    commonDataStruct = devicesDictionaryNested
+                else:
+                    print("Hardware communication: Locked")
+                    autoRefreshDevList_isLocked = True
             else:
-                print("Hardware communication: Locked")
-                autoRefreshDevList_isLocked = True
+                print("No pages requiring master readouts are currently opened, ignore.")
 
             print("Thread ended: ", threading.get_ident())
             # Set the next thread to happen
