@@ -8,7 +8,8 @@ import json, os
 import time
 import copy
 
-XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
+XRQ = xnorbusWebrequestor('http://192.168.1.59:8080')
+#XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 XRH = xnorbusRequestorHelper(XRQ)
 
 HOST_IP = '192.168.1.65'
@@ -54,7 +55,7 @@ def create_app():
     # individual devices pages communication route to read slave devices.
     @socketio.on('get_value')
     def get_value(data):
-        rcvBytes = XRQ.get(str(data['cmd']), "RS")  # set de master for ReadSlave
+        rcvBytes = XRQ.get(str(data['cmd']), str(data['cmdType']))  # set de master for ReadSlave
         if(rcvBytes != None):
             rcvBytes = eval(rcvBytes)
             rcvList = []
@@ -90,8 +91,13 @@ def create_app():
         global currentlyOpenedMainPage
         currentlyOpenedMainPage = 'deviceList'
 
-        devicesDictionary = {}
-        devicesDictionary['DEVICES'] = copy.deepcopy(commonDataStruct)
+        devicesDictionary = copy.deepcopy(commonDataStruct)
+        try:
+            t = devicesDictionary['SLAVES']
+            t = devicesDictionary['MASTER']
+        except KeyError:
+            devicesDictionary['SLAVES'] = {}
+            devicesDictionary['MASTER'] = {}
         devicesDictionary['AUTO_UPDATE_LOCKED'] = autoRefreshDevList_isLocked
 
         return render_template('deviceList.html', posts=devicesDictionary)
@@ -102,27 +108,33 @@ def create_app():
         global currentlyOpenedMainPage
         currentlyOpenedMainPage = 'treeView'
 
-        devicesDictionary = {}
-        devicesDictionary['DEVICES'] = copy.deepcopy(commonDataStruct)
+        devicesDictionary = copy.deepcopy(commonDataStruct)
+        try:
+            t = devicesDictionary['SLAVES']
+            t= devicesDictionary['MASTER']
+        except KeyError:
+            devicesDictionary['SLAVES'] = {}
+            devicesDictionary['MASTER'] = {}
+
         devicesDictionary['AUTO_UPDATE_LOCKED'] = autoRefreshDevList_isLocked
 
         # Clearing ugly parameters from Nested dictionary var:
-        for i in range(0, len(devicesDictionary['DEVICES'])):
-            if(str(type(devicesDictionary['DEVICES'][i]['NESTED'])) != "<class 'list'>"):
-                devicesDictionary['DEVICES'][i]['NESTED'] = ""
+        for i in range(0, len(devicesDictionary['SLAVES'])):
+            if(str(type(devicesDictionary['SLAVES'][i]['NESTED'])) != "<class 'list'>"):
+                devicesDictionary['SLAVES'][i]['NESTED'] = ""
 
         # adding a new parameter to dictionary var, to determine if the device has already been listed as nested device:
-        for i in range(0, len(devicesDictionary['DEVICES'])):
-           devicesDictionary['DEVICES'][i]['isNested'] = False  # set each device as not nested in list
+        for i in range(0, len(devicesDictionary['SLAVES'])):
+           devicesDictionary['SLAVES'][i]['isNested'] = False  # set each device as not nested in list
 
         # check what devices have previously been listed as nested devices, tag them:
-        for i in range(0, len(devicesDictionary['DEVICES'])):
-            for o in range(0,len(devicesDictionary['DEVICES'][i]['NESTED'])):
-                #print(devicesDictionary['DEVICES'][i]['NESTED'][o])
-                for p in range(0,len(devicesDictionary['DEVICES'])):
-                    #print("\t", devicesDictionary['DEVICES'][p]['I2C_ID'], end=" ")
-                    if(int(devicesDictionary['DEVICES'][i]['NESTED'][o]) == int(devicesDictionary['DEVICES'][p]['I2C_ID'])):
-                        devicesDictionary['DEVICES'][p]['isNested'] = True  # set specific devices as listed in list
+        for i in range(0, len(devicesDictionary['SLAVES'])):
+            for o in range(0,len(devicesDictionary['SLAVES'][i]['NESTED'])):
+                #print(devicesDictionary['SLAVES'][i]['NESTED'][o])
+                for p in range(0,len(devicesDictionary['SLAVES'])):
+                    #print("\t", devicesDictionary['SLAVES'][p]['I2C_ID'], end=" ")
+                    if(int(devicesDictionary['SLAVES'][i]['NESTED'][o]) == int(devicesDictionary['SLAVES'][p]['I2C_ID'])):
+                        devicesDictionary['SLAVES'][p]['isNested'] = True  # set specific devices as listed in list
                         #print("- detected")
                         break
                     #print()
@@ -228,12 +240,13 @@ class create_thread():
                 if autoRefreshDevList_LockEpoch < int(time.time()): # prevent loading deviceList when device is opened
                     print("Hardware communication: Started")
                     autoRefreshDevList_isLocked = False
+                    commonDataStruct['MASTER'] = XRH.getMasterInformation()
+
                     devIdList = XRH.initDeviceIDScan()
                     devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
-                    devicesDictionaryNested = XRH.getDevicesNestingDict(devicesDictionary, pDebug=False)
-                    print("Hardware communication: Completed")
+                    commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
 
-                    commonDataStruct = devicesDictionaryNested
+                    print("Hardware communication: Completed")
                 else:
                     print("Hardware communication: Locked")
                     autoRefreshDevList_isLocked = True
@@ -255,7 +268,7 @@ if(app.env == 'development'):
     app.debug = True
     dir_path = os.path.dirname(os.path.realpath(__file__))
     with open(dir_path + '/API/scannedDevicesDict.json') as f:
-        commonDataStruct = json.load(f)
+        commonDataStruct['SLAVES'] = json.load(f)
 else:
     create_thread()
 

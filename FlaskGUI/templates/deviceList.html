@@ -3,14 +3,14 @@
 {% extends '__base__.html' %}
 
 {% block content %}
-    <h1>{% block title %} Xnorduino devices hardware visualizer {% endblock %}</h1>
+    <h1>{% block title %} Xnorduino devices listview {% endblock %}</h1>
 
     {% if posts['AUTO_UPDATE_LOCKED'] == True %}
         <p class="badge badge-secondary deviceList_title-larger-badge"> Auto update: paused!</p>
         <p class="badge badge-light"> Close device windows to reactivate auto updates.</p>
     {% else %}
         <p class="badge badge-success deviceList_title-larger-badge"> Auto update: Active!</p>
-        {% if posts['DEVICES']|length <= 0 %}
+        {% if posts['SLAVES']|length <= 0 %}
             <p class="badge badge-info deviceList_title-larger-badge"> Detecting devices, please wait...</p>
             <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
@@ -18,16 +18,27 @@
         {% endif %}
     {% endif %}
 
-
-    {% for device in posts['DEVICES'] %}
-         <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width=350,height=600'); return false">
-                <h2>{{ device['DEV_TYPE'] }}</h2>
+    {% if posts['MASTER']|length > 0 %}
+         <a href="#" onClick="MyWindow=window.open('devices?{{ posts['MASTER']['URL'] }}', '{{ randomPopup }}', 'width={{ posts['MASTER']['WINDOW_SIZE'][0] }},height={{ posts['MASTER']['WINDOW_SIZE'][1] }}'); return false">
+             <h2>{{ posts['MASTER']['DEV_TYPE'] }}</h2>
          </a>
-        <span class="badge badge-info deviceList-larger-badge">I2C_ID: {{ device['I2C_ID'] }}</span>
-        <span class="badge badge-info deviceList-larger-badge">HW_ID: {{ device['HW_ID'] }}</span>
-        <span class="badge badge-info deviceList-larger-badge">FW_ID: {{ device['FW_ID'] }}</span>
-        <span class="badge badge-info deviceList-larger-badge">NESTED: {{ device['NESTED'] }}</span>
+        <span class="badge badge-info deviceList-larger-badge">I2C_ID: {{ posts['MASTER']['I2C_ID'] }}</span>
+        <span class="badge badge-info deviceList-larger-badge">HW_ID: {{ posts['MASTER']['HW_ID'] }}</span>
+        <span class="badge badge-info deviceList-larger-badge">FW_ID: {{ posts['MASTER']['FW_ID'] }}</span>
+        <span class="badge badge-info deviceList-larger-badge">ALERTS: {{ posts['MASTER']['ALERT'] }}</span>
         <hr>
-    {% endfor %}
+    {% endif %}
 
+    {% if posts['SLAVES']|length > 0 %}
+        {% for device in posts['SLAVES'] %}
+             <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width={{ device['WINDOW_SIZE'][0] }},height={{ device['WINDOW_SIZE'][1] }}'); return false">
+                    <h3>{{ device['DEV_TYPE'] }}</h3>
+             </a>
+            <span class="badge badge-info deviceList-larger-badge">I2C_ID: {{ device['I2C_ID'] }}</span>
+            <span class="badge badge-info deviceList-larger-badge">HW_ID: {{ device['HW_ID'] }}</span>
+            <span class="badge badge-info deviceList-larger-badge">FW_ID: {{ device['FW_ID'] }}</span>
+            <span class="badge badge-info deviceList-larger-badge">NESTED: {{ device['NESTED'] }}</span>
+            <hr>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

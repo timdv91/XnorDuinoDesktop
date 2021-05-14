@@ -11,7 +11,7 @@
         <p class="badge badge-light"> Close device windows to reactivate auto updates.</p>
     {% else %}
         <p class="badge badge-success deviceList_title-larger-badge"> Auto update: Active!</p>
-        {% if posts['DEVICES']|length <= 0 %}
+        {% if posts['SLAVES']|length <= 0 %}
             <p class="badge badge-info deviceList_title-larger-badge"> Detecting devices, please wait...</p>
             <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
@@ -19,120 +19,47 @@
         {% endif %}
     {% endif %}
 
-
-    <div class="tree">
-        <ul>
-            <li>
-                <a href="#"><h2>ID: 0</h2><h4>Master</h4></a>
-                <ul>
-                    {% for device in posts['DEVICES'] %}
-                        {% if device['NESTED']|length > 0 %}
-                            <li>
-                                <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width=350,height=600'); return false">
-                                    <h3>ID: {{ device['I2C_ID'] }}</h3><h5>{{ device['DEV_TYPE'] }}</h5>
-                                </a>
-                                <ul>
-                                    {% for subDevice in device['NESTED'] %}
-                                        {% for findDevice in posts['DEVICES'] %}
-                                            {% if findDevice['I2C_ID']|int == subDevice|int %}
-                                                <li>
-                                                <a href="#" onClick="MyWindow=window.open('devices?{{ findDevice['URL'] }}', '{{ randomPopup }}', 'width=350,height=600'); return false">
-                                                    <h3>ID: {{ findDevice['I2C_ID'] }}</h3><h5>{{ findDevice['DEV_TYPE'] }}</h5>
-                                                </a>
-                                                </li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                        {% else %}
-                            {% if device['isNested'] == false %}
+    {% if posts['MASTER']['DEV_TYPE']|length > 0 %}
+        <div class="tree">
+            <ul>
+                <li>
+                    <a href="#" onClick="MyWindow=window.open('devices?{{ posts['MASTER']['URL'] }}', '{{ randomPopup }}', 'width={{ posts['MASTER']['WINDOW_SIZE'][0] }},height={{ posts['MASTER']['WINDOW_SIZE'][1] }}'); return false">
+                    <h2>ID: {{ posts['MASTER']['I2C_ID'] }}</h2><h4>{{ posts['MASTER']['DEV_TYPE'] }}</h4>
+                    </a>
+                    <ul>
+                        {% for device in posts['SLAVES'] %}
+                            {% if device['NESTED']|length > 0 %}
                                 <li>
-                                    <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width=350,height=600'); return false">
+                                    <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width={{ device['WINDOW_SIZE'][0] }},height={{ device['WINDOW_SIZE'][1] }}'); return false">
                                         <h3>ID: {{ device['I2C_ID'] }}</h3><h5>{{ device['DEV_TYPE'] }}</h5>
                                     </a>
-                                </li>
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </li>
-        </ul>
-    </div>
-
-<!--
-
-    <div class="tree">
-        <ul>
-            <li>
-                 <a href="#">Master</a>
-                <ul>
-                    <li>
-                        {% for device in posts['DEVICES'] %}
-                            {% if device['NESTED']|length > 0 %}
-                                <a href="#">{{ device['I2C_ID'] }}</a>
                                     <ul>
-                                        <li>
-                                            {% for subDevice in device['NESTED'] %}
-                                                <a href="#">{{ subDevice }}</a>
+                                        {% for subDevice in device['NESTED'] %}
+                                            {% for findDevice in posts['SLAVES'] %}
+                                                {% if findDevice['I2C_ID']|int == subDevice|int %}
+                                                    <li>
+                                                    <a href="#" onClick="MyWindow=window.open('devices?{{ findDevice['URL'] }}', '{{ randomPopup }}', 'width={{ findDevice['WINDOW_SIZE'][0] }},height={{ findDevice['WINDOW_SIZE'][1] }}'); return false">
+                                                        <h3>ID: {{ findDevice['I2C_ID'] }}</h3><h5>{{ findDevice['DEV_TYPE'] }}</h5>
+                                                    </a>
+                                                    </li>
+                                                {% endif %}
                                             {% endfor %}
-                                        </li>
+                                        {% endfor %}
                                     </ul>
+                                </li>
                             {% else %}
-
+                                {% if device['isNested'] == false %}
+                                    <li>
+                                        <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width={{ device['WINDOW_SIZE'][0] }},height={{ device['WINDOW_SIZE'][1] }}'); return false">
+                                            <h3>ID: {{ device['I2C_ID'] }}</h3><h5>{{ device['DEV_TYPE'] }}</h5>
+                                        </a>
+                                    </li>
+                                {% endif %}
                             {% endif %}
-
                         {% endfor %}
-                    </li>
-                </ul>
-
-            </li>
-        </ul>
-    </div>
--->
-<!--
-We will create a family tree using just CSS(3)
-The markup will be simple nested lists
--->
-<!--
-
-    <div class="tree">
-        <ul>
-            <li>
-                <a href="#">Parent</a>
-                <ul>
-                    <li>
-                        <a href="#">Child</a>
-                        <ul>
-                            <li>
-                                <a href="#">Grand Child</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">Child</a>
-                        <ul>
-                            <li><a href="#">Grand Child</a></li>
-                            <li>
-                                <a href="#">Grand Child</a>
-                                <ul>
-                                    <li>
-                                        <a href="#">Great Grand Child</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Great Grand Child</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Great Grand Child</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><a href="#">Grand Child</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
--->
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
 {% endblock %}

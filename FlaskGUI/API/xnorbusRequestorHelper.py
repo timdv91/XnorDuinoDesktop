@@ -4,6 +4,49 @@ class xnorbusRequestorHelper():
     def __init__(self, pXRQ):
         self.XRQ = pXRQ
 
+    def getMasterInformation(self):
+        # getting a jsonDictionary with supported devices and their names:
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        with open(dir_path + '/devices.json') as f:
+            supportedDevicesDictionary = json.load(f)
+
+        # requesting data from master:
+        rcvBytes = eval(self.XRQ.get('[0,14]', "RM"))
+        rcv = []
+        for i in range(len(rcvBytes)):
+            rcv.append(rcvBytes[i])
+
+        # moving data in it's place:
+        retVal = {}
+        retVal['I2C_ID'] = str(0)
+        retVal['HW_ID'] = str(rcv[0:4])
+        retVal['FW_ID'] = 'v' + str(rcv[4:5][0])
+        retVal['ALERT'] = str(rcv[5:6][0])
+        retVal['PM_IC'] = str(rcv[6:10])
+        retVal['TRM_MOD'] = str(rcv[10:14])
+
+        try:
+            combiID = str(rcv[0:5]).replace(' ', '')
+            retVal["DEV_TYPE"] = supportedDevicesDictionary["MASTER"][combiID]["DEV_TYPE"]
+            retVal["DEV_PAGE"] = supportedDevicesDictionary["MASTER"][combiID]["DEV_PAGE"]
+            retVal["WINDOW_SIZE"] = supportedDevicesDictionary["MASTER"][combiID]["WINDOW_SIZE"]
+            retVal["URL"] = "DEV_PAGE=" + retVal["DEV_PAGE"] \
+                                + '&' + "I2C_ID=" + '0' \
+                                + '&' + "DEV_TYPE=" + retVal["DEV_TYPE"] \
+                                + '&' + "HW_ID=" + retVal["HW_ID"] \
+                                + '&' + "FW_ID=" + retVal["FW_ID"]
+        except KeyError:
+            retVal["DEV_TYPE"] = "UNKNOWN_DEVICE"
+            retVal["DEV_PAGE"] = "UNKNOWN_DEVICE"
+            retVal["WINDOW_SIZE"] = [350, 300]
+            retVal["URL"] = "DEV_PAGE=" + "devices/unsupported_device.html" \
+                                + '&' + "I2C_ID=" + '0' \
+                                + '&' + "DEV_TYPE=" + retVal["DEV_TYPE"] \
+                                + '&' + "HW_ID=" + retVal["HW_ID"] \
+                                + '&' + "FW_ID=" + retVal["FW_ID"]
+
+        return retVal
+
     # uses the scan function (function 3) implemented on the master_embedded device to scan for slaves:
     def initDeviceIDScan(self, pDebug=False):
         retVal = []
@@ -32,7 +75,8 @@ class xnorbusRequestorHelper():
             supportedDevicesDictionary = json.load(f)
 
         # getting the hardware identifiers from each slave device:
-        returnList = []
+        returnDict = {}
+        devicesList = []
         for devId in pDevIdList:
             cmd = [devId, 0, 5]
             rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))                   # set de master for ReadSlave
@@ -49,9 +93,10 @@ class xnorbusRequestorHelper():
 
             try:
                 combiID = str(devInfoArr).replace(' ', '')
-                deviceDict["DEV_TYPE"] = supportedDevicesDictionary["devices"][combiID]["DEV_TYPE"]
-                deviceDict["DEV_PAGE"] = supportedDevicesDictionary["devices"][combiID]["DEV_PAGE"]
-                deviceDict["DEV_NESTING"] = supportedDevicesDictionary["devices"][combiID]["DEV_NESTING"]
+                deviceDict["DEV_TYPE"] = supportedDevicesDictionary["SLAVES"][combiID]["DEV_TYPE"]
+                deviceDict["DEV_PAGE"] = supportedDevicesDictionary["SLAVES"][combiID]["DEV_PAGE"]
+                deviceDict["WINDOW_SIZE"] = supportedDevicesDictionary["SLAVES"][combiID]["WINDOW_SIZE"]
+                deviceDict["DEV_NESTING"] = supportedDevicesDictionary["SLAVES"][combiID]["DEV_NESTING"]
                 deviceDict["URL"] = "DEV_PAGE=" + deviceDict["DEV_PAGE"] \
                                     + '&' + "I2C_ID=" + deviceDict["I2C_ID"] \
                                     + '&' + "DEV_TYPE=" + deviceDict["DEV_TYPE"] \
@@ -60,15 +105,13 @@ class xnorbusRequestorHelper():
             except KeyError:
                 deviceDict["DEV_TYPE"] = "UNKNOWN_DEVICE"
                 deviceDict["DEV_PAGE"] = "UNKNOWN_DEVICE"
+                deviceDict["WINDOW_SIZE"] = [350, 300]
                 deviceDict["DEV_NESTING"] = -1
                 deviceDict["URL"] = "DEV_PAGE=" + "devices/unsupported_device.html" \
                                     + '&' + "I2C_ID=" + deviceDict["I2C_ID"] \
                                     + '&' + "DEV_TYPE=" + deviceDict["DEV_TYPE"] \
                                     + '&' + "HW_ID=" + deviceDict["HW_ID"] \
                                     + '&' + "FW_ID=" + deviceDict["FW_ID"]
-
-
-
 
             # print to debug console:
             if(pDebug):
@@ -77,8 +120,10 @@ class xnorbusRequestorHelper():
                     print(rcvBytes[i], end='\t')
                 print(" - ", deviceDict["DEV_TYPE"], deviceDict["FW_ID"])
 
-            returnList.append(deviceDict)
-        return returnList
+            devicesList.append(deviceDict)
+
+        returnDict['SLAVES'] = devicesList
+        return returnDict
 
 
     def getDevicesNestingDict(self, pDevicesDict, pDebug=False):
@@ -111,17 +156,3 @@ class xnorbusRequestorHelper():
         if(pDebug):
             print(str(debugPrint))
         return devicesDictLocal
-
-
-
-
-'''
-dir_path = os.path.dirname(os.path.realpath(__file__))
-dir_path = os.path.dirname(os.path.realpath(__file__))
-print(dir_path)
-with open(dir_path + '/scannedDevicesDict.json') as f:
-    supportedDevicesDictionary = json.load(f)
-
-x = xnorbusRequestorHelper()
-x.getDeviceNestingDict(supportedDevicesDictionary)
-'''

@@ -8,7 +8,7 @@
         console.log(data);
         if(data == true)
         {
-            socket.emit('get_value', {name: "ext_vcc+usb_vcc+temp", cmd: '[{{ posts['I2C_ID'] }}, 7, 4]'});  // only send data when server has locked autoRefresh
+            socket.emit('get_value', {name: "ext_vcc+usb_vcc+temp", cmd: '[{{ posts['I2C_ID'] }}, 7, 4]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
         }
     });
 

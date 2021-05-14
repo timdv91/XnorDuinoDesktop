@@ -1,0 +1,36 @@
+{% extends '/devices/__devicesBase__.html' %}
+
+{% block content %}
+
+    <script>
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true)
+        {
+            socket.emit('get_value', {name: "masterReadout", cmd: '[5, 9]', cmdType: 'RM'});  // only send data when server has locked autoRefresh
+        }
+    });
+
+
+    socket.on("value_reply", data => {
+        console.log(data);
+        document.getElementById("Alerts").innerHTML = "Alerts: " + (data["value"][0]);
+        document.getElementById("ext_vcc").innerHTML = "External vcc (voltage): " + (data["value"][1] /10) + "V";
+        document.getElementById("ext_vcc_current").innerHTML = "External vcc (current): " + (data["value"][2] *5)/1000 + "A";
+        document.getElementById("ext_vcc_wattage").innerHTML = "External vcc (wattage): " + data["value"][3] / 10 + "W";
+        document.getElementById("over_current_shtdwn").innerHTML = "Over-current shutdown: " + (data["value"][4] *5)/1000 + "A";
+    });
+    </script>
+
+    <!-- Put variable read only values here:  -->
+    <!-- These values are updated in the "socket.on("value_reply" script:  -->
+    <div class="container">
+        <h2 class="badge badge-info devices-larger-badge" id="Alerts"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="ext_vcc"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="ext_vcc_current"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="ext_vcc_wattage"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="over_current_shtdwn"></h2>
+    </div>
+
+{% endblock %}
