@@ -10,60 +10,72 @@ class xnorbusRequestorHelper():
         with open(dir_path + '/devices.json') as f:
             supportedDevicesDictionary = json.load(f)
 
-        # requesting data from master:
-        rcvBytes = eval(self.XRQ.get('[0,14]', "RM"))
-        rcv = []
-        for i in range(len(rcvBytes)):
-            rcv.append(rcvBytes[i])
-
-        # moving data in it's place:
         retVal = {}
-        retVal['I2C_ID'] = str(0)
-        retVal['HW_ID'] = str(rcv[0:4])
-        retVal['FW_ID'] = 'v' + str(rcv[4:5][0])
-        retVal['ALERT'] = str(rcv[5:6][0])
-        retVal['PM_IC'] = str(rcv[6:10])
-        retVal['TRM_MOD'] = str(rcv[10:14])
-
         try:
-            combiID = str(rcv[0:5]).replace(' ', '')
-            retVal["DEV_TYPE"] = supportedDevicesDictionary["MASTER"][combiID]["DEV_TYPE"]
-            retVal["DEV_PAGE"] = supportedDevicesDictionary["MASTER"][combiID]["DEV_PAGE"]
-            retVal["WINDOW_SIZE"] = supportedDevicesDictionary["MASTER"][combiID]["WINDOW_SIZE"]
-            retVal["URL"] = "DEV_PAGE=" + retVal["DEV_PAGE"] \
-                                + '&' + "I2C_ID=" + '0' \
-                                + '&' + "DEV_TYPE=" + retVal["DEV_TYPE"] \
-                                + '&' + "HW_ID=" + retVal["HW_ID"] \
-                                + '&' + "FW_ID=" + retVal["FW_ID"]
-        except KeyError:
-            retVal["DEV_TYPE"] = "UNKNOWN_DEVICE"
-            retVal["DEV_PAGE"] = "UNKNOWN_DEVICE"
-            retVal["WINDOW_SIZE"] = [350, 300]
-            retVal["URL"] = "DEV_PAGE=" + "devices/unsupported_device.html" \
-                                + '&' + "I2C_ID=" + '0' \
-                                + '&' + "DEV_TYPE=" + retVal["DEV_TYPE"] \
-                                + '&' + "HW_ID=" + retVal["HW_ID"] \
-                                + '&' + "FW_ID=" + retVal["FW_ID"]
+            # requesting data from master:
+            rcvBytes = eval(self.XRQ.get('[0,14]', "RM"))
+            rcv = []
+            for i in range(len(rcvBytes)):
+                rcv.append(rcvBytes[i])
+
+            # moving data in it's place:
+
+
+            retVal['I2C_ID'] = str(0)
+            retVal['HW_ID'] = str(rcv[0:4])
+            retVal['FW_ID'] = 'v' + str(rcv[4:5][0])
+            retVal['ALERT'] = str(rcv[5:6][0])
+            retVal['PM_IC'] = str(rcv[6:10])
+            retVal['TRM_MOD'] = str(rcv[10:14])
+
+            try:
+                combiID = str(rcv[0:5]).replace(' ', '')
+                retVal["DEV_TYPE"] = supportedDevicesDictionary["MASTER"][combiID]["DEV_TYPE"]
+                retVal["DEV_PAGE"] = supportedDevicesDictionary["MASTER"][combiID]["DEV_PAGE"]
+                retVal["WINDOW_SIZE"] = supportedDevicesDictionary["MASTER"][combiID]["WINDOW_SIZE"]
+                retVal["URL"] = "DEV_PAGE=" + retVal["DEV_PAGE"] \
+                                    + '&' + "I2C_ID=" + '0' \
+                                    + '&' + "DEV_TYPE=" + retVal["DEV_TYPE"] \
+                                    + '&' + "HW_ID=" + retVal["HW_ID"] \
+                                    + '&' + "FW_ID=" + retVal["FW_ID"]
+            except KeyError:
+                retVal["DEV_TYPE"] = "UNKNOWN_DEVICE"
+                retVal["DEV_PAGE"] = "UNKNOWN_DEVICE"
+                retVal["WINDOW_SIZE"] = [350, 300]
+                retVal["URL"] = "DEV_PAGE=" + "devices/unsupported_device.html" \
+                                    + '&' + "I2C_ID=" + '0' \
+                                    + '&' + "DEV_TYPE=" + retVal["DEV_TYPE"] \
+                                    + '&' + "HW_ID=" + retVal["HW_ID"] \
+                                    + '&' + "FW_ID=" + retVal["FW_ID"]
+        except IndexError:
+            print("IndexError getMaster")
+        except TypeError:
+            print("TypeError getMaster")
 
         return retVal
 
     # uses the scan function (function 3) implemented on the master_embedded device to scan for slaves:
     def initDeviceIDScan(self, pDebug=False):
         retVal = []
-        for dev in range(1, 127, 9):
-            scanList = [16, 3, 3, dev, dev+9]
-            self.XRQ.get(str(scanList), "WM")
-            rcv = eval(self.XRQ.get('[21,9]', "RM"))
+        divScanCount = 12
+        try:
+            for dev in range(1, 127, divScanCount):
+                scanList = [16, 3, 3, dev, dev+divScanCount]
+                self.XRQ.get(str(scanList), "WM")
+                rcv = eval(self.XRQ.get('[21,9]', "RM"))
 
-            for i in range(len(rcv)):
-                if (rcv[i] != 0):
-                    retVal.append(rcv[i])
-
-            if(pDebug):
-                print(dev, "-", dev + (9 - 1), " : ", end="\t")
                 for i in range(len(rcv)):
-                    print(rcv[i], end='\t')
-                print("")
+                    if (rcv[i] != 0 and rcv[i] < 128):
+                        retVal.append(rcv[i])
+
+                if(pDebug):
+                    print(dev, "-", dev + (divScanCount - 1), " : ", end="\t")
+                    for i in range(len(rcv)):
+                        print(rcv[i], end='\t')
+                    print("")
+        except TypeError:
+            None
+
         return retVal
 
     # builds a device dictionary from the previously scanned IDList:

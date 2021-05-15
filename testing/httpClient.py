@@ -28,6 +28,8 @@ reqT = requestTest('http://127.0.0.1:8080')
 
 #reqT.get('[127, 5, 1, 126]', "WS")  # set the master for WriteSlave
 
+
+
 while True:
     print("\n\nLoopstart")
     print("+++++++++++++++++++++++++++++++++++++++++++++++++")

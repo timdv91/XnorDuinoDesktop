@@ -15,22 +15,48 @@
 
     socket.on("value_reply", data => {
         console.log(data);
-        document.getElementById("Alerts").innerHTML = "Alerts: " + (data["value"][0]);
+        document.getElementById("Alerts").innerHTML = "Fault-code: " + (data["value"][0]);
         document.getElementById("ext_vcc").innerHTML = "External vcc (voltage): " + (data["value"][1] /10) + "V";
-        document.getElementById("ext_vcc_current").innerHTML = "External vcc (current): " + (data["value"][2] *5)/1000 + "A";
+        document.getElementById("ext_vcc_current").innerHTML = "External vcc (current): " + ((data["value"][2] *4)) + "mA";
         document.getElementById("ext_vcc_wattage").innerHTML = "External vcc (wattage): " + data["value"][3] / 10 + "W";
-        document.getElementById("over_current_shtdwn").innerHTML = "Over-current shutdown: " + (data["value"][4] *5)/1000 + "A";
+        document.getElementById("over_current_shtdwn").innerHTML = "Over-current shutdown: " + (data["value"][4] * 20) + "mA";
+
+
+        if(document.getElementById("OverCurrentTreshhold_Text").value == "?")
+        {
+            document.getElementById("OverCurrentTreshhold_Text").value = data["value"][4];
+        }
     });
     </script>
 
     <!-- Put variable read only values here:  -->
     <!-- These values are updated in the "socket.on("value_reply" script:  -->
     <div class="container">
-        <h2 class="badge badge-info devices-larger-badge" id="Alerts"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="ext_vcc"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="ext_vcc_current"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="ext_vcc_wattage"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="over_current_shtdwn"></h2>
+    </div>
+
+
+    <div class="container">
+        <form action="/devices_write">
+            <h2 class="badge badge-info devices-larger-badge" id="Alerts"></h2>
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=5,1 />
+            <input type="hidden" name="0" value="0">
+            <input type="submit" value="Reset">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=9,1 />
+            <label for="OverCurrentTreshhold_Text">overcurrent treshhold (x20):</label><br>
+            <input type="text" id="OverCurrentTreshhold_Text" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
     </div>
 
 {% endblock %}

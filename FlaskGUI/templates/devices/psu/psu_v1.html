@@ -8,7 +8,7 @@
         console.log(data);
         if(data == true)
         {
-            socket.emit('get_value', {name: "ext_vcc+usb_vcc+temp", cmd: '[{{ posts['I2C_ID'] }}, 7, 4]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+            socket.emit('get_value', {name: "ext_vcc+usb_vcc+temp", cmd: '[{{ posts['I2C_ID'] }}, 7, 5]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
         }
     });
 
@@ -22,6 +22,11 @@
         if(document.getElementById("setTempOffsetText").value == "?")
         {
             document.getElementById("setTempOffsetText").value = data["value"][3];
+        }
+
+        if(document.getElementById("setLoopIntervalText").value == "?")
+        {
+            document.getElementById("setLoopIntervalText").value = data["value"][4];
         }
     });
     </script>
@@ -41,8 +46,8 @@
         <form action="/devices_write">
             <input type='hidden' name='posts' value="{{ posts }}" />
             <input type='hidden' name='cmd' value=5,1 />
-            <label for="0">Dev ID:</label><br>
-            <input type="text" id="0" name="0" value="{{ posts['I2C_ID'] }}">
+            <label for="setI2C">Dev ID:</label><br>
+            <input type="text" id="setI2C" name="0" value="{{ posts['I2C_ID'] }}">
             <input type="submit" value="Set">
         </form>
     </div>
@@ -53,6 +58,16 @@
             <input type='hidden' name='cmd' value=10,1 />
             <label for="setTempOffsetText">Temperature offset:</label><br>
             <input type="text" id="setTempOffsetText" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=11,1 />
+            <label for="setLoopIntervalText">Loop interval:</label><br>
+            <input type="text" id="setLoopIntervalText" name="0" value="?">
             <input type="submit" value="Set">
         </form>
     </div>

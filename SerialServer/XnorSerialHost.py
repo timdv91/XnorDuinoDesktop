@@ -113,7 +113,7 @@ class XnorSerialHost():
         return retval
 
     def writeMaster(self, pData, pDebug=False):
-        if(pData[0] <= 8):           # master is only writable starting from index 9!
+        if(pData[0] <= 4):           # master is only writable starting from index 9!
             return b'\x00\x00'
         return self.rawCommunication(pData)
 

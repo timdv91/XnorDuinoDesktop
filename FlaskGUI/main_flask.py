@@ -8,7 +8,7 @@ import json, os
 import time
 import copy
 
-XRQ = xnorbusWebrequestor('http://192.168.1.59:8080')
+XRQ = xnorbusWebrequestor('http://192.168.1.65:8080')
 #XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 XRH = xnorbusRequestorHelper(XRQ)
 
@@ -187,12 +187,18 @@ def create_app():
                 except ValueError:
                     isValid = False
 
-            cmd = "[" + str(I2C_ID) + ", " + str(send_startId) + ", " + str(send_n) + "" + str(sendValue) + "]"
+            writeMethod = None
+            if(I2C_ID != '0'):
+                cmd = "[" + str(I2C_ID) + ", " + str(send_startId) + ", " + str(send_n) + "" + str(sendValue) + "]"
+                writeMethod = 'WS'
+            else:
+                cmd = "[" + str(send_startId) + ", " + str(send_n) + "" + str(sendValue) + "]"
+                writeMethod = 'WM'
             print(cmd)                                                                # last comma is automatically put in place!
 
             if isValid:
-                print("Valid input!")
-                rcvBytes = XRQ.get(str(cmd), "WS")  # set de master for ReadSlave
+                print("Valid input!",  writeMethod)
+                rcvBytes = XRQ.get(str(cmd), writeMethod)  # set de master for ReadSlave
                 print(rcvBytes)
             else:
                 print("Invalid input!")
