@@ -26,9 +26,32 @@ reqT = requestTest('http://127.0.0.1:8080')
 # reqT.get('[16, 6, 2, 126, 10, 2, 145, 1]')
 # reqT.get('[16, 5, 2, 126, 11, 1, 2]')
 
-#reqT.get('[127, 5, 1, 126]', "WS")  # set the master for WriteSlave
+
+'''
+reqT.get('[19, 3, 2, 3, 4]', "WM")  # set the master for WriteSlave
+reqT.get('[22, 3, 5, 6, 7]', "WM")  # set the master for WriteSlave
+reqT.get('[25, 4, 33, 124, 2, 10]', "WM")  # set the master for WriteSlave
+reqT.get('[16, 3, 4, 0, 1]', "WM")  # set the master for WriteSlave
+#time.sleep(1)
+#reqT.get('[16, 6, 4, 0, 10, 20, 30, 40]', "WM")  # set the master for WriteSlave
+#reqT.get('[16, 7, 50, 60, 70, 61, 124, 2, 100]', "WM")  # set the master for WriteSlave
 
 
+time.sleep(2)
+
+reqT.get('[16, 2, 6, 0]', "WM")
+r = reqT.post('[20,14]', "RM")
+for i in range(0,len(r)):
+    print(r[i], end=" ")
+
+reqT.get('[16, 2, 6, 1]', "WM")
+r = reqT.post('[20,14]', "RM")
+for i in range(0,len(r)):
+    print(r[i], end=" ")
+
+quit()
+
+'''
 
 while True:
     print("\n\nLoopstart")
