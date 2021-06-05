@@ -29,6 +29,41 @@
             autoUpdateLockedSpinner.style.display = "block";
         }
     });
+
+    // redirect function that's globally available:
+    function pageRedirect(pCurrentPage, pRedirectObject)
+    {
+        const queryString = window.location.search;
+        console.log(queryString);
+        const urlParams = new URLSearchParams(queryString);
+
+        var postData = urlParams.get('posts');
+        if(postData != null)
+        {
+            var postData = postData.replaceAll("'", '"');
+            var jsonData = JSON.parse(postData);
+
+            url = jsonData["DEV_PAGE"];
+            url = url.replace(pCurrentPage, document.getElementById(pRedirectObject).value);
+            I2C_ID = jsonData["I2C_ID"];
+            DEV_TYPE = jsonData["DEV_TYPE"];
+            HW_ID = jsonData["HW_ID"];
+            FW_ID = jsonData["FW_ID"];
+
+            window.location.replace("devices?DEV_PAGE=" + url + "&I2C_ID=" + I2C_ID + "&DEV_TYPE=" + DEV_TYPE + "&HW_ID=" + HW_ID + "&FW_ID=" + FW_ID);
+        }
+        else
+        {
+            url = urlParams.get('DEV_PAGE');
+            url = url.replace(pCurrentPage, document.getElementById(pRedirectObject).value);
+            I2C_ID = urlParams.get('I2C_ID');
+            DEV_TYPE = urlParams.get('DEV_TYPE');
+            HW_ID = urlParams.get('HW_ID');
+            FW_ID = urlParams.get('FW_ID');
+
+            window.location.replace("devices?DEV_PAGE=" + url + "&I2C_ID=" + I2C_ID + "&DEV_TYPE=" + DEV_TYPE + "&HW_ID=" + HW_ID + "&FW_ID=" + FW_ID);
+        }
+    }
 </script>
 
 <!doctype html>

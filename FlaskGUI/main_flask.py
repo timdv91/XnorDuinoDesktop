@@ -12,6 +12,7 @@ XRQ = xnorbusWebrequestor('http://192.168.1.65:8080')
 #XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 XRH = xnorbusRequestorHelper(XRQ)
 
+#HOST_IP = '127.0.0.1'
 HOST_IP = '192.168.1.65'
 HOST_PORT = 5000
 

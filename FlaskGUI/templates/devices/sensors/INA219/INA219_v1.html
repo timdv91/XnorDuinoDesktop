@@ -1,0 +1,60 @@
+{% extends '/devices/__devicesBase__.html' %}
+
+{% block content %}
+
+    <script>
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true)
+        {
+            socket.emit('get_value', {name: "ina2", cmd: '[{{ posts['I2C_ID'] }}, 6, 4]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+        }
+    });
+
+
+    socket.on("value_reply", data => {
+        console.log(data);
+        document.getElementById("ina219_vcc").innerHTML = "Voltage: " + (data["value"][0] /10) + "V";
+        document.getElementById("ina219_cur").innerHTML = "Current: " + (data["value"][1] *4) + "mA";
+        document.getElementById("ina219_pow").innerHTML = "Power: " + (data["value"][2] /10) + "W";
+
+        if(document.getElementById("setLoopIntervalText").value == "?")
+        {
+            document.getElementById("setLoopIntervalText").value = data["value"][3];
+        }
+    });
+    </script>
+
+    <!-- Put variable read only values here:  -->
+    <!-- These values are updated in the "socket.on("value_reply" script:  -->
+    <div class="container">
+        <h2 class="badge badge-info devices-larger-badge" id="ina219_vcc"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="ina219_cur"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="ina219_pow"></h2>
+    </div>
+
+
+    <!-- Put variable read & write values here:  -->
+    <!-- These values use a get request to send to server:  -->
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=5,1 />
+            <label for="setI2C">Dev ID:</label><br>
+            <input type="text" id="setI2C" name="0" value="{{ posts['I2C_ID'] }}">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=9,1 />
+            <label for="setLoopIntervalText">Loop interval:</label><br>
+            <input type="text" id="setLoopIntervalText" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+{% endblock %}

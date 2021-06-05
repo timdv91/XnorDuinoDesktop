@@ -22,36 +22,64 @@ reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
+reqT.get('[124, 1, 2, 0, 250]', "WS")          # set the master for WriteSlave
+
+
+quit()
+#reqT.get('[127, 5, 1, 123]', "WS")
+r = eval(reqT.get('[123, 0, 10]', "RS"))
+buf = []
+for i in range(0, len(r)):
+    buf.append(r[i])
+    print(r[i])
+print(buf)
+
+quit()
 # set the termination module temp offset and loop delay
 # reqT.get('[16, 6, 2, 126, 10, 2, 145, 1]')
 # reqT.get('[16, 5, 2, 126, 11, 1, 2]')
 
+#r = reqT.get('[16, 2, 7, 1]', "WM")  # set the master for WriteSlave
+#quit()
+reqT.get('[16, 10, 5, 0, 124, 2, 5, 126, 9, 0, 15, 60]', "WM")  # set the master for WriteSlave
+reqT.get('[16, 10, 5, 1, 124, 2, 20, 126, 9, 0, 15, 62]', "WM")  # set the master for WriteSlave
+reqT.get('[16, 10, 5, 2, 125, 2, 5, 126, 9, 0, 15, 62]', "WM")  # set the master for WriteSlave
+reqT.get('[16, 10, 5, 3, 125, 2, 20, 126, 9, 0, 15, 60]', "WM")  # set the master for WriteSlave
+
+#reqT.get('[16, 13, 4, 0, 0, 1, 2, 3, 4, 5, 6, 62, 8, 9, 10]', "WM")  # set the master for WriteSlave
+
+r = eval(reqT.get('[20, 3]', "RM"))
+buf = []
+for i in range(0, len(r)):
+    buf.append(r[i])
+print(buf)
+
 
 '''
-reqT.get('[19, 3, 2, 3, 4]', "WM")  # set the master for WriteSlave
-reqT.get('[22, 3, 5, 6, 7]', "WM")  # set the master for WriteSlave
-reqT.get('[25, 4, 33, 124, 2, 10]', "WM")  # set the master for WriteSlave
-reqT.get('[16, 3, 4, 0, 1]', "WM")  # set the master for WriteSlave
-#time.sleep(1)
-#reqT.get('[16, 6, 4, 0, 10, 20, 30, 40]', "WM")  # set the master for WriteSlave
-#reqT.get('[16, 7, 50, 60, 70, 61, 124, 2, 100]', "WM")  # set the master for WriteSlave
+r = reqT.get('[16, 2, 7, 2]', "WM")  # set the master for WriteSlave
+r = eval(reqT.get('[20, 1]', "RM"))
+buf = []
+for i in range(0, len(r)):
+    buf.append(r[i])
+print(buf)
+'''
+
+for i in range(0,92):
+    print(i, " ", end=": ")
+    r = reqT.get('[16, 2, 6, ' + str(i) + ']', "WM")  # set the master for WriteSlave
+    r = eval(reqT.get('[20, 11]', "RM"))
+    buf = []
+    for o in range(0, len(r)):
+        buf.append(r[o])
+    print(buf)
 
 
-time.sleep(2)
 
-reqT.get('[16, 2, 6, 0]', "WM")
-r = reqT.post('[20,14]', "RM")
-for i in range(0,len(r)):
-    print(r[i], end=" ")
 
-reqT.get('[16, 2, 6, 1]', "WM")
-r = reqT.post('[20,14]', "RM")
-for i in range(0,len(r)):
-    print(r[i], end=" ")
+
+
 
 quit()
-
-'''
 
 while True:
     print("\n\nLoopstart")

@@ -1,0 +1,156 @@
+{% extends '/devices/__devicesBase__.html' %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+{% block content %}
+
+    <script>
+    var scheduleCounter = 0;
+    var scheduleArray = [];
+
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true && scheduleCounter < 1)
+        {
+            var cmd = '[16, 2, 6, ' + scheduleCounter + ']';
+            socket.emit('get_value', {name: "masterWrite", cmd: cmd, cmdType: 'WM'});
+            scheduleCounter++; // prevent to run repeatedly
+        }
+    });
+
+
+    socket.on("value_reply", data => {
+        console.log(data);
+
+        // After a masterWrite request the embedded device has reserved data, go and get that data with a readout:
+        if(data["name"] == "masterWrite")
+        {
+            socket.emit('get_value', {name: "masterReadout", cmd: '[20, 11]', cmdType: 'RM'}); // send readMaster request to hardware
+        }
+
+        // after a readout of the master data we want to store that data, we also want to check if there is more data available:
+        if(data["name"] == "masterReadout")
+        {
+            // if more scheduler data is available, send another masterWrite to the embedded device, so it can prepare the data for request:
+            if(scheduleCounter < parseInt(data["value"][10]))
+            {
+                var _cmd = '[16, 2, 6, ' + scheduleCounter + ']';
+                socket.emit('get_value', {name: "masterWrite", cmd: _cmd, cmdType: 'WM'}); // send writeMaster request to hardware
+
+                //if(parseInt(data["value"][8]) > 0)
+                //{
+                scheduleArray.push(data["value"]);
+                //}
+                scheduleCounter++;
+
+
+                $('.schedulList').html("<p> Reading memory: " + scheduleCounter + "/" + parseInt(data["value"][10]) + "</p>");
+            }
+            else // if all scheduler data has been requested, present it on the webpage:
+            {
+                console.log(scheduleArray);
+
+                var htmlScheduleArr = [];
+                for(var i=0; i< scheduleArray.length; i++)
+                {
+                    var scheduleIDint = parseInt(i);
+                    var scheduleIDTitle = "Schedule" + (parseInt(i)+1).toString();
+
+                    var scheduleDataExe = [scheduleArray[i][0], scheduleArray[i][1], scheduleArray[i][2]];
+                    var scheduleDataSlvA = [scheduleArray[i][3], scheduleArray[i][4]];
+                    var scheduleDataSlvB = [scheduleArray[i][5], scheduleArray[i][6]];
+                    var scheduleDataCmp = scheduleArray[i][7];
+
+                    var divName = "schedule" + i.toString();
+
+                    var _sN = "";
+                    var _sS = "";
+                    var _sE = "";
+                    var _sB = "";
+                    var _sU = "";
+
+                    if(scheduleDataCmp == 33)
+                        _sN = "selected";
+                    else if(scheduleDataCmp == 60)
+                        _sS = "selected";
+                    else if (scheduleDataCmp == 61)
+                        _sE = "selected";
+                    else if (scheduleDataCmp == 62)
+                        _sB = "selected";
+                    else
+                        _sU = "selected";
+
+                    var htmlcode = '<hr><div class=' + divName + '>' +
+                        '' +
+                        '<h5> ' + scheduleIDTitle + '</h5>' +
+                        '<form action="/devices_write" >' +
+                            '<table style="width:20%">' +
+                            '<tr>' +
+                            '<td><input type="hidden" name="posts" value="{{ posts }}" /></td>' +
+                            '<td><input type="hidden" name="cmd" value=16,10 /></td>' +
+                            '<td><input type="hidden" name="0" value=5 /></td>' +
+                            '<td><input type="hidden" name="1" value=' + scheduleIDint + ' /></td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td><label for="SchedulerList_Text1">Execution: </label></td>' +
+                            '<td><input type="text" size="3" id="SchedulerList_Text1" name="2" value='+ scheduleDataExe[0] +'></td>' +
+                            '<td><input type="text" size="3" id="SchedulerList_Text1" name="3" value='+ scheduleDataExe[1] +'></td>' +
+                            '<td><input type="text" size="3" id="SchedulerList_Text1" name="4" value='+ scheduleDataExe[2] +'></td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td><label for="SchedulerList_Text2">Slave A: </label></td>' +
+                            '<td><input type="text" size="3" id="SchedulerList_Text2" name="5" value='+ scheduleDataSlvA[0] +'></td>' +
+                            '<td><input type="text" size="3" id="SchedulerList_Text2" name="6" value='+ scheduleDataSlvA[1] +'></td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td><label for="SchedulerList_Text3">Slave B: </label></td>' +
+                            '<td><input type="text" size="3" id="SchedulerList_Text3" name="7" value='+ scheduleDataSlvB[0] +'></td>' +
+                            '<td><input type="text" size="3" id="SchedulerList_Text3" name="8" value='+ scheduleDataSlvB[1] +'></td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td><label for="SchedulerList_Text4">Comperator: </label></td>' +
+                            '<td>' +
+                                '<select id="SchedulerList_Text4" name="9" value="?" >' +
+                                  '<option value=0 '+ _sU + '> ? </option>' +
+                                  '<option value=33 '+ _sN + '> != </option>' +
+                                  '<option value=60 '+ _sS + '> < </option>' +
+                                  '<option value=61 '+ _sE + '> = </option>' +
+                                  '<option value=62 '+ _sB + '> > </option>' +
+                                '</select>' +
+                            '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td><input type="submit" value="Set"></td>' +
+                            '</tr>' +
+                        '</form></div>'
+
+                    console.log(htmlcode);
+                    htmlScheduleArr.push(htmlcode);
+                }
+
+                $('.loadSpinner').html("<p> Loaded "+ scheduleArray.length  + " schedules from memory. </p>");
+                $('.schedulList').html("");
+                $('.schedulList').append(htmlScheduleArr);
+            }
+        }
+
+    });
+    </script>
+
+    <div class="container">
+        <button id="redirect1" value="master_v1.html" onclick="pageRedirect('master_v1_scheduler.html','redirect1')">return to main page</button>
+    </div>
+
+    <div class="loadSpinner">
+        <p>Loading scheduler data from device...</p>
+        <div id="autoUpdateLockedSpinner" class="spinner-border" role="status" >
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+
+    <div class="schedulList">
+    </div>
+
+{% endblock %}

@@ -27,6 +27,8 @@
             document.getElementById("OverCurrentTreshhold_Text").value = data["value"][4];
         }
     });
+
+
     </script>
 
     <!-- Put variable read only values here:  -->
@@ -57,6 +59,10 @@
             <input type="text" id="OverCurrentTreshhold_Text" name="0" value="?">
             <input type="submit" value="Set">
         </form>
+    </div>
+
+    <div class="container">
+        <button id="redirect1" value="master_v1_scheduler.html" onclick="pageRedirect('master_v1.html','redirect1')">Open scheduler</button>
     </div>
 
 {% endblock %}
