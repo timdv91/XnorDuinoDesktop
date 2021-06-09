@@ -1,0 +1,80 @@
+{% extends '/devices/__devicesBase__.html' %}
+
+{% block content %}
+
+    <script>
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true)
+        {
+            socket.emit('get_value', {name: "cv50_1", cmd: '[{{ posts['I2C_ID'] }}, 6, 10]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+            socket.emit('get_value', {name: "cv50_2", cmd: '[{{ posts['I2C_ID'] }}, 16, 10]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+        }
+    });
+
+
+    socket.on("value_reply", data => {
+        console.log(data);
+        if(data["name"] == "cv50_1")
+        {
+            //data["value"][7] = 28;
+            //data["value"][8] = 15;
+            document.getElementById("solarFluxDensity").innerHTML = "Solar flux density (Wm²): " + parseInt((data["value"][0] * 10) + (data["value"][1]));
+            document.getElementById("precipitation").innerHTML = "Precipitation (mm): " + parseFloat(((data["value"][2] * 100) + (data["value"][3])) * 0.017).toFixed(3);
+            document.getElementById("LightningStrikeCount").innerHTML = "LightningStrike count: " + parseInt((data["value"][4] * 100) + (data["value"][5]));
+            document.getElementById("LightningStrikeDistance").innerHTML = "LightningStrike distance (km): " + parseInt((data["value"][6]));
+            document.getElementById("WindSpeed").innerHTML = "Wind speed (ms^-1): " + parseFloat(((data["value"][7] * 100) + (data["value"][8])) * 0.01).toFixed(2);
+            document.getElementById("WindDirection").innerHTML = "Wind direction (°): " + parseInt((data["value"][9])*2);
+
+        }
+        else if(data["name"] == "cv50_2")
+        {
+            document.getElementById("WindSpeedMax").innerHTML = "Wind speed max (ms^-1): " + parseFloat(((data["value"][0] * 100) + (data["value"][1])) * 0.01).toFixed(2);
+            document.getElementById("AirTemperature").innerHTML = "Air temperature (°C): " + parseFloat((data["value"][2]-100)*0.5).toFixed(2);
+            document.getElementById("VaporPressure").innerHTML = "Vapor pressure (kPa): " + parseFloat(((data["value"][3]) + "." + (data["value"][4]))).toFixed(2);
+            document.getElementById("BarometricPressure").innerHTML = "Barometric pressure (hPa): " + parseFloat((data["value"][5]*0.25+50)*10).toFixed(2);
+            document.getElementById("RelativeHumidity").innerHTML = "Relative humidity (%): " + parseFloat((data["value"][6]*4*0.1)).toFixed(2);
+            document.getElementById("HumiditySensorTemperature").innerHTML = "Humidity sensor temperature (°C): " + parseFloat((data["value"][7]-100)*0.5).toFixed(2);
+            document.getElementById("TiltNorthSouth").innerHTML = "Tilt North / South (°): " + parseInt((data["value"][8]-90));
+            document.getElementById("TiltWestEast").innerHTML = "Tilt West / East (°): " + parseInt((data["value"][9]-90));
+        }
+    });
+    </script>
+
+    <!-- Put variable read only values here:  -->
+    <!-- These values are updated in the "socket.on("value_reply" script:  -->
+    <div class="container">
+        <h2 class="badge badge-info devices-larger-badge" id="solarFluxDensity"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="precipitation"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="LightningStrikeCount"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="LightningStrikeDistance"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="WindSpeed"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="WindDirection"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="WindSpeedMax"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="AirTemperature"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="VaporPressure"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="BarometricPressure"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="RelativeHumidity"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="HumiditySensorTemperature"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="TiltNorthSouth"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="TiltWestEast"></h2>
+    </div>
+
+
+    <!-- Put variable read & write values here:  -->
+    <!-- These values use a get request to send to server:  -->
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=5,1 />
+            <label for="setI2C">Dev ID:</label><br>
+            <input type="text" id="setI2C" name="0" value="{{ posts['I2C_ID'] }}">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+    </div>
+
+{% endblock %}
