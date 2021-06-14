@@ -81,7 +81,12 @@ def create_app():
         currentlyOpenedMainPage = 'about'
         return render_template('about.html')
 
-
+    # Rerouting for the about button:
+    @app.route('/dataAcquisition')
+    def dataAcquisition():
+        global currentlyOpenedMainPage
+        currentlyOpenedMainPage = 'dataAcquisition'
+        return render_template('dataAcquisition.html')
     # ======================================================================================================
 
     # Page that shows deviceList.html, this page inherits content from the __base__.html file:
@@ -244,7 +249,7 @@ class create_thread():
             print("Thread started: ", threading.get_ident())
 
             if(currentlyOpenedMainPage in runThreadOnLoadedPages):            # prevent loading deviceList when page is not loaded
-                if autoRefreshDevList_LockEpoch < int(time.time()): # prevent loading deviceList when device is opened
+                if autoRefreshDevList_LockEpoch < int(time.time()):           # prevent loading deviceList when device is opened
                     print("Hardware communication: Started")
                     autoRefreshDevList_isLocked = False
                     commonDataStruct['MASTER'] = XRH.getMasterInformation()
@@ -257,8 +262,10 @@ class create_thread():
                 else:
                     print("Hardware communication: Locked")
                     autoRefreshDevList_isLocked = True
-            else:
-                print("No pages requiring master readouts are currently opened, ignore.")
+                currentlyOpenedMainPage = None                              # clear the currentlyOpenedMainPage to prevent auto updates after page is closed!
+            else:                                                           # On each refresh of the page this value is restored automatically for next update.
+                print("No configuration page opened, running DAQ execution...")
+
 
             print("Thread ended: ", threading.get_ident())
             # Set the next thread to happen

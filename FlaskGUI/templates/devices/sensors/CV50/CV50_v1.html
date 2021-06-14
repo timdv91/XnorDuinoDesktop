@@ -9,7 +9,7 @@
         if(data == true)
         {
             socket.emit('get_value', {name: "cv50_1", cmd: '[{{ posts['I2C_ID'] }}, 6, 10]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
-            socket.emit('get_value', {name: "cv50_2", cmd: '[{{ posts['I2C_ID'] }}, 16, 10]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+            socket.emit('get_value', {name: "cv50_2", cmd: '[{{ posts['I2C_ID'] }}, 16, 11]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
         }
     });
 
@@ -38,6 +38,11 @@
             document.getElementById("HumiditySensorTemperature").innerHTML = "Humidity sensor temperature (°C): " + parseFloat((data["value"][7]-100)*0.5).toFixed(2);
             document.getElementById("TiltNorthSouth").innerHTML = "Tilt North / South (°): " + parseInt((data["value"][8]-90));
             document.getElementById("TiltWestEast").innerHTML = "Tilt West / East (°): " + parseInt((data["value"][9]-90));
+
+            if(document.getElementById("setLoopIntervalText").value == "?")
+            {
+                document.getElementById("setLoopIntervalText").value = data["value"][10];
+            }
         }
     });
     </script>
@@ -75,6 +80,13 @@
     </div>
 
     <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=26,1 />
+            <label for="setLoopIntervalText">Loop interval (x10 sec):</label><br>
+            <input type="text" id="setLoopIntervalText" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
     </div>
 
 {% endblock %}
