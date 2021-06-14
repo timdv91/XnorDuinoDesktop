@@ -39,7 +39,7 @@ def create_app():
 
         if (app.env != "development"):
             dir_path = os.path.dirname(os.path.realpath(__file__))
-            with open(dir_path + '/API/scannedDevicesDict.json', 'w') as outfile:
+            with open(dir_path + '/API/debugScannedDeviceList.json', 'w') as outfile:
                 json.dump(devicesDictionary, outfile)
 
         return render_template('deviceList.html', posts=devicesDictionary)
@@ -115,7 +115,7 @@ app = create_app()
 if(app.env == "development"):
     print("Running in debug mode:")
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open(dir_path + '/API/scannedDevicesDict.json') as json_file:
+    with open(dir_path + '/API/debugScannedDeviceList.json') as json_file:
         storedDeviceScan = json.load(json_file)
     commonDataStruct = storedDeviceScan
 else:

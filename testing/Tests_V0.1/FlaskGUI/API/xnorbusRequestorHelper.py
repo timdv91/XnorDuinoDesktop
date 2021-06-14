@@ -111,7 +111,7 @@ class xnorbusRequestorHelper():
 dir_path = os.path.dirname(os.path.realpath(__file__))
 dir_path = os.path.dirname(os.path.realpath(__file__))
 print(dir_path)
-with open(dir_path + '/scannedDevicesDict.json') as f:
+with open(dir_path + '/debugScannedDeviceList.json') as f:
     supportedDevicesDictionary = json.load(f)
 
 x = xnorbusRequestorHelper()

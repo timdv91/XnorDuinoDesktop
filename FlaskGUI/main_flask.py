@@ -1,5 +1,6 @@
 from FlaskGUI.API.xnorbusWebrequestor import xnorbusWebrequestor
 from FlaskGUI.API.xnorbusRequestorHelper import xnorbusRequestorHelper
+from FlaskGUI.API.xnorbusDAQ import xnorbusDAQ
 from flask import Flask, render_template
 from flask import request
 import atexit, threading
@@ -10,7 +11,8 @@ import copy
 
 XRQ = xnorbusWebrequestor('http://192.168.1.65:8080')
 #XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
-XRH = xnorbusRequestorHelper(XRQ)
+XRH = xnorbusRequestorHelper(XRQ, "devices.json")
+XDAQ = xnorbusDAQ(XRQ, "DAQconfig.json")
 
 #HOST_IP = '127.0.0.1'
 HOST_IP = '192.168.1.65'
@@ -262,10 +264,12 @@ class create_thread():
                 else:
                     print("Hardware communication: Locked")
                     autoRefreshDevList_isLocked = True
-                currentlyOpenedMainPage = None                              # clear the currentlyOpenedMainPage to prevent auto updates after page is closed!
-            else:                                                           # On each refresh of the page this value is restored automatically for next update.
+                currentlyOpenedMainPage = None      # clear the currentlyOpenedMainPage to prevent auto updates after page is closed!
+                                                    # On each refresh of the page this value is restored automatically for next update.
+            else:
                 print("No configuration page opened, running DAQ execution...")
-
+                configData = XDAQ.getConfigFromFile()
+                print(configData['TEST'])
 
             print("Thread ended: ", threading.get_ident())
             # Set the next thread to happen
@@ -281,7 +285,7 @@ app = create_app()
 if(app.env == 'development'):
     app.debug = True
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open(dir_path + '/API/scannedDevicesDict.json') as f:
+    with open(dir_path + '/API/debugScannedDeviceList.json') as f:
         commonDataStruct['SLAVES'] = json.load(f)
 else:
     create_thread()

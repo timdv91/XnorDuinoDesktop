@@ -1,13 +1,14 @@
 import json, os, time
 
 class xnorbusRequestorHelper():
-    def __init__(self, pXRQ):
+    def __init__(self, pXRQ, pFileName):
         self.XRQ = pXRQ
+        self.FILENAME = pFileName
 
     def getMasterInformation(self):
         # getting a jsonDictionary with supported devices and their names:
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open(dir_path + '/devices.json') as f:
+        with open(dir_path + '/' + self.FILENAME) as f:
             supportedDevicesDictionary = json.load(f)
 
         retVal = {}
@@ -83,7 +84,7 @@ class xnorbusRequestorHelper():
 
         # getting a jsonDictionary with supported devices and their names:
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open(dir_path + '/devices.json') as f:
+        with open(dir_path + '/' + self.FILENAME) as f:
             supportedDevicesDictionary = json.load(f)
 
         # getting the hardware identifiers from each slave device:
