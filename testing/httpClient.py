@@ -22,6 +22,43 @@ reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
+
+
+#reqT.get('[127, 5, 1, 21]', "WS")
+
+#reqT.get('[20, 7, 1, 10]', "WS")
+#reqT.get('[21, 7, 1, 10]', "WS")
+reqT.get('[20, 10, 1, 80]', "WS")
+reqT.get('[21, 10, 1, 80]', "WS")
+while(True):
+    time.sleep(1)
+    #reqT.get('[20, 10, 1, 255]', "WS")
+    #reqT.get('[21, 10, 1, 255]', "WS")
+    #reqT.get('[20, 8, 1, 45]', "WS")
+    #reqT.get('[21, 8, 1, 45]', "WS")
+
+
+
+    r = eval(reqT.get('[20, 6, 7]', "RS"))
+    buf = []
+    for i in range(0, len(r)):
+        buf.append(r[i])
+        print(r[i])
+    print(buf)
+
+    r = eval(reqT.get('[21, 6, 7]', "RS"))
+    buf = []
+    for i in range(0, len(r)):
+        buf.append(r[i])
+        print(r[i])
+    print(buf)
+
+quit()
+
+
+
+
+
 reqT.get('[124, 1, 2, 0, 250]', "WS")          # set the master for WriteSlave
 
 
