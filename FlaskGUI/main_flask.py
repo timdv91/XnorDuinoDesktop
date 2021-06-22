@@ -13,7 +13,7 @@ import copy
 XRQ = xnorbusWebrequestor('http://192.168.1.28:8080')
 #XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 
-XRH = xnorbusRequestorHelper(XRQ, "devices.json")
+XRH = xnorbusRequestorHelper(XRQ, "DEVconfig.json")
 XDAQ = xnorbusDAQ(XRQ, "DAQconfig.json")
 
 HOST_IP = '127.0.0.1'
