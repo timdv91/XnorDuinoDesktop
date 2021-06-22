@@ -1,11 +1,9 @@
-from FlaskGUI.API.xnorbusWebrequestor import xnorbusWebrequestor
-from FlaskGUI.API.xnorbusRequestorHelper import xnorbusRequestorHelper
+from FlaskGUI.SRC.xnorbusWebrequestor import xnorbusWebrequestor
+from FlaskGUI.SRC.GUI.xnorbusRequestorHelper import xnorbusRequestorHelper
 from flask import Flask, render_template
 from flask import request
 import atexit, threading
-from flask_socketio import SocketIO, join_room, leave_room
-import os
-
+from flask_socketio import SocketIO
 
 XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 XRH = xnorbusRequestorHelper(XRQ)

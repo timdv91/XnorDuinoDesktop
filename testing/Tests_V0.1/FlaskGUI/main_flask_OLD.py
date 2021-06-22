@@ -1,5 +1,5 @@
-from FlaskGUI.API.xnorbusWebrequestor import xnorbusWebrequestor
-from FlaskGUI.API.xnorbusRequestorHelper import xnorbusRequestorHelper
+from FlaskGUI.SRC.xnorbusWebrequestor import xnorbusWebrequestor
+from FlaskGUI.SRC.GUI.xnorbusRequestorHelper import xnorbusRequestorHelper
 from flask import Flask, render_template
 from flask import request
 import atexit, threading

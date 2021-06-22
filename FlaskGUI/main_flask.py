@@ -1,10 +1,10 @@
-from FlaskGUI.API.xnorbusWebrequestor import xnorbusWebrequestor
-from FlaskGUI.API.xnorbusRequestorHelper import xnorbusRequestorHelper
-from FlaskGUI.API.xnorbusDAQ import xnorbusDAQ
+from FlaskGUI.SRC.xnorbusWebrequestor import xnorbusWebrequestor
+from FlaskGUI.SRC.GUI.xnorbusRequestorHelper import xnorbusRequestorHelper
+from FlaskGUI.SRC.DAQ.xnorbusDAQ import xnorbusDAQ
 from flask import Flask, render_template
 from flask import request
 import atexit, threading
-from flask_socketio import SocketIO, emit, send
+from flask_socketio import SocketIO, emit
 import json, os
 import time
 import copy
@@ -12,6 +12,7 @@ import copy
 #XRQ = xnorbusWebrequestor('http://192.168.1.65:8080')
 XRQ = xnorbusWebrequestor('http://192.168.1.28:8080')
 #XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
+
 XRH = xnorbusRequestorHelper(XRQ, "devices.json")
 XDAQ = xnorbusDAQ(XRQ, "DAQconfig.json")
 
@@ -242,40 +243,42 @@ class create_thread():
             None
 
     def doStuff(self):
-        global commonDataStruct
         global THREAD_refreshDeviceList
-        global autoRefreshDevList_LockEpoch
-        global autoRefreshDevList_isLocked
         global currentlyOpenedMainPage, runThreadOnLoadedPages
         with dataLock:
         # Do your stuff with commonDataStruct Here
             print("Thread started: ", threading.get_ident())
-
-            if(currentlyOpenedMainPage in runThreadOnLoadedPages):            # prevent loading deviceList when page is not loaded
-                if autoRefreshDevList_LockEpoch < int(time.time()):           # prevent loading deviceList when device is opened
-                    print("Hardware communication: Started")
-                    autoRefreshDevList_isLocked = False
-                    commonDataStruct['MASTER'] = XRH.getMasterInformation()
-
-                    devIdList = XRH.initDeviceIDScan()
-                    devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
-                    commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
-
-                    print("Hardware communication: Completed")
-                else:
-                    print("Hardware communication: Locked")
-                    autoRefreshDevList_isLocked = True
-                currentlyOpenedMainPage = None      # clear the currentlyOpenedMainPage to prevent auto updates after page is closed!
-                                                    # On each refresh of the page this value is restored automatically for next update.
+            if(currentlyOpenedMainPage in runThreadOnLoadedPages):          # prevent loading deviceList when page is not loaded
+                currentlyOpenedMainPage = None                              # clear the currentlyOpenedMainPage to prevent auto updates after page is closed!
+                self.runBusDeviceScan()                                     # On each refresh of the page this value is restored automatically for next update.
             else:
-                print("No configuration page opened, running DAQ execution...")
-                configData = XDAQ.getConfigFromFile()
-                print(configData['TEST'])
+                self.runDAQ()                                               # When the XnorDuino configurator is not working, execute DAQ
 
             print("Thread ended: ", threading.get_ident())
             # Set the next thread to happen
             THREAD_refreshDeviceList = threading.Timer(POOL_TIME, self.doStuff)
             THREAD_refreshDeviceList.start()
+
+    def runBusDeviceScan(self):
+        global commonDataStruct
+        global autoRefreshDevList_LockEpoch
+        global autoRefreshDevList_isLocked
+        if autoRefreshDevList_LockEpoch < int(time.time()):  # prevent loading deviceList when device is opened
+            autoRefreshDevList_isLocked = False
+            print("Hardware communication: Started")
+            commonDataStruct['MASTER'] = XRH.getMasterInformation()
+            devIdList = XRH.initDeviceIDScan()
+            devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
+            commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
+            print("Hardware communication: Completed")
+        else:
+            print("Hardware communication: Locked")
+            autoRefreshDevList_isLocked = True
+
+    def runDAQ(self):
+        print("No configuration page opened, running DAQ execution...")
+        configData = XDAQ.getConfigFromFile()
+        print(configData['TEST'])
 
 #=======================================================================================================
 
@@ -286,7 +289,7 @@ app = create_app()
 if(app.env == 'development'):
     app.debug = True
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open(dir_path + '/API/debugScannedDeviceList.json') as f:
+    with open(dir_path + '/debug/debugScannedDeviceList.json') as f:
         commonDataStruct['SLAVES'] = json.load(f)
 else:
     create_thread()
