@@ -92,18 +92,21 @@ class xnorbusRequestorHelper():
         returnDict = {}
         devicesList = []
         for devId in pDevIdList:
-            cmd = [devId, 0, 5]
-            rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))                   # set de master for ReadSlave
+            try:
+                cmd = [devId, 0, 5]
+                rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))                   # set de master for ReadSlave
 
-            # convert byte array to readable list:
-            devInfoArr = []
-            for i in range(0, len(rcvBytes)):
-                devInfoArr.append(rcvBytes[i])
+                # convert byte array to readable list:
+                devInfoArr = []
+                for i in range(0, len(rcvBytes)):
+                    devInfoArr.append(rcvBytes[i])
 
-            deviceDict = {}
-            deviceDict["I2C_ID"] = str(devId)
-            deviceDict["HW_ID"] = str(devInfoArr[:-1]).replace(' ', '')
-            deviceDict["FW_ID"] = "v" + str(devInfoArr[-1]).replace(' ', '')
+                deviceDict = {}
+                deviceDict["I2C_ID"] = str(devId)
+                deviceDict["HW_ID"] = str(devInfoArr[:-1]).replace(' ', '')
+                deviceDict["FW_ID"] = "v" + str(devInfoArr[-1]).replace(' ', '')
+            except IndexError:
+                return None
 
             try:
                 combiID = str(devInfoArr).replace(' ', '')

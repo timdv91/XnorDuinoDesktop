@@ -16,8 +16,8 @@ XRQ = xnorbusWebrequestor('http://192.168.1.65:8080')
 XRH = xnorbusRequestorHelper(XRQ, "DEVconfig.json")
 XDAQ = xnorbusDAQ(XRQ, "DAQconfig.json")
 
-HOST_IP = '127.0.0.1'
-#HOST_IP = '192.168.1.65'
+#HOST_IP = '127.0.0.1'
+HOST_IP = '192.168.1.65'
 HOST_PORT = 5000
 
 # =========================================================
@@ -269,7 +269,8 @@ class create_thread():
             commonDataStruct['MASTER'] = XRH.getMasterInformation()
             devIdList = XRH.initDeviceIDScan()
             devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
-            commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
+            if(devicesDictionary != None):
+                commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
             print("Hardware communication: Completed")
         else:
             print("Hardware communication: Locked")
