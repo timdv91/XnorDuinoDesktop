@@ -138,6 +138,12 @@ class XnorSerialHost():
         pData.insert(1, dataSize)  # inform master we're gonna write 4 bytes
         pData.insert(2, 2)  # set masters register to read request from slave
 
+        if (self.RFmode == True):
+            dataSize = len(pData) + 1
+            pData.insert(0, 16)
+            pData.insert(1, dataSize)
+            pData.insert(2, 11)
+
         print(pData)
         retval = self.rawCommunication(pData)
         return retval

@@ -23,17 +23,20 @@ reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
 
-
+#reqT.get('0', "clrRFmode")                 # read bus_memory from remote device
+reqT.get('[0, 19, 162, 00, 65, 146, 243, 158]', "setRFmode") # set wireless master mode
+quit()
 
 reqT.get('0', "clrRFmode")                 # read bus_memory from remote device
 
 #=======================================================================================================================
-reqT.get('[9, 1, 42]', 'WM')
+reqT.get('[9, 1, 41]', 'WM')
 r = eval(reqT.get('[0, 14]', 'RM'))  # read data received by the master
 for i in range(len(r)):
     print(r[i], end=" ")
 print()
 
+reqT.get('[126, 11, 1, 3]', "WS")          # set the master for WriteSlave
 r = eval(reqT.get('[126, 0, 12]', "RS"))
 for i in range(len(r)):
     print(r[i], end=" ")
@@ -43,12 +46,13 @@ print()
 reqT.get('[0, 19, 162, 00, 65, 146, 243, 158]', "setRFmode") # set wireless master mode
 #=======================================================================================================================
 
-reqT.get('[9, 1, 42]', 'WM')
+reqT.get('[9, 1, 43]', 'WM')
 r = eval(reqT.get('[0, 14]', "RM"))   # read bus_memory from remote device
 for i in range(len(r)):
     print(r[i], end=" ")
 print()
 
+reqT.get('[126, 11, 1, 2]', "WS")          # set the master for WriteSlave
 r = eval(reqT.get('[126, 0, 12]', "RS"))
 for i in range(len(r)):
     print(r[i], end=" ")
