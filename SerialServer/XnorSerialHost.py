@@ -4,6 +4,7 @@ class XnorSerialHost():
     def __init__(self, pPort, pBautrate=38400):
         self._connectionInit(pPort, pBautrate)
         self.isComLocked = False
+        self.RFmode = False
 
     def __del__(self):
         self.ser.close()
@@ -33,6 +34,10 @@ class XnorSerialHost():
             retVal = self.writeSlave(pData)
         elif(pFunction == "/WM"):
             retVal = self.writeMaster(pData)
+        elif(pFunction == "/setRFmode"):
+            retVal = self.setRFmode(pData)
+        elif (pFunction == "/clrRFmode"):
+            retVal = self.clrRFmode(pData)
         return retVal
 
 
@@ -91,8 +96,25 @@ class XnorSerialHost():
         pData.insert(0, 16)     # start writing master register at index 16
         pData.insert(1, 4)       # inform master we're gonna write 4 bytes
         pData.insert(2, 1)      # set masters register to read request from slave
+
+        if (self.RFmode == True):
+            dataSize = len(pData) + 1
+            pData.insert(0, 16)
+            pData.insert(1, dataSize)
+            pData.insert(2, 11)
+
         print(pData)
         retval = self.rawCommunication(pData)
+
+        if (self.RFmode == True):
+            pDataSize = pData[-1]
+            pData = []
+            pData.insert(0, 16)
+            pData.insert(1, 3)
+            pData.insert(2, 12)
+            pData.insert(3, 20)
+            pData.insert(4, pDataSize)
+            self.rawCommunication(pData)
 
         # second read masters data register for data received from slave:
         print(pData[-1])
@@ -100,6 +122,13 @@ class XnorSerialHost():
         return retval
 
     def readMaster(self, pData, pDebug=False):
+        if(self.RFmode == True):
+            pData.insert(0, 16)
+            pData.insert(1, 3)
+            pData.insert(2, 12)
+            self.rawCommunication(pData)
+            pData = [20, pData[4]]
+
         return self.rawCommunication(pData)
 
     def writeSlave(self, pData, pDebug=False):
@@ -108,6 +137,7 @@ class XnorSerialHost():
         pData.insert(0, 16)  # start writing master register at index 16
         pData.insert(1, dataSize)  # inform master we're gonna write 4 bytes
         pData.insert(2, 2)  # set masters register to read request from slave
+
         print(pData)
         retval = self.rawCommunication(pData)
         return retval
@@ -115,7 +145,36 @@ class XnorSerialHost():
     def writeMaster(self, pData, pDebug=False):
         if(pData[0] <= 4):           # master is only writable starting from index 9!
             return b'\x00\x00'
+
+        if(self.RFmode == True):
+            dataSize = len(pData) + 1
+            pData.insert(0, 16)
+            pData.insert(1, dataSize)
+            pData.insert(2, 11)
+
+        print(pData)
         return self.rawCommunication(pData)
+
+    def setRFmode(self, pData):
+        # first set the masters registers to init a read request on a slave:
+        dataSize = len(pData) + 1
+        pData.insert(0, 16)  # start writing master register at index 16
+        pData.insert(1, dataSize)  # inform master we're gonna write n bytes
+        pData.insert(2, 9)
+        print(pData)
+        retval = self.rawCommunication(pData)
+        self.RFmode = True
+        return retval
+
+    def clrRFmode(self, pData):
+        pData = []
+        pData.insert(0, 16)  # start writing master register at index 16
+        pData.insert(1, 1)
+        pData.insert(2, 10)
+        retval = self.rawCommunication(pData)
+        self.RFmode = False
+        return retval
+
 
 '''
 xsh = XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=19200)

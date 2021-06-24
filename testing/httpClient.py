@@ -24,6 +24,94 @@ reqT = requestTest('http://127.0.0.1:8080')
 
 
 
+
+reqT.get('0', "clrRFmode")                 # read bus_memory from remote device
+
+#=======================================================================================================================
+reqT.get('[9, 1, 42]', 'WM')
+r = eval(reqT.get('[0, 14]', 'RM'))  # read data received by the master
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+r = eval(reqT.get('[126, 0, 12]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+#=======================================================================================================================
+reqT.get('[0, 19, 162, 00, 65, 146, 243, 158]', "setRFmode") # set wireless master mode
+#=======================================================================================================================
+
+reqT.get('[9, 1, 42]', 'WM')
+r = eval(reqT.get('[0, 14]', "RM"))   # read bus_memory from remote device
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+r = eval(reqT.get('[126, 0, 12]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+#=======================================================================================================================
+
+quit()
+
+print("\n\nReading remote master module raw")
+eCount = 0
+sCount = 0
+startTime = time.time()
+
+
+reqT.get('[16, 3, 12, 0, 14]')                 # read bus_memory from remote device
+print("Requested data from remote device.")
+
+
+r = eval(reqT.get('[20, 14]'))  # read data received by the master
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+print("Errors: ", eCount, end=" | ")
+print("Success: ", sCount)
+print("--- %s seconds ---" % (time.time() - startTime))
+
+
+
+
+print("Second test")
+
+
+
+
+print("\n\nReading remote termination module raw")
+eCount = 0
+sCount = 0
+startTime = time.time()
+reqT.get('[16, 7, 11, 16, 4, 1, 126, 0, 12]')   # write action to remote device
+print("send action to remote device.")
+
+
+reqT.get('[16, 3, 12, 20, 12]')                 # read bus_memory from remote device
+print("Requested data from remote device.")
+
+
+r = eval(reqT.get('[20, 12]'))  # read data received by the master
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+print("Errors: ", eCount, end=" | ")
+print("Success: ", sCount)
+print("--- %s seconds ---" % (time.time() - startTime))
+
+
+quit()
+
+
+
+
+
+
 #reqT.get('[127, 5, 1, 21]', "WS")
 
 #reqT.get('[20, 7, 1, 10]', "WS")
