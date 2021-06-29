@@ -162,6 +162,10 @@ class XnorSerialHost():
         return self.rawCommunication(pData)
 
     def setRFmode(self, pData):
+        # hex to dec conversion:
+        for i in range(0,len(pData)):
+            pData[i] = int(pData[i], 16)
+
         # first set the masters registers to init a read request on a slave:
         dataSize = len(pData) + 1
         pData.insert(0, 16)  # start writing master register at index 16

@@ -153,21 +153,25 @@ class xnorbusRequestorHelper():
                 debugPrint += "\tNestign support: NO" + "\n"
                 devicesDictLocal[i]["NESTED"] = "N/A"
             else:
-                debugPrint += "\tNesting support: YES" + "\n"
-                cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"]), 1]
-                rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
-                debugPrint += "\tConnected slave devices:" + str(int(rcvBytes[0])) + "\n"
-                if(int(rcvBytes[0]) > 0):
-                    cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"])+1, int(rcvBytes[0])]
-                    nestedDevIdList_bytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
-                    debugPrint += "\tConnected slaves ID's: "
-                    nestedDevIdList = []
-                    for ids in nestedDevIdList_bytes:
-                        nestedDevIdList.append(ids)
-                        debugPrint += str(ids) + ' '
-                    debugPrint += "\n"
-                    devicesDictLocal[i]["NESTED"] = nestedDevIdList
-                else:
+                try:
+                    debugPrint += "\tNesting support: YES" + "\n"
+                    cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"]), 1]
+                    rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
+                    debugPrint += "\tConnected slave devices:" + str(int(rcvBytes[0])) + "\n"
+                    if(int(rcvBytes[0]) > 0):
+                        cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"])+1, int(rcvBytes[0])]
+                        nestedDevIdList_bytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
+                        debugPrint += "\tConnected slaves ID's: "
+                        nestedDevIdList = []
+                        for ids in nestedDevIdList_bytes:
+                            nestedDevIdList.append(ids)
+                            debugPrint += str(ids) + ' '
+                        debugPrint += "\n"
+                        devicesDictLocal[i]["NESTED"] = nestedDevIdList
+                    else:
+                        devicesDictLocal[i]["NESTED"] = "None"
+                except IndexError:
+                    print("IndexError, returning 'None' value")
                     devicesDictLocal[i]["NESTED"] = "None"
 
         if(pDebug):
