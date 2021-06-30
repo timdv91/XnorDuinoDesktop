@@ -22,10 +22,16 @@ reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
-#reqT.get('["00", "13", "A2", "00", "41", "92", "F3", "9E"]', "setRFmode") # set wireless master mode
-reqT.get('["00", "00", "00", "00", "00", "00", "FF", "FF"]', "setRFmode") # set wireless master mode
+reqT.get('["00", "13", "A2", "00", "41", "92", "F3", "9E"]', "setRFmode") # set wireless master mode
 
-reqT.get('[16, 9, 13, 00, 19, 162, 00, 64, 134, 78, 220]', "WM") # set wireless master mode
+quit()
+
+#reqT.get('["00", "00", "00", "00", "00", "00", "FF", "FF"]', "setRFmode") # set wireless master mode
+#reqT.get('0', "clrRFmode")
+#time.sleep(1)
+reqT.get('[16, 2, 15, 10]', 'WM')
+#reqT.get('0', "clrRFmode")                 # read bus_memory from remote device
+#reqT.get('[16, 9, 13, 00, 19, 162, 00, 64, 134, 78, 220]', "WM") # set wireless master mode
 
 r = eval(reqT.get('[20, 9]'))  # read data received by the master
 for i in range(len(r)):

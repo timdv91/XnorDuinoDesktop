@@ -11,7 +11,7 @@ class XnorSerialHost():
 
     def _connectionInit(self, pPort, pBautrate):
         print("Establishing serial connection to embedded device: ", end=" ")
-        self.ser = serial.Serial(pPort, pBautrate, timeout=.25)
+        self.ser = serial.Serial(pPort, pBautrate, timeout=.250)
         time.sleep(2.5)
         self.ser.write(b'\x01')     # send SOH byte
         check = self.ser.read(2)    # check if device responds with ACK and EOT bytes
