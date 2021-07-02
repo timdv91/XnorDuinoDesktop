@@ -3,24 +3,50 @@
 {% block content %}
 
     <script>
+    var isDevNameLoaded = false;
+
     // If server has locked the autorefresh, start own communication:
     socket.on("isLocked", data => {
         console.log(data);
         if(data == true)
         {
             socket.emit('get_value', {name: "masterReadout", cmd: '[5, 9]', cmdType: 'RM'});  // only send data when server has locked autoRefresh
+
+            if(isDevNameLoaded == false)
+                socket.emit('get_value', {name: "masterReadout_loadDevName", cmd: '[16, 1, 16]', cmdType: 'WM'});  // write command do load the deviceName from eeprom.
         }
     });
 
 
     socket.on("value_reply", data => {
-        console.log(data);
-        document.getElementById("Alerts").innerHTML = "Fault-code: " + (data["value"][0]);
-        document.getElementById("ext_vcc").innerHTML = "External vcc (voltage): " + (data["value"][1] /10) + "V";
-        document.getElementById("ext_vcc_current").innerHTML = "External vcc (current): " + ((data["value"][2] *4)) + "mA";
-        document.getElementById("ext_vcc_wattage").innerHTML = "External vcc (wattage): " + data["value"][3] / 10 + "W";
-        document.getElementById("over_current_shtdwn").innerHTML = "Over-current shutdown: " + (data["value"][4] * 20) + "mA";
 
+        if(data["name"] == "masterReadout")
+        {
+            console.log(data);
+            document.getElementById("Alerts").innerHTML = "Fault-code: " + (data["value"][0]);
+            document.getElementById("ext_vcc").innerHTML = "External vcc (voltage): " + (data["value"][1] /10) + "V";
+            document.getElementById("ext_vcc_current").innerHTML = "External vcc (current): " + ((data["value"][2] *4)) + "mA";
+            document.getElementById("ext_vcc_wattage").innerHTML = "External vcc (wattage): " + data["value"][3] / 10 + "W";
+            document.getElementById("over_current_shtdwn").innerHTML = "Over-current shutdown: " + (data["value"][4] * 20) + "mA";
+        }
+
+        if(data["name"] == "masterReadout_loadDevName")
+        {
+            console.log(data);
+            isDevNameLoaded = true;
+            socket.emit('get_value', {name: "masterReadout_GetDevName", cmd: '[20, 9]', cmdType: 'RM'});  // only send data when server has locked autoRefresh
+        }
+
+        if(data["name"] == "masterReadout_GetDevName")
+        {
+            var devName = "";
+            for(var i=0; i<9; i++)
+                devName += String.fromCharCode(data["value"][i]);
+            console.log(devName);
+            document.getElementById("DeviceName_Text").value = devName;
+
+            isDevNameLoaded = true;
+        }
 
         if(document.getElementById("OverCurrentTreshhold_Text").value == "?")
         {
@@ -28,7 +54,29 @@
         }
     });
 
+    function submitDevName()
+    {
+        var devName = document.getElementById("DeviceName_Text").value;
+        console.log(devName);
 
+        var charArray = ["", "", "", "", "", "", "", "", ""];
+        for(var i=0; i<devName.length;i++)
+            charArray[i] = devName.charAt(i).charCodeAt(0);
+        console.log(charArray);
+
+        for(var i=devName.length; i<charArray.length; i++)
+            charArray[i] = 32;
+        console.log(charArray);
+
+        var cmd = "[16, 10, 17, ";
+        for(var i=0; i<charArray.length; i++)
+            cmd += charArray[i] + ", ";
+        cmd = cmd.slice(0, -2);
+        cmd += "]";
+        console.log(cmd);
+
+        socket.emit('get_value', {name: "writeNewDevName", cmd: cmd, cmdType: 'WM'}); // enter wireless mode when MAC is vallid.
+    }
     </script>
 
     <!-- Put variable read only values here:  -->
@@ -61,8 +109,15 @@
         </form>
     </div>
 
+     <div class="container">
+         <label for="DeviceName_Text">Wireless device name:</label>
+         <input type="text" id="DeviceName_Text" name="1" value="?">
+         <INPUT TYPE="button" value="Submit" onclick="submitDevName();" >
+     </div>
+
     <div class="container">
         <button id="redirect1" value="master_v1_scheduler.html" onclick="pageRedirect('master_v1.html','redirect1')">Open scheduler</button>
+        <button id="redirect2" value="master_v1_wireless.html" onclick="pageRedirect('master_v1.html','redirect2')">Wireless mode</button>
     </div>
 
 {% endblock %}

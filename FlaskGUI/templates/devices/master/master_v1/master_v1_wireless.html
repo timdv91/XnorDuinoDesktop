@@ -1,0 +1,141 @@
+{% extends '/devices/__devicesBase__.html' %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+{% block content %}
+
+    <script>
+    var endOfScan = false;
+    var nodeArray_NAME = [];
+    var nodeArray_MAC = [];
+
+
+    // notes:
+    // add a timeout on the scan, to prevent nodes from showing up multiple times whenever the scan timeout on hardware runs out. --> todo!
+    // update hw firmware to also send device name on scan? --> done!
+
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true && endOfScan == false)
+        {
+            var cmd = '[16, 2, 15, 10]';
+            socket.emit('get_value', {name: "NetScanBroadCast", cmd: cmd, cmdType: 'WM'});
+
+        }
+    });
+
+
+    socket.on("value_reply", data => {
+        // After a masterWrite request the embedded device has reserved data, go and get that data with a readout:
+        if(data["name"] == "NetScanBroadCast")
+        {
+            console.log(data);
+            socket.emit('get_value', {name: "NetScanReadOut_NAME", cmd: '[29, 9]', cmdType: 'RM'}); // send readMaster request to hardware
+        }
+
+        if(data["name"] == "NetScanReadOut_NAME")
+        {
+            var devName = "";
+            for(var i=0; i<9; i++)
+                devName += String.fromCharCode(data["value"][i]);
+            nodeArray_NAME.push(devName);
+            console.log(devName);
+
+            socket.emit('get_value', {name: "NetScanReadOut_MAC", cmd: '[20, 9]', cmdType: 'RM'}); // send readMaster request to hardware
+        }
+
+        // after a readout of the master data we want to store that data, we also want to check if there is more data available:
+        if(data["name"] == "NetScanReadOut_MAC")
+        {
+            console.log(data);
+            if(data["value"][0] == 1)
+            {
+                var byteArr = (data["value"]).toString().split(",");
+                var selectBoxString = "[";
+                for(var i = 1; i < byteArr.length; i++)
+                {
+                    selectBoxString += '"' + parseInt(byteArr[i]).toString(16) + '",';
+                }
+
+                selectBoxString = selectBoxString.slice(0, -1);
+                selectBoxString += "]";
+
+                nodeArray_MAC.push(selectBoxString);
+            }
+            else
+            {
+                endOfScan = true;
+                $('.loadSpinner').html("<p> Discovery completed, " +  nodeArray_MAC.length  + " remote device(s) found. </p>");
+
+                var selectBox = document.getElementById("wirelessNodes_Text");
+
+                selectBox.options.add(new Option('LOCAL', '[0,0,0,0,0,0,0,0]') );
+
+                for(var i=0; i<nodeArray_MAC.length; i++)
+                {
+                    var optionText = nodeArray_NAME[i];
+                    var optionValue = nodeArray_MAC[i];
+                    selectBox.options.add(new Option(optionText, optionValue) );
+                }
+            }
+        }
+
+        // close window after setting it into RF mode.
+        if(data["name"] == "setRfMode")
+        {
+            alert("Changing node could take a while,\nplease be patient!");
+            window.close();
+        }
+
+    });
+
+    function submitForm()
+    {
+        console.log("Do something");
+
+        var e = document.getElementById("wirelessNodes_Text");
+        var value = e.options[e.selectedIndex].value;
+        var text = e.options[e.selectedIndex].text;
+
+        console.log(value);
+        console.log(text);
+
+        var cmd = value;
+        if(value == '[0,0,0,0,0,0,0,0]')
+            socket.emit('get_value', {name: "setRfMode", cmd: cmd, cmdType: 'clrRFmode'}); // exit wireless mode when MAC is filled with all zeros.
+        else
+            socket.emit('get_value', {name: "setRfMode", cmd: cmd, cmdType: 'setRFmode'}); // enter wireless mode when MAC is vallid.
+    }
+    </script>
+
+    <div class="container">
+        <button id="redirect2" value="master_v1.html" onclick="pageRedirect('master_v1_wireless.html','redirect2')">return to main page</button>
+    </div>
+
+    <div class="loadSpinner">
+        <p>Discovering remote nodes, please wait...</p>
+        <div id="autoUpdateLockedSpinner" class="spinner-border" role="status" >
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=9,1 />
+
+            <label for="wirelessNodes_Text">Wireless nodes:</label>
+            <select id="wirelessNodes_Text" name="wirelessNodes"></select>
+
+            <INPUT TYPE="button" value="Submit" onclick="submitForm();" >
+            <!--<input type="submit" value="Set">-->
+        </form>
+    </div>
+
+
+    <div class="nodeList">
+
+    </div>
+
+{% endblock %}

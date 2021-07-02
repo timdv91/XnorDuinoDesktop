@@ -45,7 +45,7 @@
                 scheduleCounter++;
 
 
-                $('.schedulList').html("<p> Reading memory: " + scheduleCounter + "/" + parseInt(data["value"][10]) + "</p>");
+                $('.schedulList').html("<p> Reading memory: " + (scheduleCounter-1) + "/" + (parseInt(data["value"][10])-1) + "</p>");
             }
             else // if all scheduler data has been requested, present it on the webpage:
             {
