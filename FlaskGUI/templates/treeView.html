@@ -26,38 +26,42 @@
                     <a href="#" onClick="MyWindow=window.open('devices?{{ posts['MASTER']['URL'] }}', '{{ randomPopup }}', 'width={{ posts['MASTER']['WINDOW_SIZE'][0] }},height={{ posts['MASTER']['WINDOW_SIZE'][1] }}'); return false">
                     <h2>ID: {{ posts['MASTER']['I2C_ID'] }}</h2><h4>{{ posts['MASTER']['DEV_TYPE'] }}</h4>
                     </a>
-                    <ul>
+                    {% if posts['SLAVES']|length > 0 %}
+                        <ul>
                         {% for device in posts['SLAVES'] %}
                             {% if device['NESTED']|length > 0 %}
-                                <li>
-                                    <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width={{ device['WINDOW_SIZE'][0] }},height={{ device['WINDOW_SIZE'][1] }}'); return false">
-                                        <h3>ID: {{ device['I2C_ID'] }}</h3><h5>{{ device['DEV_TYPE'] }}</h5>
-                                    </a>
-                                    <ul>
-                                        {% for subDevice in device['NESTED'] %}
-                                            {% for findDevice in posts['SLAVES'] %}
-                                                {% if findDevice['I2C_ID']|int == subDevice|int %}
-                                                    <li>
-                                                    <a href="#" onClick="MyWindow=window.open('devices?{{ findDevice['URL'] }}', '{{ randomPopup }}', 'width={{ findDevice['WINDOW_SIZE'][0] }},height={{ findDevice['WINDOW_SIZE'][1] }}'); return false">
-                                                        <h3>ID: {{ findDevice['I2C_ID'] }}</h3><h5>{{ findDevice['DEV_TYPE'] }}</h5>
-                                                    </a>
-                                                    </li>
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endfor %}
-                                    </ul>
-                                </li>
-                            {% else %}
-                                {% if device['isNested'] == false %}
+
                                     <li>
                                         <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width={{ device['WINDOW_SIZE'][0] }},height={{ device['WINDOW_SIZE'][1] }}'); return false">
                                             <h3>ID: {{ device['I2C_ID'] }}</h3><h5>{{ device['DEV_TYPE'] }}</h5>
                                         </a>
+                                        <ul>
+                                            {% for subDevice in device['NESTED'] %}
+                                                {% for findDevice in posts['SLAVES'] %}
+                                                    {% if findDevice['I2C_ID']|int == subDevice|int %}
+                                                        <li>
+                                                        <a href="#" onClick="MyWindow=window.open('devices?{{ findDevice['URL'] }}', '{{ randomPopup }}', 'width={{ findDevice['WINDOW_SIZE'][0] }},height={{ findDevice['WINDOW_SIZE'][1] }}'); return false">
+                                                            <h3>ID: {{ findDevice['I2C_ID'] }}</h3><h5>{{ findDevice['DEV_TYPE'] }}</h5>
+                                                        </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </ul>
                                     </li>
-                                {% endif %}
+                                {% else %}
+                                    {% if device['isNested'] == false %}
+                                        <li>
+                                            <a href="#" onClick="MyWindow=window.open('devices?{{ device['URL'] }}', '{{ randomPopup }}', 'width={{ device['WINDOW_SIZE'][0] }},height={{ device['WINDOW_SIZE'][1] }}'); return false">
+                                                <h3>ID: {{ device['I2C_ID'] }}</h3><h5>{{ device['DEV_TYPE'] }}</h5>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
                             {% endif %}
                         {% endfor %}
-                    </ul>
+                        </ul>
+                    {% endif %}
                 </li>
             </ul>
         </div>

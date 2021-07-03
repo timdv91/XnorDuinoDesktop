@@ -76,6 +76,7 @@
         console.log(cmd);
 
         socket.emit('get_value', {name: "writeNewDevName", cmd: cmd, cmdType: 'WM'}); // enter wireless mode when MAC is vallid.
+        alert("Device name has been changed!");
     }
     </script>
 
@@ -112,7 +113,7 @@
      <div class="container">
          <label for="DeviceName_Text">Wireless device name:</label>
          <input type="text" id="DeviceName_Text" name="1" value="?">
-         <INPUT TYPE="button" value="Submit" onclick="submitDevName();" >
+         <INPUT TYPE="button" value="Set" onclick="submitDevName();" >
      </div>
 
     <div class="container">

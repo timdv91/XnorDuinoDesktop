@@ -9,9 +9,11 @@
     var nodeArray_NAME = [];
     var nodeArray_MAC = [];
 
+    var scanTimeOut = 10;
+    var epochTime = 0;
 
     // notes:
-    // add a timeout on the scan, to prevent nodes from showing up multiple times whenever the scan timeout on hardware runs out. --> todo!
+    // add a timeout on the scan, to prevent nodes from showing up multiple times whenever the scan timeout on hardware runs out. --> done!
     // update hw firmware to also send device name on scan? --> done!
 
     // If server has locked the autorefresh, start own communication:
@@ -19,9 +21,29 @@
         console.log(data);
         if(data == true && endOfScan == false)
         {
-            var cmd = '[16, 2, 15, 10]';
-            socket.emit('get_value', {name: "NetScanBroadCast", cmd: cmd, cmdType: 'WM'});
+            if(epochTime == 0)
+            {
+                epochTime = Math.round(Date.now() / 1000);
+                console.log(epochTime);
 
+                $('.loadSpinner').html("<p> Discovering remote nodes, please wait... </p>");
+                autoUpdateLockedSpinner.style.display = "block";
+            }
+
+            if((epochTime + scanTimeOut) > (Math.round(Date.now() / 1000)))
+            {
+                console.log("BroadcastTransmit");
+                var cmd = '[16, 2, 15, ' + scanTimeOut + ']';
+                socket.emit('get_value', {name: "NetScanBroadCast", cmd: cmd, cmdType: 'WM'});
+            }
+            else
+            {
+                console.log("scanTimeout");
+                document.getElementById("_wirelessNodes_TimeOut").hidden = false;
+                document.getElementById("wirelessNodes_TimeOut").value = scanTimeOut;
+                $('.loadSpinner').html("<p> Discovery timeout, increase the timeout value if not all devices where discovered in time. </p>");
+                endOfScan = true;
+            }
         }
     });
 
@@ -70,7 +92,7 @@
 
                 var selectBox = document.getElementById("wirelessNodes_Text");
 
-                selectBox.options.add(new Option('LOCAL', '[0,0,0,0,0,0,0,0]') );
+                selectBox.options.add(new Option('USB/UART', '[0,0,0,0,0,0,0,0]') );
 
                 for(var i=0; i<nodeArray_MAC.length; i++)
                 {
@@ -84,13 +106,26 @@
         // close window after setting it into RF mode.
         if(data["name"] == "setRfMode")
         {
-            alert("Changing node could take a while,\nplease be patient!");
+            alert("Changing node could take a while,\ndo not open device before next auto update!");
             window.close();
         }
 
     });
 
-    function submitForm()
+    function Rescan()
+    {
+        scanTimeOut = document.getElementById("wirelessNodes_TimeOut").value;
+        document.getElementById("_wirelessNodes_TimeOut").hidden = true;
+        autoUpdateLockedSpinner.style.display = "block";
+
+        nodeArray_NAME = [];
+        nodeArray_MAC = [];
+        epochTime = 0;
+
+        endOfScan = false;
+    }
+
+    function Connect()
     {
         console.log("Do something");
 
@@ -120,15 +155,22 @@
         </div>
     </div>
 
+    <div class="container" id="_wirelessNodes_TimeOut" hidden=true>
+        <form action="/devices_write">
+            <label for="wirelessNodes_TimeOut">Discovery timeout:</label>
+            <input type="text" id="wirelessNodes_TimeOut" name="0" value="?">
+
+            <INPUT TYPE="button" value="Rescan" onclick="Rescan();" >
+            <!--<input type="submit" value="Set">-->
+        </form>
+    </div>
+
     <div class="container">
         <form action="/devices_write">
-            <input type='hidden' name='posts' value="{{ posts }}" />
-            <input type='hidden' name='cmd' value=9,1 />
-
-            <label for="wirelessNodes_Text">Wireless nodes:</label>
+            <label for="wirelessNodes_Text">Connect to node:</label>
             <select id="wirelessNodes_Text" name="wirelessNodes"></select>
 
-            <INPUT TYPE="button" value="Submit" onclick="submitForm();" >
+            <INPUT TYPE="button" value="Connect" onclick="Connect();" >
             <!--<input type="submit" value="Set">-->
         </form>
     </div>
