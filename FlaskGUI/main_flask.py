@@ -68,6 +68,11 @@ def create_app():
                 rcvList.append(rcvBytes[i])
             emit('value_reply', {"name":data['name'], "value": rcvList})
 
+    @socketio.on('clearDevList')
+    def clearDevList():
+        global commonDataStruct
+        commonDataStruct = {}
+
     # ============================ Main page and About page Get and Post requests: =========================
     # ======================================================================================================
 
@@ -93,7 +98,42 @@ def create_app():
     def dataAcquisition():
         global currentlyOpenedMainPage
         currentlyOpenedMainPage = 'dataAcquisition'
-        return render_template('dataAcquisition.html')
+
+        DAQConfig = XDAQ.readConfigFromFile()
+        print(DAQConfig['DATABASE'])
+        return render_template('dataAcquisition.html', posts=DAQConfig)
+
+    # Rerouting for the about button:
+    @app.route('/dataAcquisition_write')
+    def dataAcquisition_write():
+        global currentlyOpenedMainPage
+        currentlyOpenedMainPage = 'dataAcquisition'
+
+        if request.method == 'GET':
+            DAQConfig = eval(request.args.getlist('posts')[0]) # F html, css and JS! random nonsnes like this is why I prefer real programming lanuagues as C or C++!
+            print(DAQConfig)
+
+            if(request.args['cmd'] == "config"):
+                DAQConfig['DATABASE']['URL'] = request.args['ServerIP']
+                DAQConfig['DATABASE']['PORT'] = request.args['ServerPort']
+                DAQConfig['DATABASE']['USER'] = request.args['DatabaseUser']
+                DAQConfig['DATABASE']['PASS'] = request.args['DatabasePass']
+
+                # Fix the nonsensical crap an HTML checkbox brings with it:
+                checkBoxState = None
+                try:
+                    checkBoxState = request.args['DatabaseEncrypted']
+                    if(checkBoxState != False):
+                        checkBoxState = True
+                except:
+                    checkBoxState = False
+
+                DAQConfig['DATABASE']['ENCRYPTION'] = checkBoxState
+                XDAQ.writeConfigToFile(DAQConfig)
+            else:
+                print("Web devs can fuck themselves in the arse with a cacti!")
+
+        return render_template('dataAcquisition.html', posts=DAQConfig)
 
     # ============================ DeviceList and TreeView Get and Post requests: ==============================
     # ======================================================================================================
@@ -289,8 +329,8 @@ class create_thread():
     # do data acquisition on separated thread:
     def runDAQ(self):
         print("No configuration page opened, running DAQ execution...")
-        configData = XDAQ.getConfigFromFile()
-        print(configData['TEST'])
+        configData = XDAQ.readConfigFromFile()
+        print(configData['DATABASE'])
 
 
 

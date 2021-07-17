@@ -1,33 +1,36 @@
-<link rel="stylesheet" href="/static/css/treeView.css">
+<link rel="stylesheet" href="/static/css/dataAcquisition.css">
 {% extends '__base__.html' %}
 
 {% block content %}
 
-    <script>
-    function readConfigFile()
-    {
-        alert("Read");
-    }
-    readConfigFile();
-
-    function SaveServerConfig()
-    {
-        alert("Test!!!");
-    }
-    </script>
-
     <h1>{% block title %} Xnorduino DAQ {% endblock %}</h1>
+
     <div class="container">
         <h3>Server configuration:</h3>
-        <form action="/DAQ_Config">
-            <label for="ServerIP_TxT">Server URL or IP:</label>
-            <input type="text" id="ServerIP_TxT" name="ServerIP" value="">
+        <form action="/dataAcquisition_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value="config" />
 
-            <label for="ServerPort_TxT">Server port:</label>
-            <input type="text" id="ServerPort_TxT" name="ServerPort" value="">
+            <label for="DatabaseIP_TxT" >Server URL or IP:</label>
+            <input type="text" id="DatabaseIP_TxT" name="ServerIP" value= "{{ posts['DATABASE']['URL'] }}" >
 
-            <INPUT TYPE="button" value="Save" onclick="SaveServerConfig();" >
-            <!--<input type="submit" value="Set">-->
+            <label for="DatabasePort_TxT">Server port:</label>
+            <input type="text" id="DatabasePort_TxT" name="ServerPort" value="{{ posts['DATABASE']['PORT'] }}">
+
+            <label for="DatabaseUser_TxT">Database Username:</label>
+            <input type="text" id="DatabaseUser_TxT" name="DatabaseUser" value= "{{ posts['DATABASE']['USER'] }}" >
+
+            <label for="DatabasePass_TxT">Database Password:</label>
+            <input type="password" id="DatabasePass_TxT" name="DatabasePass" value="{{ posts['DATABASE']['PASS'] }}">
+
+            <label for="DatabaseEncrypted">Encrypted data transfer:</label>
+            {% if posts['DATABASE']['ENCRYPTION'] %}
+                <input type="checkbox" id="DatabaseEncrypted" name="DatabaseEncrypted" value="True" checked>
+            {% else %}
+                <input type="checkbox" id="DatabaseEncrypted" name="DatabaseEncrypted" value="False">
+            {% endif %}
+            <br>
+            <input type="submit" id="loginBtn" value="Save">
         </form>
     </div>
 

@@ -106,6 +106,7 @@
         // close window after setting it into RF mode.
         if(data["name"] == "setRfMode")
         {
+            socket.emit('clearDevList'); // clear devices in devicelist on change of remote node...
             alert("Changing node could take a while,\ndo not open device before next auto update!");
             window.close();
         }
