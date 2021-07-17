@@ -2,6 +2,33 @@
 {% extends '__base__.html' %}
 
 {% block content %}
+
+    <script>
+    function readConfigFile()
+    {
+        alert("Read");
+    }
+    readConfigFile();
+
+    function SaveServerConfig()
+    {
+        alert("Test!!!");
+    }
+    </script>
+
     <h1>{% block title %} Xnorduino DAQ {% endblock %}</h1>
-    <p>Under construction</p>
+    <div class="container">
+        <h3>Server configuration:</h3>
+        <form action="/DAQ_Config">
+            <label for="ServerIP_TxT">Server URL or IP:</label>
+            <input type="text" id="ServerIP_TxT" name="ServerIP" value="">
+
+            <label for="ServerPort_TxT">Server port:</label>
+            <input type="text" id="ServerPort_TxT" name="ServerPort" value="">
+
+            <INPUT TYPE="button" value="Save" onclick="SaveServerConfig();" >
+            <!--<input type="submit" value="Set">-->
+        </form>
+    </div>
+
 {% endblock %}

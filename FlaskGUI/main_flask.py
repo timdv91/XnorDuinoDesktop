@@ -38,10 +38,10 @@ autoRefreshDevList_isLocked = True          # if True deviceList will extend pau
 
 def create_app():
     app = Flask(__name__)
-
-    # ======================================================================================================
     socketio = SocketIO(app)
 
+    # ============================ DeviceList and TreeView socketIO requests: ==============================
+    # ======================================================================================================
     # individual device pages send a heartbeat each N'th second to keep the autorefresh state paused.
     @socketio.on('heart_beat')
     def subGUI_HeartBeat():
@@ -68,7 +68,7 @@ def create_app():
                 rcvList.append(rcvBytes[i])
             emit('value_reply', {"name":data['name'], "value": rcvList})
 
-
+    # ============================ Main page and About page Get and Post requests: =========================
     # ======================================================================================================
 
     # Rerouting for the index page:
@@ -85,12 +85,17 @@ def create_app():
         currentlyOpenedMainPage = 'about'
         return render_template('about.html')
 
+    # ============================ DAQ page Get and Post requests: =========================
+    # ======================================================================================================
+
     # Rerouting for the about button:
     @app.route('/dataAcquisition')
     def dataAcquisition():
         global currentlyOpenedMainPage
         currentlyOpenedMainPage = 'dataAcquisition'
         return render_template('dataAcquisition.html')
+
+    # ============================ DeviceList and TreeView Get and Post requests: ==============================
     # ======================================================================================================
 
     # Page that shows deviceList.html, this page inherits content from the __base__.html file:
@@ -151,8 +156,8 @@ def create_app():
 
         return render_template('treeView.html', posts=devicesDictionary)
 
+    # ============================ Device page Get and Post requests: ======================================
     # ======================================================================================================
-
 
     # Page that shows individual device pages, inherits content from the __devicesBase__.html file:
     @app.route('/devices', methods=('GET', 'POST'))
@@ -217,10 +222,11 @@ def create_app():
 
     return app
 
-#=======================================================================================================
-
+# ====================== MultiThreaded background worker for deviceScan and DAQ: =======================
+# ======================================================================================================
 
 class create_thread():
+    # Create new thread to run background tasks asynchronously:
     def __init__(self):
         print("Starting thread creation")
         # Do initialisation stuff here
@@ -231,9 +237,11 @@ class create_thread():
         THREAD_refreshDeviceList = threading.Timer(POOL_TIME, self.doStuff)
         THREAD_refreshDeviceList.start()
 
+    # Call backgroundworkers assassin for deletion of the child thread (should happen automatically)
     def __del__(self):
         atexit.register(self.interrupt)
 
+    # the interrupt that actually kills the backgroundworker:
     def interrupt(self):
         global THREAD_refreshDeviceList
         print("Thread is being destroyed")
@@ -242,6 +250,7 @@ class create_thread():
         except Exception:
             None
 
+    # the backgroundworker:
     def doStuff(self):
         global THREAD_refreshDeviceList
         global currentlyOpenedMainPage, runThreadOnLoadedPages
@@ -259,6 +268,7 @@ class create_thread():
             THREAD_refreshDeviceList = threading.Timer(POOL_TIME, self.doStuff)
             THREAD_refreshDeviceList.start()
 
+    # do device scan on separated thread:
     def runBusDeviceScan(self):
         global commonDataStruct
         global autoRefreshDevList_LockEpoch
@@ -276,14 +286,16 @@ class create_thread():
             print("Hardware communication: Locked")
             autoRefreshDevList_isLocked = True
 
+    # do data acquisition on separated thread:
     def runDAQ(self):
         print("No configuration page opened, running DAQ execution...")
         configData = XDAQ.getConfigFromFile()
         print(configData['TEST'])
 
-#=======================================================================================================
 
 
+# ========================================== Flask launcher: ===========================================
+# ======================================================================================================
 app = create_app()
 #app.env = 'development'
 
