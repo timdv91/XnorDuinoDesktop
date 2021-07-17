@@ -3,35 +3,81 @@
 
 {% block content %}
 
+<script>
+function hideServerConfig()
+{
+  isHidden = document.getElementById("serverConfig").hidden;
+  console.log(isHidden);
+  if(isHidden == false)
+  {
+    document.getElementById("serverConfig").hidden = true;
+    document.getElementById("hideServerConfigBtn").value = "+";
+  }
+  else
+  {
+    document.getElementById("serverConfig").hidden = false;
+    document.getElementById("hideServerConfigBtn").value = "-";
+  }
+}
+
+function hideDAQConfig()
+{
+  isHidden = document.getElementById("daqConfig").hidden;
+  console.log(isHidden);
+  if(isHidden == false)
+  {
+    document.getElementById("daqConfig").hidden = true;
+    document.getElementById("hideDAQConfigBtn").value = "+";
+  }
+  else
+  {
+    document.getElementById("daqConfig").hidden = false;
+    document.getElementById("hideDAQConfigBtn").value = "-";
+  }
+}
+</script>
+
     <h1>{% block title %} Xnorduino DAQ {% endblock %}</h1>
 
     <div class="container">
-        <h3>Server configuration:</h3>
-        <form action="/dataAcquisition_write">
-            <input type='hidden' name='posts' value="{{ posts }}" />
-            <input type='hidden' name='cmd' value="config" />
+        <form> <INPUT TYPE="button" id="hideServerConfigBtn" value="-" onclick="hideServerConfig();" > </form>
+        <h4> Database-server configuration:</h4>
+        <div class="wrapper" id="serverConfig">
+            <form action="/dataAcquisition_write">
+                  <input type='hidden' name='posts' value="{{ posts }}" />
+                  <input type='hidden' name='cmd' value="config" />
 
-            <label for="DatabaseIP_TxT" >Server URL or IP:</label>
-            <input type="text" id="DatabaseIP_TxT" name="ServerIP" value= "{{ posts['DATABASE']['URL'] }}" >
+                  <label for="DatabaseIP_TxT" >Server URL or IP:</label>
+                  <input type="text" id="DatabaseIP_TxT" name="ServerIP" value= "{{ posts['DATABASE']['URL'] }}" >
 
-            <label for="DatabasePort_TxT">Server port:</label>
-            <input type="text" id="DatabasePort_TxT" name="ServerPort" value="{{ posts['DATABASE']['PORT'] }}">
+                  <label for="DatabasePort_TxT">Server port:</label>
+                  <input type="text" id="DatabasePort_TxT" name="ServerPort" value="{{ posts['DATABASE']['PORT'] }}">
 
-            <label for="DatabaseUser_TxT">Database Username:</label>
-            <input type="text" id="DatabaseUser_TxT" name="DatabaseUser" value= "{{ posts['DATABASE']['USER'] }}" >
+                  <label for="DatabaseUser_TxT">Database Username:</label>
+                  <input type="text" id="DatabaseUser_TxT" name="DatabaseUser" value= "{{ posts['DATABASE']['USER'] }}" >
 
-            <label for="DatabasePass_TxT">Database Password:</label>
-            <input type="password" id="DatabasePass_TxT" name="DatabasePass" value="{{ posts['DATABASE']['PASS'] }}">
+                  <label for="DatabasePass_TxT">Database Password:</label>
+                  <input type="password" id="DatabasePass_TxT" name="DatabasePass" value="{{ posts['DATABASE']['PASS'] }}">
 
-            <label for="DatabaseEncrypted">Encrypted data transfer:</label>
-            {% if posts['DATABASE']['ENCRYPTION'] %}
-                <input type="checkbox" id="DatabaseEncrypted" name="DatabaseEncrypted" value="True" checked>
-            {% else %}
-                <input type="checkbox" id="DatabaseEncrypted" name="DatabaseEncrypted" value="False">
-            {% endif %}
-            <br>
-            <input type="submit" id="loginBtn" value="Save">
-        </form>
+                  <label for="DatabaseEncrypted">Encrypted data transfer:</label>
+                  {% if posts['DATABASE']['ENCRYPTION'] %}
+                      <input type="checkbox" id="DatabaseEncrypted" name="DatabaseEncrypted" value="True" checked>
+                  {% else %}
+                      <input type="checkbox" id="DatabaseEncrypted" name="DatabaseEncrypted" value="False">
+                  {% endif %}
+                  <input type="submit" id="loginBtn" value="Save">
+            </form>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <hr>
+        <form> <INPUT TYPE="button" id="hideDAQConfigBtn" value="-" onclick="hideDAQConfig();" > </form>
+        <h4> DAQ settings: </h4>
+        <div class="wrapper" id="daqConfig">
+            <p>{{ devices }}</p>
+        </div>
     </div>
 
 {% endblock %}

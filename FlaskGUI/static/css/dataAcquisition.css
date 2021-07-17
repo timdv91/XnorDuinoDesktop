@@ -14,8 +14,22 @@ input[type="checkbox"]{
     top: 7px;
 }
 
+
 #loginBtn {
     position: relative;
-    left: 165px;
-    top: 40px;
+    left: 113px;
+    top: 1px;
+}
+
+.container{
+    /*background-color: lightblue;*/
+    width:10%;
+    clear:left;
+    text-align:left;
+    padding-right:10px;
+    padding-bottom:10px;
+}
+
+.wrapper{
+    padding-top:10px;
 }

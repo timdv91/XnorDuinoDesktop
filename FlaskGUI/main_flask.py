@@ -97,21 +97,21 @@ def create_app():
     @app.route('/dataAcquisition')
     def dataAcquisition():
         global currentlyOpenedMainPage
+        global commonDataStruct
         currentlyOpenedMainPage = 'dataAcquisition'
 
         DAQConfig = XDAQ.readConfigFromFile()
-        print(DAQConfig['DATABASE'])
-        return render_template('dataAcquisition.html', posts=DAQConfig)
+        return render_template('dataAcquisition.html', posts=DAQConfig, devices=commonDataStruct)
 
     # Rerouting for the about button:
     @app.route('/dataAcquisition_write')
     def dataAcquisition_write():
         global currentlyOpenedMainPage
+        global commonDataStruct
         currentlyOpenedMainPage = 'dataAcquisition'
 
         if request.method == 'GET':
             DAQConfig = eval(request.args.getlist('posts')[0]) # F html, css and JS! random nonsnes like this is why I prefer real programming lanuagues as C or C++!
-            print(DAQConfig)
 
             if(request.args['cmd'] == "config"):
                 DAQConfig['DATABASE']['URL'] = request.args['ServerIP']
@@ -133,7 +133,7 @@ def create_app():
             else:
                 print("Web devs can fuck themselves in the arse with a cacti!")
 
-        return render_template('dataAcquisition.html', posts=DAQConfig)
+        return render_template('dataAcquisition.html', posts=DAQConfig, devices=commonDataStruct)
 
     # ============================ DeviceList and TreeView Get and Post requests: ==============================
     # ======================================================================================================
@@ -321,6 +321,8 @@ class create_thread():
             devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
             if(devicesDictionary != None):
                 commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
+
+            XRH.writeDevListToFile(commonDataStruct, "tmpDeviceList.json") # write datastruct with devices to tmpFile
             print("Hardware communication: Completed")
         else:
             print("Hardware communication: Locked")

@@ -177,3 +177,20 @@ class xnorbusRequestorHelper():
         if(pDebug):
             print(str(debugPrint))
         return devicesDictLocal
+
+
+    # Store devicelist into tmp file:
+    # ====================================================================================
+    def writeDevListToFile(self, pDevList, pFileName):
+        # getting a jsonDictionary with supported devices and their names:
+        dir_path = str(Path(os.path.dirname(os.path.realpath(__file__))).parent.parent)
+        with open(dir_path + '/DB/TMP/' + pFileName, 'w') as f:
+            json.dump(pDevList, f, ensure_ascii=False, indent=4)
+
+    # Store devicelist into tmp file:
+    def readDevListFromFile(self, pFileName):
+        # getting a jsonDictionary with supported devices and their names:
+        dir_path = str(Path(os.path.dirname(os.path.realpath(__file__))).parent.parent)
+        with open(dir_path + '/DB/TMP/' + pFileName) as f:
+            tmpDeviceList = json.load(f)
+        return tmpDeviceList
