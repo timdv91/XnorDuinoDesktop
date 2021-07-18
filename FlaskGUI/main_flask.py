@@ -10,16 +10,16 @@ import json, os
 import time
 import copy
 
-#XRQ = xnorbusWebrequestor('http://192.168.1.65:8080')
+XRQ = xnorbusWebrequestor('http://192.168.1.65:8080')
 #XRQ = xnorbusWebrequestor('http://192.168.1.28:8080')
-XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
+#XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 
 XRH = xnorbusRequestorHelper(XRQ, "DEVconfig.json")
 XDAQ = xnorbusDAQ(XRQ, "DAQconfig.json")
 TFM = temporaryFileManager("tmpDeviceList.json")
 
-HOST_IP = '127.0.0.1'
-#HOST_IP = '192.168.1.65'
+#HOST_IP = '127.0.0.1'
+HOST_IP = '192.168.1.65'
 HOST_PORT = 5000
 
 # =========================================================
