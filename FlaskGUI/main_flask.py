@@ -1,6 +1,7 @@
 from FlaskGUI.SRC.xnorbusWebrequestor import xnorbusWebrequestor
 from FlaskGUI.SRC.GUI.xnorbusRequestorHelper import xnorbusRequestorHelper
 from FlaskGUI.SRC.DAQ.xnorbusDAQ import xnorbusDAQ
+from FlaskGUI.SRC.TMP.temporaryFileManager import temporaryFileManager
 from flask import Flask, render_template
 from flask import request
 import atexit, threading
@@ -15,6 +16,7 @@ XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 
 XRH = xnorbusRequestorHelper(XRQ, "DEVconfig.json")
 XDAQ = xnorbusDAQ(XRQ, "DAQconfig.json")
+TFM = temporaryFileManager("tmpDeviceList.json")
 
 HOST_IP = '127.0.0.1'
 #HOST_IP = '192.168.1.65'
@@ -100,6 +102,9 @@ def create_app():
         global commonDataStruct
         currentlyOpenedMainPage = 'dataAcquisition'
 
+        if(len(commonDataStruct) <= 0):
+            commonDataStruct = TFM.readDevListFromFile()
+
         DAQConfig = XDAQ.readConfigFromFile()
         return render_template('dataAcquisition.html', posts=DAQConfig, devices=commonDataStruct)
 
@@ -129,10 +134,13 @@ def create_app():
                     checkBoxState = False
 
                 DAQConfig['DATABASE']['ENCRYPTION'] = checkBoxState
-                XDAQ.writeConfigToFile(DAQConfig)
-            else:
-                print("Web devs can fuck themselves in the arse with a cacti!")
 
+            elif(request.args['cmd'] == "DAQSettings"):
+                print("Add daq rules here to daqConfig file")
+            else:
+                print("ERROR: '/dataAcquisition_write' - Unknown option")
+
+            XDAQ.writeConfigToFile(DAQConfig)
         return render_template('dataAcquisition.html', posts=DAQConfig, devices=commonDataStruct)
 
     # ============================ DeviceList and TreeView Get and Post requests: ==============================
@@ -322,7 +330,7 @@ class create_thread():
             if(devicesDictionary != None):
                 commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
 
-            XRH.writeDevListToFile(commonDataStruct, "tmpDeviceList.json") # write datastruct with devices to tmpFile
+            TFM.writeDevListToFile(commonDataStruct) # write datastruct with devices to tmpFile
             print("Hardware communication: Completed")
         else:
             print("Hardware communication: Locked")

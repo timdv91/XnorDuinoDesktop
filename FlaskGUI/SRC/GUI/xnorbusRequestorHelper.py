@@ -34,6 +34,7 @@ class xnorbusRequestorHelper():
                 combiID = str(rcv[0:5]).replace(' ', '')
                 retVal["DEV_TYPE"] = supportedDevicesDictionary["MASTER"][combiID]["DEV_TYPE"]
                 retVal["DEV_PAGE"] = supportedDevicesDictionary["MASTER"][combiID]["DEV_PAGE"]
+                retVal["MEM_MAP"] = supportedDevicesDictionary["MASTER"][combiID]["MEM_MAP"]
                 retVal["WINDOW_SIZE"] = supportedDevicesDictionary["MASTER"][combiID]["WINDOW_SIZE"]
                 retVal["URL"] = "DEV_PAGE=" + retVal["DEV_PAGE"] \
                                     + '&' + "I2C_ID=" + '0' \
@@ -43,6 +44,7 @@ class xnorbusRequestorHelper():
             except KeyError:
                 retVal["DEV_TYPE"] = "UNKNOWN_DEVICE"
                 retVal["DEV_PAGE"] = "UNKNOWN_DEVICE"
+                retVal["MEM_MAP"] = "UNKNOWN_DEVICE"
                 retVal["WINDOW_SIZE"] = [350, 300]
                 retVal["URL"] = "DEV_PAGE=" + "devices/unsupported_device.html" \
                                     + '&' + "I2C_ID=" + '0' \
@@ -112,6 +114,7 @@ class xnorbusRequestorHelper():
                 combiID = str(devInfoArr).replace(' ', '')
                 deviceDict["DEV_TYPE"] = supportedDevicesDictionary["SLAVES"][combiID]["DEV_TYPE"]
                 deviceDict["DEV_PAGE"] = supportedDevicesDictionary["SLAVES"][combiID]["DEV_PAGE"]
+                deviceDict["MEM_MAP"] = supportedDevicesDictionary["SLAVES"][combiID]["MEM_MAP"]
                 deviceDict["WINDOW_SIZE"] = supportedDevicesDictionary["SLAVES"][combiID]["WINDOW_SIZE"]
                 deviceDict["DEV_NESTING"] = supportedDevicesDictionary["SLAVES"][combiID]["DEV_NESTING"]
                 deviceDict["URL"] = "DEV_PAGE=" + deviceDict["DEV_PAGE"] \
@@ -122,6 +125,7 @@ class xnorbusRequestorHelper():
             except KeyError:
                 deviceDict["DEV_TYPE"] = "UNKNOWN_DEVICE"
                 deviceDict["DEV_PAGE"] = "UNKNOWN_DEVICE"
+                deviceDict["MEM_MAP"] = "UNKNOWN_DEVICE"
                 deviceDict["WINDOW_SIZE"] = [350, 300]
                 deviceDict["DEV_NESTING"] = -1
                 deviceDict["URL"] = "DEV_PAGE=" + "devices/unsupported_device.html" \
@@ -179,18 +183,4 @@ class xnorbusRequestorHelper():
         return devicesDictLocal
 
 
-    # Store devicelist into tmp file:
-    # ====================================================================================
-    def writeDevListToFile(self, pDevList, pFileName):
-        # getting a jsonDictionary with supported devices and their names:
-        dir_path = str(Path(os.path.dirname(os.path.realpath(__file__))).parent.parent)
-        with open(dir_path + '/DB/TMP/' + pFileName, 'w') as f:
-            json.dump(pDevList, f, ensure_ascii=False, indent=4)
 
-    # Store devicelist into tmp file:
-    def readDevListFromFile(self, pFileName):
-        # getting a jsonDictionary with supported devices and their names:
-        dir_path = str(Path(os.path.dirname(os.path.realpath(__file__))).parent.parent)
-        with open(dir_path + '/DB/TMP/' + pFileName) as f:
-            tmpDeviceList = json.load(f)
-        return tmpDeviceList

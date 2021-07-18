@@ -4,6 +4,8 @@
 {% block content %}
 
 <script>
+
+// hiding server configuration:
 function hideServerConfig()
 {
   isHidden = document.getElementById("serverConfig").hidden;
@@ -20,6 +22,7 @@ function hideServerConfig()
   }
 }
 
+// hiding daq settings:
 function hideDAQConfig()
 {
   isHidden = document.getElementById("daqConfig").hidden;
@@ -35,9 +38,29 @@ function hideDAQConfig()
     document.getElementById("hideDAQConfigBtn").value = "-";
   }
 }
+
+// when slave has been selected:
+function onSlaveSelect_Event()
+{
+    var e = document.getElementById("slaveSelection_select");
+    var value = e.options[e.selectedIndex].value;
+    var text = e.options[e.selectedIndex].text;
+
+    document.getElementById("sensorSelect").hidden = false;
+
+    //alert(value);
+    //alert(text);
+}
+
 </script>
 
     <h1>{% block title %} Xnorduino DAQ {% endblock %}</h1>
+    <p id="warning">
+        Warning under construction:  this page is not completely functional or stable! <br>
+        TODO: Add wireless daq selection<br>
+        TODO: Make delete button functional<br>
+        TODO: Add MEM_MAP json file for all slave and master devices<br>
+    </p>
 
     <div class="container">
         <form> <INPUT TYPE="button" id="hideServerConfigBtn" value="-" onclick="hideServerConfig();" > </form>
@@ -65,7 +88,7 @@ function hideDAQConfig()
                   {% else %}
                       <input type="checkbox" id="DatabaseEncrypted" name="DatabaseEncrypted" value="False">
                   {% endif %}
-                  <input type="submit" id="loginBtn" value="Save">
+                  <input type="submit" id="dbSaveBtn" value="Save">
             </form>
         </div>
     </div>
@@ -76,8 +99,92 @@ function hideDAQConfig()
         <form> <INPUT TYPE="button" id="hideDAQConfigBtn" value="-" onclick="hideDAQConfig();" > </form>
         <h4> DAQ settings: </h4>
         <div class="wrapper" id="daqConfig">
-            <p>{{ devices }}</p>
+            <div class="addNewRule">
+                <h5> Add new Daq rule: </h5>
+                <form action="/dataAcquisition_write">
+                    <input type='hidden' name='posts' value="{{ posts }}" />
+                    <input type='hidden' name='cmd' value="DAQSettings" />
+
+                    <label for="ruleName_Txt" >DAQ rule name:</label>
+                    <input type="text" id="ruleName_Txt" name="ruleName_Txt" value= "" >
+
+                    <label for="interval_select">Interval: </label>
+                    <select id="interval_select" name="intervalSelect">
+                        <option value="5">5 sec</option>
+                        <option value="10">10 sec</option>
+                        <option value="15">15 sec</option>
+                        <option value="30">30 sec</option>
+                        <option value="60">1 min</option>
+                        <option value="120">2 min</option>
+                        <option value="300">5 min</option>
+                        <option value="600">10 min</option>
+                        <option value="900">15 min</option>
+                        <option value="1800">30 min</option>
+                        <option value="3600">1 hour</option>
+                        <option value="7200">2 hours</option>
+                        <option value="14400">4 hours</option>
+                        <option value="28800">8 hours</option>
+                        <option value="57600">16 hours</option>
+                        <option value="86400">1 day</option>
+                    </select>
+
+                    <label for="slaveSelection_select">Slave:</label>
+                    <select id="slaveSelection_select" name="slaveSelect" onchange="onSlaveSelect_Event()">
+                        <option value="{{ devices['MASTER']['HW_ID'] }}">{{ devices['MASTER']['I2C_ID'] }}</option>
+                        {% for slave in devices['SLAVES'] %}
+                            <option value="{{ slave['HW_ID'] }}">{{ slave['I2C_ID'] }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="sensorSelection" id="sensorSelect" hidden>
+                        <label for="SensorSelection_select">Collect:</label>
+                        <select id="SensorSelection_select" name="sensorSelect">
+                            <option value="0">external voltage</option>
+                            <option value="0">usb voltage</option>
+                            <option value="0">temperature</option>
+                        </select>
+                    </div>
+
+                    <input type="submit" id="daqAddBtn" value="Add">
+                </form>
+            </div>
+
+            <!-- demonstration part only: -->
+            <div class="ruleList">
+                <h5> Daq rule list: </h5>
+                <hr>
+                <div class="ruleList">
+                    <p>Read external voltage</p>
+                    <p>Interval: 15 sec</p>
+                    <p>Slave ID: 102</p>
+                    <p>Sensor: ext voltage</p>
+                    <from><input type="submit" id="cheat0" value="Delete"></from>
+                </div>
+                <hr>
+                <div class="ruleList">
+                    <p>Read usb voltage</p>
+                    <p>Interval: 30 sec</p>
+                    <p>Slave ID: 102</p>
+                    <p>Sensor: usb voltage</p>
+                    <from><input type="submit" id="cheat1" value="Delete"></from>
+                </div>
+                <hr>
+                <div class="ruleList">
+                    <p>Read temperature sensor</p>
+                    <p>Interval: 30 sec</p>
+                    <p>Slave ID: 102</p>
+                    <p>Sensor: temperature</p>
+                    <from><input type="submit" id="cheat1" value="Delete"></from>
+                </div>
+
+            </div>
+
+            <!--
+            <div class="ruleList">
+                <hr>
+                <p>{{ devices }}</p>
+            </div>
+            -->
         </div>
     </div>
-
 {% endblock %}
