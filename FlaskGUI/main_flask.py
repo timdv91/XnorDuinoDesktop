@@ -325,12 +325,21 @@ class create_thread():
             autoRefreshDevList_isLocked = False
             print("Hardware communication: Started")
             commonDataStruct['MASTER'] = XRH.getMasterInformation()
-            devIdList = XRH.initDeviceIDScan()
-            devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
-            if(devicesDictionary != None):
-                commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
 
-            TFM.writeDevListToFile(commonDataStruct) # write datastruct with devices to tmpFile
+            print(commonDataStruct)
+            devIdList = []
+            try:
+                if(commonDataStruct['MASTER']['DEV_TYPE'] == 'Master'): # only scan for local slaves on a 'Master' module.
+                    devIdList = XRH.initDeviceIDScan()
+
+                devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
+                if(devicesDictionary != None):
+                    commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
+
+                TFM.writeDevListToFile(commonDataStruct) # write datastruct with devices to tmpFile
+            except KeyError as e:
+                print(str(e))
+
             print("Hardware communication: Completed")
         else:
             print("Hardware communication: Locked")

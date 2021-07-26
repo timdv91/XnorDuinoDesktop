@@ -1,0 +1,96 @@
+{% extends '/devices/__devicesBase__.html' %}
+
+{% block content %}
+
+    <script>
+    var isDevNameLoaded = false;
+
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true)
+        {
+            socket.emit('get_value', {name: "frostv2_Readout", cmd: '[5, 12]', cmdType: 'RM'});  // only send data when server has locked autoRefresh
+
+            if(isDevNameLoaded == false)
+                socket.emit('get_value', {name: "frostReadout_loadDevName", cmd: '[16, 1, 16]', cmdType: 'WM'});  // write command do load the deviceName from eeprom.
+        }
+    });
+
+
+    socket.on("value_reply", data => {
+
+        if(data["name"] == "frostv2_Readout")
+        {
+            console.log(data);
+            document.getElementById("freezer_relay").innerHTML = "Relay: " + (data["value"][0]); // needs calculations to work...
+            document.getElementById("int_battery").innerHTML = "Battery: " + (data["value"][1]); // needs calculations to work...
+            document.getElementById("int_Temp").innerHTML = "Int-temp: " + (data["value"][3]); // needs calculations to work...
+            document.getElementById("ext_Temp").innerHTML = "Ext-temp: " + (data["value"][2]); // needs calculations to work...
+        }
+
+        if(data["name"] == "frostReadout_loadDevName")
+        {
+            console.log(data);
+            isDevNameLoaded = true;
+            socket.emit('get_value', {name: "frostReadout_GetDevName", cmd: '[20, 9]', cmdType: 'RM'});  // only send data when server has locked autoRefresh
+        }
+
+        if(data["name"] == "frostReadout_GetDevName")
+        {
+            var devName = "";
+            for(var i=0; i<9; i++)
+                devName += String.fromCharCode(data["value"][i]);
+            console.log(devName);
+            document.getElementById("DeviceName_Text").value = devName;
+
+            isDevNameLoaded = true;
+        }
+    });
+
+    function submitDevName()
+    {
+        var devName = document.getElementById("DeviceName_Text").value;
+        console.log(devName);
+
+        var charArray = ["", "", "", "", "", "", "", "", ""];
+        for(var i=0; i<devName.length;i++)
+            charArray[i] = devName.charAt(i).charCodeAt(0);
+        console.log(charArray);
+
+        for(var i=devName.length; i<charArray.length; i++)
+            charArray[i] = 32;
+        console.log(charArray);
+
+        var cmd = "[16, 10, 17, ";
+        for(var i=0; i<charArray.length; i++)
+            cmd += charArray[i] + ", ";
+        cmd = cmd.slice(0, -2);
+        cmd += "]";
+        console.log(cmd);
+
+        socket.emit('get_value', {name: "writeNewDevName", cmd: cmd, cmdType: 'WM'}); // enter wireless mode when MAC is vallid.
+        alert("Device name has been changed!");
+    }
+    </script>
+
+    <!-- Put variable read only values here:  -->
+    <!-- These values are updated in the "socket.on("value_reply" script:  -->
+    <div class="container">
+        <h2 class="badge badge-info devices-larger-badge" id="freezer_relay"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="int_battery"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="int_Temp"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="ext_Temp"></h2>
+    </div>
+
+     <div class="container">
+         <label for="DeviceName_Text">Wireless device name:</label>
+         <input type="text" id="DeviceName_Text" name="1" value="?">
+         <INPUT TYPE="button" value="Set" onclick="submitDevName();" >
+     </div>
+
+    <div class="container">
+        <button id="redirect2" value="frost_v2_wireless.html" onclick="pageRedirect('frost_v2.html','redirect2')">Wireless mode</button>
+    </div>
+
+{% endblock %}

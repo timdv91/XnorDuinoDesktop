@@ -35,8 +35,6 @@
                 console.log("BroadcastTransmit");
                 var cmd = '[16, 2, 15, ' + scanTimeOut + ']';
                 socket.emit('get_value', {name: "NetScanBroadCast", cmd: cmd, cmdType: 'WM'});
-
-                autoUpdateLockedSpinner.style.display = "block"; //Disappears to early for some reason, quick-fix
             }
             else
             {
@@ -64,7 +62,7 @@
             for(var i=0; i<9; i++)
                 devName += String.fromCharCode(data["value"][i]);
             nodeArray_NAME.push(devName);
-            console.log(data);
+            console.log(devName);
 
             socket.emit('get_value', {name: "NetScanReadOut_MAC", cmd: '[20, 9]', cmdType: 'RM'}); // send readMaster request to hardware
         }
@@ -90,18 +88,18 @@
             else
             {
                 endOfScan = true;
+                $('.loadSpinner').html("<p> Discovery completed, " +  nodeArray_MAC.length  + " remote device(s) found. </p>");
 
                 var selectBox = document.getElementById("wirelessNodes_Text");
 
                 selectBox.options.add(new Option('USB/UART', '[0,0,0,0,0,0,0,0]') );
+
                 for(var i=0; i<nodeArray_MAC.length; i++)
                 {
                     var optionText = nodeArray_NAME[i];
                     var optionValue = nodeArray_MAC[i];
                     selectBox.options.add(new Option(optionText, optionValue) ); // add wireles nodes to wirelessNodes_Text
                 }
-
-                $('.loadSpinner').html("<p> Discovery completed, " +  nodeArray_MAC.length  + " remote device(s) found. </p>");
             }
         }
 
@@ -148,7 +146,7 @@
     </script>
 
     <div class="container">
-        <button id="redirect2" value="master_v1.html" onclick="pageRedirect('master_v1_wireless.html','redirect2')">return to main page</button>
+        <button id="redirect2" value="frost_v2.html" onclick="pageRedirect('frost_v2_wireless.html','redirect2')">return to main page</button>
     </div>
 
     <div class="loadSpinner">
