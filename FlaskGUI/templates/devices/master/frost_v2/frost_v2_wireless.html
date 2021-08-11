@@ -17,6 +17,7 @@
     // update hw firmware to also send device name on scan? --> done!
 
     // If server has locked the autorefresh, start own communication:
+    /*
     socket.on("isLocked", data => {
         console.log(data);
         if(data == true && endOfScan == false)
@@ -46,8 +47,9 @@
             }
         }
     });
+    */
 
-
+    /*
     socket.on("value_reply", data => {
         // After a masterWrite request the embedded device has reserved data, go and get that data with a readout:
         if(data["name"] == "NetScanBroadCast")
@@ -112,7 +114,8 @@
         }
 
     });
-
+    */
+    /*
     function Rescan()
     {
         scanTimeOut = document.getElementById("wirelessNodes_TimeOut").value;
@@ -125,6 +128,14 @@
 
         endOfScan = false;
     }
+    */
+
+    window.onload = function()
+    {
+        $('.loadSpinner').html("<p> Discovery completed, " +  nodeArray_MAC.length  + " remote device(s) found. </p>");
+        var selectBox = document.getElementById("wirelessNodes_Text");
+        selectBox.options.add(new Option('USB/UART', '[0,0,0,0,0,0,0,0]') );
+    };
 
     function Connect()
     {
@@ -142,6 +153,10 @@
             socket.emit('get_value', {name: "setRfMode", cmd: cmd, cmdType: 'clrRFmode'}); // exit wireless mode when MAC is filled with all zeros.
         else
             socket.emit('get_value', {name: "setRfMode", cmd: cmd, cmdType: 'setRFmode'}); // enter wireless mode when MAC is vallid.
+
+        socket.emit('clearDevList'); // clear devices in devicelist on change of remote node...
+        alert("Changing node could take a while,\ndo not open device before next auto update!");
+        window.close();
     }
     </script>
 

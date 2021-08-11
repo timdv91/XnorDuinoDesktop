@@ -10,7 +10,7 @@
         console.log(data);
         if(data == true)
         {
-            socket.emit('get_value', {name: "frostv2_Readout", cmd: '[5, 12]', cmdType: 'RM'});  // only send data when server has locked autoRefresh
+            socket.emit('get_value', {name: "frostv2_Readout", cmd: '[5, 9]', cmdType: 'RM'});  // only send data when server has locked autoRefresh
 
             if(isDevNameLoaded == false)
                 socket.emit('get_value', {name: "frostReadout_loadDevName", cmd: '[16, 1, 16]', cmdType: 'WM'});  // write command do load the deviceName from eeprom.
@@ -23,10 +23,33 @@
         if(data["name"] == "frostv2_Readout")
         {
             console.log(data);
-            document.getElementById("freezer_relay").innerHTML = "Relay: " + (data["value"][0]); // needs calculations to work...
-            document.getElementById("int_battery").innerHTML = "Battery: " + (data["value"][1]); // needs calculations to work...
-            document.getElementById("int_Temp").innerHTML = "Int-temp: " + (data["value"][3]); // needs calculations to work...
-            document.getElementById("ext_Temp").innerHTML = "Ext-temp: " + (data["value"][2]); // needs calculations to work...
+            document.getElementById("tc_error").innerHTML = "TC-error-code: " + (data["value"][3]);     // needs calculations to work...
+            document.getElementById("freezer_relay").innerHTML = "Relay: " + (data["value"][7]);        // needs calculations to work...
+            document.getElementById("int_battery_volt").innerHTML = "Battery: " + ((3.30/255.0)*(data["value"][8])).toFixed(2) + "V";        // needs calculations to work...
+            document.getElementById("int_battery_perc").innerHTML = "Battery: " + (((((3.30/255.0)*(data["value"][8])).toFixed(2))/ 3) * 100).toFixed(2) + "%";        // needs calculations to work...
+            document.getElementById("int_Temp").innerHTML = "Int-temp: " + (data["value"][2]-40);       // needs calculations to work...
+
+            // temperature alerts:
+            if(document.getElementById("TempSpA").value == "?")
+            {
+                document.getElementById("TempSpA").value = data["value"][4]-200;
+                document.getElementById("TempSpA_S").value = data["value"][4];
+            }
+            if(document.getElementById("TempSpB").value == "?")
+            {
+                document.getElementById("TempSpB").value = data["value"][5]-200;
+                document.getElementById("TempSpB_S").value = data["value"][5];
+            }
+            if(document.getElementById("TempSpC").value == "?")
+            {
+                document.getElementById("TempSpC").value = data["value"][6]-200;
+                document.getElementById("TempSpC_S").value = data["value"][6];
+            }
+
+            //Build tc temperature:
+            var tcTemp = data["value"][0] << 8;
+            tcTemp |= data["value"][1];
+            document.getElementById("ext_Temp").innerHTML = "Ext-temp: " + tcTemp; // needs calculations to work...
         }
 
         if(data["name"] == "frostReadout_loadDevName")
@@ -72,15 +95,41 @@
         socket.emit('get_value', {name: "writeNewDevName", cmd: cmd, cmdType: 'WM'}); // enter wireless mode when MAC is vallid.
         alert("Device name has been changed!");
     }
+
+    function sliderEvent()
+    {
+        document.getElementById("TempSpA").value = document.getElementById("TempSpA_S").value -200;
+        document.getElementById("TempSpB").value = document.getElementById("TempSpB_S").value -200;
+        document.getElementById("TempSpC").value = document.getElementById("TempSpC_S").value -200;
+    }
     </script>
 
     <!-- Put variable read only values here:  -->
     <!-- These values are updated in the "socket.on("value_reply" script:  -->
     <div class="container">
+        <h2 class="badge badge-info devices-larger-badge" id="tc_error"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="freezer_relay"></h2>
-        <h2 class="badge badge-info devices-larger-badge" id="int_battery"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="int_battery_volt"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="int_battery_perc"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="int_Temp"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="ext_Temp"></h2>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=9,3 />
+            <label for="TempSpA">Temperature setpoint A:</label>
+            <input type="text" id="TempSpA" value="?" readonly>
+            <input type="range" min="1" max="254" value="0" class="slider" id="TempSpA_S" name="0" oninput="sliderEvent()">
+            <label for="TempSpB">Temperature setpoint B:</label>
+            <input type="text" id="TempSpB" value="?" readonly>
+            <input type="range" min="1" max="254" value="0" class="slider" id="TempSpB_S" name="1" oninput="sliderEvent()">
+            <label for="TempSpC">Temperature setpoint C:</label>
+            <input type="text" id="TempSpC" value="?" readonly>
+            <input type="range" min="1" max="254" value="0" class="slider" id="TempSpC_S" name="2" oninput="sliderEvent()">
+            <input type="submit" value="Set">
+        </form>
     </div>
 
      <div class="container">

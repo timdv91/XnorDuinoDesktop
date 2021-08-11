@@ -22,6 +22,40 @@ reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
+# humidity sensor:
+# memory mapping:
+# 5 = I2C-ID
+# 6 = loop speed ms (x10)
+# 7 & 8 = compressed floating point temperature sensor TOP --> ((id7-50) + (id8/100))
+# 9 & 10 = compressed floating point relative humidity TOP --> (id9 + (id10/100))
+# 11 & 12 = compressed floating point absolute humidity TOP
+# 13 & 14 = compressed floating point temperature sensor BOT
+# 15 & 16 = compressed floating point relative humidity BOT
+# 17 & 18 = compressed floating point absolute humidity BOT
+
+reqT.get('[50, 6, 1, 75]', "WS")          # set the master for WriteSlave
+r = eval(reqT.get('[50, 5, 10]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+quit()
+
+
+#reqT.get('[127, 5, 1, 13]', "WS")          # set the master for WriteSlave
+#reqT.get('[12, 6, 1, 25]', "WS")          # set the master for WriteSlave
+
+r = eval(reqT.get('[12, 5, 14]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+r = eval(reqT.get('[13, 5, 14]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+quit()
+
 reqT.get('["00", "13", "A2", "00", "41", "92", "F3", "9E"]', "setRFmode") # set wireless master mode
 reqT.get('0', "clrRFmode")                 # read bus_memory from remote device
 
