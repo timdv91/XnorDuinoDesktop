@@ -17,7 +17,7 @@
         console.log(data);
         document.getElementById("ext_vcc").innerHTML = "External voltage: " + (data["value"][0] /10) + "V";
         document.getElementById("usb_vcc").innerHTML = "USB voltage: " + (data["value"][1] *2)/100 + "V";
-        document.getElementById("temperature").innerHTML = "Temperature: " + data["value"][2] + "°C";
+        document.getElementById("temperature").innerHTML = "Temperature: " + (data["value"][2]-50) + "°C";
 
         if(document.getElementById("setTempOffsetText").value == "?")
         {

@@ -33,6 +33,26 @@ reqT = requestTest('http://127.0.0.1:8080')
 # 15 & 16 = compressed floating point relative humidity BOT
 # 17 & 18 = compressed floating point absolute humidity BOT
 
+
+# humidity sensors:
+#========================================================================
+#r = eval(reqT.get('[13, 6, 1 , 25]', "WS"))
+
+r = eval(reqT.get('[12, 5, 14]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+r = eval(reqT.get('[13, 5, 14]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+quit()
+
+
+# PWm fan controller
+# ========================================================================
 reqT.get('[50, 6, 1, 75]', "WS")          # set the master for WriteSlave
 r = eval(reqT.get('[50, 5, 10]', "RS"))
 for i in range(len(r)):
@@ -42,6 +62,8 @@ print()
 quit()
 
 
+
+# ===========================================================================
 #reqT.get('[127, 5, 1, 13]', "WS")          # set the master for WriteSlave
 #reqT.get('[12, 6, 1, 25]', "WS")          # set the master for WriteSlave
 
