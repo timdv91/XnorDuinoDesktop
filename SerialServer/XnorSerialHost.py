@@ -1,5 +1,7 @@
 import serial, time
 
+DEV_MODE = False
+
 class XnorSerialHost():
     def __init__(self, pPort, pBautrate=38400):
         self._connectionInit(pPort, pBautrate)
@@ -38,6 +40,8 @@ class XnorSerialHost():
             retVal = self.setRFmode(pData)
         elif (pFunction == "/clrRFmode"):
             retVal = self.clrRFmode(pData)
+        elif (pFunction == "/reset"):
+            retVal = self.resetMode(pData)
         return retVal
 
 
@@ -65,8 +69,9 @@ class XnorSerialHost():
 
 
         # Send the command data after hardware ACK response:
-        print("Sending data: ", end=": ")
-        print(pData)
+        if(DEV_MODE):
+            print("Sending data: ", end=": ")
+            print(pData)
         sendBytes = bytes(pData)
         self.ser.write(sendBytes)
 
@@ -76,8 +81,9 @@ class XnorSerialHost():
             rcv = (self.ser.read(2))
         else: # read received data from data request:
             rcv = (self.ser.read(pData[1] + 1))
-        print("received data: " , end=": ")
-        print(rcv)
+        if(DEV_MODE):
+            print("received data: " , end=": ")
+            print(rcv)
 
         # check for EOT byte:
         if(rcv[-1:] != b'\x04'):
@@ -86,7 +92,8 @@ class XnorSerialHost():
             return b'\x00\x04'                  # If EOT never received, abort send ascii null and EOT (EOT error)
 
         # Return received data if everything went successfully:
-        print("Request processed successfully!")
+        if(DEV_MODE):
+            print("Request processed successfully!")
         self.isComLocked = False
         return rcv[:-1]                         # chopchop the EOT char
 
@@ -103,7 +110,8 @@ class XnorSerialHost():
             pData.insert(1, dataSize)
             pData.insert(2, 11)
 
-        print(pData)
+        if(DEV_MODE):
+            print(pData)
         retval = self.rawCommunication(pData)
 
         if (self.RFmode == True):
@@ -117,7 +125,8 @@ class XnorSerialHost():
             self.rawCommunication(pData)
 
         # second read masters data register for data received from slave:
-        print(pData[-1])
+        if(DEV_MODE):
+            print(pData[-1])
         retval = self.rawCommunication([20, int(pData[-1])])
         return retval
 
@@ -144,7 +153,8 @@ class XnorSerialHost():
             pData.insert(1, dataSize)
             pData.insert(2, 11)
 
-        print(pData)
+        if(DEV_MODE):
+            print(pData)
         retval = self.rawCommunication(pData)
         return retval
 
@@ -158,7 +168,8 @@ class XnorSerialHost():
             pData.insert(1, dataSize)
             pData.insert(2, 11)
 
-        print(pData)
+        if(DEV_MODE):
+            print(pData)
         return self.rawCommunication(pData)
 
     def setRFmode(self, pData):
@@ -171,7 +182,8 @@ class XnorSerialHost():
         pData.insert(0, 16)  # start writing master register at index 16
         pData.insert(1, dataSize)  # inform master we're gonna write n bytes
         pData.insert(2, 9)
-        print(pData)
+        if(DEV_MODE):
+            print(pData)
         retval = self.rawCommunication(pData)
         self.RFmode = True
         return retval
@@ -185,6 +197,14 @@ class XnorSerialHost():
         self.RFmode = False
         return retval
 
+    def resetMode(self, pData):
+        for i in range(0,100,1):
+            print("\n")
+        print("Manual or automated connection reset requested...")
+        time.sleep(2)
+        for i in range(0,100,1):
+            print("\n")
+        quit(2)
 
 '''
 xsh = XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=19200)

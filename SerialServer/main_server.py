@@ -6,12 +6,15 @@ Usage::
 """
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
-from SerialServer import XnorSerialHost
 
+# local libs:
+import XnorSerialHost
 XSH = XnorSerialHost.XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=38400)
 #XSH = XnorSerialHost.XnorSerialHost(pPort='COM19', pBautrate=38400)
 #XSH = XnorSerialHost.XnorSerialHost(pPort='COM20', pBautrate=38400)
 #XSH = XnorSerialHost.XnorSerialHost(pPort='COM23', pBautrate=38400)
+
+DEV_MODE = False
 
 class Srv(BaseHTTPRequestHandler):
     def _set_response(self):
@@ -22,7 +25,8 @@ class Srv(BaseHTTPRequestHandler):
     def do_GET(self):
         content_length = int(self.headers['Content-Length'])  # <--- Gets the size of data
         get_data = self.rfile.read(content_length)  # <--- Gets the data itself
-        logging.info("GET request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n", str(self.path), str(self.headers), get_data.decode('utf-8'))
+        if(DEV_MODE):
+            logging.info("GET request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n", str(self.path), str(self.headers), get_data.decode('utf-8'))
 
         rcv = XSH._communication(str(self.path), eval(get_data.decode('ascii')))
 
@@ -32,7 +36,8 @@ class Srv(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
         post_data = self.rfile.read(content_length) # <--- Gets the data itself
-        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n", str(self.path), str(self.headers), post_data.decode('utf-8'))
+        if(DEV_MODE):
+            logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n", str(self.path), str(self.headers), post_data.decode('utf-8'))
 
         rcv = XSH._communication(str(self.path), eval(post_data.decode('ascii')))
 

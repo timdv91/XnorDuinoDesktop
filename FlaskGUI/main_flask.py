@@ -1,7 +1,15 @@
+from SRC.xnorbusWebrequestor import xnorbusWebrequestor
+from SRC.GUI.xnorbusRequestorHelper import xnorbusRequestorHelper
+from SRC.DAQ.xnorbusDAQ import xnorbusDAQ
+from SRC.TMP.temporaryFileManager import temporaryFileManager
+from SRC.GUI.IP import IP
+'''
 from FlaskGUI.SRC.xnorbusWebrequestor import xnorbusWebrequestor
 from FlaskGUI.SRC.GUI.xnorbusRequestorHelper import xnorbusRequestorHelper
 from FlaskGUI.SRC.DAQ.xnorbusDAQ import xnorbusDAQ
 from FlaskGUI.SRC.TMP.temporaryFileManager import temporaryFileManager
+'''
+
 from flask import Flask, render_template
 from flask import request
 import atexit, threading
@@ -18,7 +26,8 @@ XRH = xnorbusRequestorHelper(XRQ, "DEVconfig.json")
 XDAQ = xnorbusDAQ(XRQ, "DAQconfig.json")
 TFM = temporaryFileManager("tmpDeviceList.json")
 
-HOST_IP = '127.0.0.1'
+HOST_IP = IP().get_ip()
+#HOST_IP = '127.0.0.1'
 #HOST_IP = '192.168.1.65'
 HOST_PORT = 5000
 
@@ -52,7 +61,7 @@ def create_app():
         global autoRefreshDevList_isLocked
         emit('isLocked', autoRefreshDevList_isLocked)
 
-    # individual devices pages emit 'connect' when they are opend to set autorefresh state to paused.
+    # individual devices pages emit 'connect' when they are opened to set autorefresh state to paused.
     @socketio.on('connect')
     def subGUI_connected():
         global autoRefreshDevList_LockEpoch
@@ -323,11 +332,12 @@ class create_thread():
         global autoRefreshDevList_isLocked
         if autoRefreshDevList_LockEpoch < int(time.time()):  # prevent loading deviceList when device is opened
             autoRefreshDevList_isLocked = False
+
             print("Hardware communication: Started")
             commonDataStruct['MASTER'] = XRH.getMasterInformation()
-
-            print(commonDataStruct)
+            #print(commonDataStruct)
             devIdList = []
+
             try:
                 if(commonDataStruct['MASTER']['DEV_TYPE'] == 'Master'): # only scan for local slaves on a 'Master' module.
                     devIdList = XRH.initDeviceIDScan()
@@ -348,8 +358,9 @@ class create_thread():
     # do data acquisition on separated thread:
     def runDAQ(self):
         print("No configuration page opened, running DAQ execution...")
-        configData = XDAQ.readConfigFromFile()
-        print(configData['DATABASE'])
+        print("Under construction...")
+        #configData = XDAQ.readConfigFromFile()
+        #print(configData['DATABASE'])
 
 
 

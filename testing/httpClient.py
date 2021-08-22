@@ -34,6 +34,8 @@ reqT = requestTest('http://127.0.0.1:8080')
 # 17 & 18 = compressed floating point absolute humidity BOT
 
 
+reqT.get('0', "reset")          # set the master for WriteSlave
+quit()
 # humidity sensors:
 #========================================================================
 #r = eval(reqT.get('[13, 6, 1 , 25]', "WS"))

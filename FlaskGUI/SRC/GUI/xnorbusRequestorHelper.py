@@ -52,9 +52,14 @@ class xnorbusRequestorHelper():
                                     + '&' + "HW_ID=" + retVal["HW_ID"] \
                                     + '&' + "FW_ID=" + retVal["FW_ID"]
         except IndexError:
-            print("IndexError getMaster")
+            print("IndexError getMaster, resetting hardware")
+            self.XRQ.get('[0,0]', "reset")
         except TypeError:
-            print("TypeError getMaster")
+            print("TypeError getMaster, resetting hardware")
+            self.XRQ.get('[0,0]', "reset")
+        except Exception as e:
+            print(str(e) + ",  returning 'None' value")
+            self.XRQ.get('[0,0]', "reset")
 
         return retVal
 
@@ -77,7 +82,11 @@ class xnorbusRequestorHelper():
                     for i in range(len(rcv)):
                         print(rcv[i], end='\t')
                     print("")
-        except TypeError:
+        except TypeError as e:
+            print(str(e) + ",  returning 'None' value")
+            None
+        except Exception as e:
+            print(str(e) + ",  returning 'None' value")
             None
 
         return retVal
@@ -107,7 +116,11 @@ class xnorbusRequestorHelper():
                 deviceDict["I2C_ID"] = str(devId)
                 deviceDict["HW_ID"] = str(devInfoArr[:-1]).replace(' ', '')
                 deviceDict["FW_ID"] = "v" + str(devInfoArr[-1]).replace(' ', '')
-            except IndexError:
+            except IndexError as e:
+                print(str(e) + ",  returning 'None' value")
+                return None
+            except Exception as e:
+                print(str(e) + ",  returning 'None' value")
                 return None
 
             try:
@@ -133,6 +146,9 @@ class xnorbusRequestorHelper():
                                     + '&' + "DEV_TYPE=" + deviceDict["DEV_TYPE"] \
                                     + '&' + "HW_ID=" + deviceDict["HW_ID"] \
                                     + '&' + "FW_ID=" + deviceDict["FW_ID"]
+
+            except Exception as e:
+                print(str(e) + ",  Unexpected error occurred.")
 
             # print to debug console:
             if(pDebug):
@@ -174,8 +190,11 @@ class xnorbusRequestorHelper():
                         devicesDictLocal[i]["NESTED"] = nestedDevIdList
                     else:
                         devicesDictLocal[i]["NESTED"] = "None"
-                except IndexError:
-                    print("IndexError, returning 'None' value")
+                except IndexError as e:
+                    print(str(e) + ",  returning 'None' value")
+                    devicesDictLocal[i]["NESTED"] = "None"
+                except Exception as e:
+                    print(str(e) + ",  returning 'None' value")
                     devicesDictLocal[i]["NESTED"] = "None"
 
         if(pDebug):

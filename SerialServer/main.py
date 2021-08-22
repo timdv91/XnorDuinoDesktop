@@ -1,5 +1,10 @@
-from SerialServer import main_server
 from sys import argv
+import os
+from pathlib import Path
+
+# local libs:
+import main_server
+
 
 class main():
     def __init__(self):
