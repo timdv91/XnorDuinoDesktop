@@ -48,7 +48,7 @@ class XnorSerialHost():
     def rawCommunication(self, pData, pDebug=False):
         time.sleep(.02)
         if ((len(pData) != pData[1] + 2)) and (len(pData) > 2):  # do not check for length on read action
-            print("Write action data length error!")              # Avoid writing invalid data to hardware
+            print("Write action data length error!")             # Avoid writing invalid data to hardware
             return b'\x00\x00'                                   # send ascii null null
 
         #Lock this function when active:

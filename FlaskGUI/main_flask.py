@@ -125,7 +125,7 @@ def create_app():
         currentlyOpenedMainPage = 'dataAcquisition'
 
         if request.method == 'GET':
-            DAQConfig = eval(request.args.getlist('posts')[0]) # F html, css and JS! random nonsnes like this is why I prefer real programming lanuagues as C or C++!
+            DAQConfig = eval(request.args.getlist('posts')[0])  # Why inside an array? Check this later on?
 
             if(request.args['cmd'] == "config"):
                 DAQConfig['DATABASE']['URL'] = request.args['ServerIP']
@@ -241,7 +241,7 @@ def create_app():
         posts = None
         isValid = True
         if request.method == 'GET':
-            posts = eval(request.args.getlist('posts')[0]) # F html, css and JS! random nonsnes like this is why I prefer real programming lanuagues as C or C++!
+            posts = eval(request.args.getlist('posts')[0])  # Why inside an array? Check this later on?
 
             DEV_TYPE = posts['DEV_TYPE']
             DEV_PAGE = posts['DEV_PAGE']
@@ -266,7 +266,7 @@ def create_app():
             else:
                 cmd = "[" + str(send_startId) + ", " + str(send_n) + "" + str(sendValue) + "]"
                 writeMethod = 'WM'
-            print(cmd)                                                                # last comma is automatically put in place!
+            print(cmd)                                     # last comma is automatically put in place!
 
             if isValid:
                 print("Valid input!",  writeMethod)
