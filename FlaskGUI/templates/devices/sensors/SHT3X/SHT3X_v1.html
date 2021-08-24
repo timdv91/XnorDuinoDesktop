@@ -1,0 +1,71 @@
+{% extends '/devices/__devicesBase__.html' %}
+
+{% block content %}
+
+    <script>
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true)
+        {
+            socket.emit('get_value', {name: "sht3X", cmd: '[{{ posts['I2C_ID'] }}, 6, 13]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+        }
+    });
+
+
+    socket.on("value_reply", data => {
+        console.log(data);
+        document.getElementById("sht3x_temp_TOP").innerHTML = "Temp:" + ((data["value"][1] + (data["value"][2]/100)) - 50).toFixed(2) + "°C";
+        document.getElementById("sht3x_relH_TOP").innerHTML = "Rel H: " + (data["value"][3] + (data["value"][4]/100)).toFixed(2) + "%";
+        document.getElementById("sht3x_absH_TOP").innerHTML = "Abs H: " + (data["value"][5] + (data["value"][6]/100)).toFixed(2) + "%";
+
+        document.getElementById("sht3x_temp_BOT").innerHTML = "Temp:" + ((data["value"][7] + (data["value"][8]/100)) - 50).toFixed(2) + "°C";
+        document.getElementById("sht3x_relH_BOT").innerHTML = "Rel H: " + (data["value"][9] + (data["value"][10]/100)).toFixed(2) + "%";
+        document.getElementById("sht3x_absH_BOT").innerHTML = "Abs H: " + (data["value"][11] + (data["value"][12]/100)).toFixed(2) + "%";
+
+        if(document.getElementById("setLoopIntervalText").value == "?")
+        {
+            document.getElementById("setLoopIntervalText").value = data["value"][0];
+        }
+    });
+    </script>
+
+    <!-- Put variable read only values here:  -->
+    <!-- These values are updated in the "socket.on("value_reply" script:  -->
+    <div class="container">
+        <h4> Sensor 1 (top): </h4>
+        <h2 class="badge badge-info devices-larger-badge" id="sht3x_temp_TOP"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="sht3x_relH_TOP"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="sht3x_absH_TOP"></h2>
+    </div>
+
+    <div class="container">
+        <h4> Sensor 2 (Optional): </h4>
+        <h2 class="badge badge-info devices-larger-badge" id="sht3x_temp_BOT"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="sht3x_relH_BOT"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="sht3x_absH_BOT"></h2>
+    </div>
+
+    <!-- Put variable read & write values here:  -->
+    <!-- These values use a get request to send to server:  -->
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=5,1 />
+            <label for="setI2C">Dev ID:</label><br>
+            <input type="text" id="setI2C" name="0" value="{{ posts['I2C_ID'] }}">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=6,1 />
+            <label for="setLoopIntervalText">Loop interval:</label><br>
+            <input type="text" id="setLoopIntervalText" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+{% endblock %}

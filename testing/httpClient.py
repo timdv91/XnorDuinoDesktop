@@ -33,6 +33,17 @@ reqT = requestTest('http://127.0.0.1:8080')
 # 15 & 16 = compressed floating point relative humidity BOT
 # 17 & 18 = compressed floating point absolute humidity BOT
 
+r = eval(reqT.get('[12, 5, 14]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+r = eval(reqT.get('[13, 5, 14]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+quit()
+
 
 reqT.get('0', "reset")          # set the master for WriteSlave
 quit()
