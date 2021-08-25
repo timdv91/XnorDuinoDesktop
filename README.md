@@ -1,5 +1,6 @@
 # XnorDuinoDesktop
 XnorDuinoDesktop is an hardware automation GUI, build for XnorBus based I2C communication devices.
+
 ---
 
 ## Goals
