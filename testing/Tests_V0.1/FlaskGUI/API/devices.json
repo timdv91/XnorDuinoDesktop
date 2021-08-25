@@ -1,0 +1,25 @@
+{
+  "devices": {
+      "[96,150,155,76,1]": {
+          "DEV_TYPE": "PSU",
+          "DEV_PAGE": "devices/psu/psu_v1.html",
+          "DEV_NESTING": 12
+        },
+      "[96,115,0,56,1]": {
+        "DEV_TYPE": "Termination",
+        "DEV_PAGE": "devices/termination/termination_v1.html",
+        "DEV_NESTING": -1
+      }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+

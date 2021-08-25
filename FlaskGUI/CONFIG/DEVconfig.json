@@ -1,0 +1,78 @@
+{
+  "MASTER": {
+    "[96,114,235,7,1]": {
+      "DEV_TYPE": "Master",
+      "DEV_PAGE": "devices/master/master_v1/master_v1.html",
+      "MEM_MAP": "devices/master/master_v1/master_v1.json",
+      "WINDOW_SIZE": [420,750]
+    },
+    "[96,252,111,206,1]": {
+      "DEV_TYPE": "Frost v2",
+      "DEV_PAGE": "devices/master/frost_v2/frost_v2.html",
+      "MEM_MAP": "devices/master/frost_v2/frost_v2.json",
+      "WINDOW_SIZE": [420,750]
+    }
+  },
+  "SLAVES": {
+    "[96,150,155,76,1]": {
+      "DEV_TYPE": "PSU",
+      "DEV_PAGE": "devices/psu/psu_v1.html",
+      "MEM_MAP": "devices/psu/psu_v1.json",
+      "WINDOW_SIZE": [350,600],
+      "DEV_NESTING": 12
+    },
+    "[96,115,0,56,1]": {
+      "DEV_TYPE": "Termination",
+      "DEV_PAGE": "devices/termination/termination_v1.html",
+      "MEM_MAP": "devices/termination/termination_v1.json",
+      "WINDOW_SIZE": [350,600],
+      "DEV_NESTING": -1
+    },
+    "[96,173,28,232,1]": {
+      "DEV_TYPE": "INA219",
+      "DEV_PAGE": "devices/sensors/INA219/INA219_v1.html",
+      "MEM_MAP": "devices/sensors/INA219/INA219_v1.json",
+      "WINDOW_SIZE": [350,600],
+      "DEV_NESTING": -1
+    },
+    "[96,191,146,12,1]": {
+      "DEV_TYPE": "CV50",
+      "DEV_PAGE": "devices/sensors/CV50/CV50_v1.html",
+      "MEM_MAP": "devices/sensors/CV50/CV50_v1.json",
+      "WINDOW_SIZE": [500,825],
+      "DEV_NESTING": -1
+    },
+    "[96,205,214,189,1]": {
+      "DEV_TYPE": "Spotlight",
+      "DEV_PAGE": "devices/ledlights/spotlight_v1/spotlight_v1.html",
+      "MEM_MAP": "devices/ledlights/spotlight_v1/spotlight_v1.json",
+      "WINDOW_SIZE": [350,900],
+      "DEV_NESTING": -1
+    },
+    "[97,19,246,148,1]": {
+      "DEV_TYPE": "Fan Controller (pwm)",
+      "DEV_PAGE": "devices/fanController/fanController_v1.html",
+      "MEM_MAP": "devices/fanController/fanController_v1.json",
+      "WINDOW_SIZE": [350,900],
+      "DEV_NESTING": -1
+    },
+    "[97,9,89,94,1]": {
+      "DEV_TYPE": "SHT3X",
+      "DEV_PAGE": "devices/sensors/SHT3X/SHT3X_v1.html",
+      "MEM_MAP": "devices/sensors/SHT3X/SHT3X_v1.json",
+      "WINDOW_SIZE": [350,900],
+      "DEV_NESTING": -1
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

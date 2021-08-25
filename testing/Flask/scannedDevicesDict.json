@@ -1,0 +1,44 @@
+[
+  {
+    "I2C_ID": "100",
+    "HW_ID": "[96,150,155,76]",
+    "FW_ID": " v1",
+    "DEV_TYPE": "PSU",
+    "DEV_PAGE": "devices/psu/psu_v1.html",
+    "DEV_NESTING": 12,
+    "URL": "DEV_PAGE=devices/psu/psu_v1.html&I2C_ID=100"
+  },
+  {
+    "I2C_ID": "101", "HW_ID": "[96,150,155,76]",
+    "FW_ID": " v1",
+    "DEV_TYPE": "PSU",
+    "DEV_PAGE": "devices/psu/psu_v1.html",
+    "DEV_NESTING": 12,
+    "URL": "DEV_PAGE=devices/psu/psu_v1.html&I2C_ID=101"
+  },
+  {
+    "I2C_ID": "124",
+    "HW_ID": "[0,245,50,24]",
+    "FW_ID": " v16",
+    "DEV_TYPE": "UNKNOWN_DEVICE",
+    "DEV_PAGE": "UNKNOWN_DEVICE",
+    "DEV_NESTING": -1,
+    "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=124"
+  },
+  {
+    "I2C_ID": "125",
+    "HW_ID": "[0,245,50,251]",
+    "FW_ID": " v47",
+    "DEV_TYPE": "UNKNOWN_DEVICE",
+    "DEV_PAGE": "UNKNOWN_DEVICE",
+    "DEV_NESTING": -1,
+    "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=125"
+  },
+  {
+    "I2C_ID": "126",
+    "HW_ID": "[96,115,0,56]",
+    "FW_ID": " v1",
+    "DEV_TYPE": "Termination",
+    "DEV_PAGE": "devices/termination/termination_v1.html",
+    "DEV_NESTING": -1,
+    "URL": "DEV_PAGE=devices/termination/termination_v1.html&I2C_ID=126"}]
