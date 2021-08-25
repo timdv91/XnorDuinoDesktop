@@ -26,8 +26,8 @@ XnorDuinoDesktop includes:
 ## Documentation:
 - Documentation will be up within some days. 
 
+## Note(s): 
+- This is a work in progress and not completely finished!
+
 ## License:
-
-All code is licensed under the MPLv2 License.
-
-Note: This is a work in progress and not completely finished!
+- All code is licensed under the MPLv2 License.
