@@ -23,7 +23,7 @@ XnorDuinoDesktop includes:
    Wireless Zigbee communication is implemented using Digi XBee modules.
    Large portions of wireless communication is handled within the XnorBee libraries. 
 
-##Documentation:
+## Documentation:
 - Documentation will be up within some days. 
 
 ## License:
