@@ -53,7 +53,7 @@
       "DEV_TYPE": "Fan Controller (pwm)",
       "DEV_PAGE": "devices/fanController/fanController_v1.html",
       "MEM_MAP": "devices/fanController/fanController_v1.json",
-      "WINDOW_SIZE": [350,900],
+      "WINDOW_SIZE": [375,900],
       "DEV_NESTING": -1
     },
     "[97,9,89,94,1]": {

@@ -8,7 +8,7 @@
         console.log(data);
         if(data == true)
         {
-            socket.emit('get_value', {name: "PWMandTacho", cmd: '[{{ posts['I2C_ID'] }}, 6, 10]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+            socket.emit('get_value', {name: "PWMandTacho", cmd: '[{{ posts['I2C_ID'] }}, 6, 11]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
         }
     });
 
@@ -16,12 +16,10 @@
     socket.on("value_reply", data => {
         console.log(data);
 
-        document.getElementById("tacho_A").innerHTML = "A (rpm): " + (((data["value"][3] & 0xff) << 8) | (data["value"][4] & 0xff));
-        document.getElementById("tacho_B").innerHTML = "B (rpm): " + (((data["value"][5] & 0xff) << 8) | (data["value"][6] & 0xff));
-        document.getElementById("tacho_C").innerHTML = "C (rpm): " + (((data["value"][7] & 0xff) << 8) | (data["value"][8] & 0xff));
-
-        //document.getElementById("tacho_B").innerHTML = "B (rpm): " + (((data["value"][3] & 0xff) << 8) | (data["value"][4] & 0xff)));
-        //document.getElementById("tacho_C").innerHTML = "C (rpm): " + data["value"][8] + "°C";
+        document.getElementById("tacho_A").innerHTML = "A (rpm): " + (((data["value"][4] & 0xff) << 8) | (data["value"][5] & 0xff));
+        document.getElementById("tacho_B").innerHTML = "B (rpm): " + (((data["value"][6] & 0xff) << 8) | (data["value"][7] & 0xff));
+        document.getElementById("tacho_C").innerHTML = "C (rpm): " + (((data["value"][8] & 0xff) << 8) | (data["value"][9] & 0xff));
+        document.getElementById("tacho_D").innerHTML = "D (rpm): " + (((data["value"][10] & 0xff) << 8) | (data["value"][11] & 0xff));
 
         if(document.getElementById("setPwm_A").value == "?")
         {
@@ -37,6 +35,11 @@
         {
             document.getElementById("setPwm_C").value = data["value"][2];
         }
+
+        if(document.getElementById("setPwm_D").value == "?")
+        {
+            document.getElementById("setPwm_D").value = data["value"][3];
+        }
     });
     </script>
 
@@ -46,6 +49,7 @@
         <h2 class="badge badge-info devices-larger-badge" id="tacho_A"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="tacho_B"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="tacho_C"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="tacho_D"></h2>
     </div>
 
 
@@ -87,6 +91,16 @@
             <input type='hidden' name='cmd' value=8,1 />
             <label for="setPwm_C">PWM setpoint C (0-255):</label><br>
             <input type="text" id="setPwm_C" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+   <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=9,1 />
+            <label for="setPwm_D">PWM setpoint D (0-255):</label><br>
+            <input type="text" id="setPwm_D" name="0" value="?">
             <input type="submit" value="Set">
         </form>
     </div>
