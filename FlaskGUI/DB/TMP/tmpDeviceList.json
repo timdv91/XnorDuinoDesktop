@@ -4,8 +4,8 @@
         "HW_ID": "[96, 114, 235, 7]",
         "FW_ID": "v1",
         "ALERT": "0",
-        "PM_IC": "[161, 7, 4, 40]",
-        "TRM_MOD": "[187, 159, 215, 21]",
+        "PM_IC": "[228, 2, 2, 40]",
+        "TRM_MOD": "[87, 225, 217, 19]",
         "DEV_TYPE": "Master",
         "DEV_PAGE": "devices/master/master_v1/master_v1.html",
         "MEM_MAP": "devices/master/master_v1/master_v1.json",
@@ -17,22 +17,22 @@
     },
     "SLAVES": [
         {
-            "I2C_ID": "7",
-            "HW_ID": "[97,19,246,148]",
+            "I2C_ID": "99",
+            "HW_ID": "[97,86,178,37]",
             "FW_ID": "v1",
-            "DEV_TYPE": "Fan Controller (pwm)",
-            "DEV_PAGE": "devices/fanController/fanController_v1.html",
-            "MEM_MAP": "devices/fanController/fanController_v1.json",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
             "WINDOW_SIZE": [
-                375,
-                900
+                350,
+                300
             ],
             "DEV_NESTING": -1,
-            "URL": "DEV_PAGE=devices/fanController/fanController_v1.html&I2C_ID=7&DEV_TYPE=Fan Controller (pwm)&HW_ID=[97,19,246,148]&FW_ID=v1",
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=99&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[97,86,178,37]&FW_ID=v1",
             "NESTED": "N/A"
         },
         {
-            "I2C_ID": "101",
+            "I2C_ID": "120",
             "HW_ID": "[96,150,155,76]",
             "FW_ID": "v1",
             "DEV_TYPE": "PSU",
@@ -43,10 +43,8 @@
                 600
             ],
             "DEV_NESTING": 12,
-            "URL": "DEV_PAGE=devices/psu/psu_v1.html&I2C_ID=101&DEV_TYPE=PSU&HW_ID=[96,150,155,76]&FW_ID=v1",
-            "NESTED": [
-                7
-            ]
+            "URL": "DEV_PAGE=devices/psu/psu_v1.html&I2C_ID=120&DEV_TYPE=PSU&HW_ID=[96,150,155,76]&FW_ID=v1",
+            "NESTED": "None"
         },
         {
             "I2C_ID": "126",

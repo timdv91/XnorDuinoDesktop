@@ -17,10 +17,165 @@ class requestTest():
         return r.text
 
 
+# compressor pressure sensors with relay controls:
+
 reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://0.0.0.0:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
+
+reqT.get('[99, 6, 1, 5]', "WS")                                         # set the master for WriteSlave
+reqT.get('[99, 7, 10, 2, 52, 1, 75, 1, 7, 1, 2, 0, 0]', "WS")         # set the master for WriteSlave
+
+
+r = eval(reqT.get('[99, 6, 11]', "RS"))
+print("ID: ", end="")
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+
+r = eval(reqT.get('[99, 17, 8]', "RS"))
+print("ID: ", end="")
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+quit();
+
+
+
+
+# COMATE board:
+# =============================================
+
+r = eval(reqT.get('[8, 0, 4]', "RS"))
+print("ID: ", end="")
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+r = eval(reqT.get('[8, 4, 1]', "RS"))
+print("FW ID: ", end="")
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+r = eval(reqT.get('[8, 5, 1]', "RS")) # I2C ID parameter is not set and not used
+print("I2C ID: ", end="")
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+print("========================================")
+r = eval(reqT.get('[8, 6, 8]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+# solarvoltage voltage
+value = r[0] << 8 | r[1]
+print("solar voltage: " + str(value/1000) + "V")
+
+# solar current
+value = r[2] << 8 | r[3]
+print("solar current: " + str(value/1000) + "A")
+
+# watt / hour
+value = r[4] << 8 | r[5]
+print("watt hour: " + str(value) + "Wh")
+
+# batt voltage
+voltage = r[6] << 8 | r[7]
+print("batt votlage: " + str(voltage/1000) + "V")
+
+
+print("========================================")
+r = eval(reqT.get('[8, 14, 8]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+# cell voltage 1
+voltage = r[0] << 8 | r[1]
+print("Cell voltage 0: " + str(voltage/1000) + "V")
+
+# cell voltage 2
+voltage = r[2] << 8 | r[3]
+print("Cell voltage 1: " + str(voltage/1000) + "V")
+
+# cell voltage 3
+voltage = r[4] << 8 | r[5]
+print("Cell voltage 2: " + str(voltage/1000) + "V")
+
+# cell voltage 4
+voltage = r[6] << 8 | r[7]
+print("Cell voltage 3: " + str(voltage/1000) + "V")
+
+
+print("========================================")
+r = eval(reqT.get('[8, 22, 8]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+# humidity outside:
+value = r[0] << 8 | r[1]
+print("Humidity outside: \t\t" + str(value/100) + " %")
+
+# temperature outside:
+value = r[2] << 8 | r[3]
+print("Temperature outside: \t" + str(value/100) + "°C")
+
+# humidity tube:
+value = r[4] << 8 | r[5]
+print("Humidity tube: \t\t\t" + str(value/100) + " %")
+
+# temperature tube:
+value = r[6] << 8 | r[7]
+print("Temperature tube: \t\t" + str(value/100) + "°C")
+
+
+print("========================================")
+r = eval(reqT.get('[8, 30, 10]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+value = r[0] << 8 | r[1]
+print("daylength: \t\t" + str(value/0.016667) + " minutes")
+
+value = r[2] << 8 | r[3]
+print("nightlength: \t" + str(value/0.016667) + " minutes")
+
+value = r[4] << 8 | r[5]
+print("fanOnTimeTotal: " + str(value/0.016667) + " minutes")
+
+value = r[6] << 8 | r[7]
+print("fanOnTimeLast: \t" + str(value/0.016667) + " minutes")
+
+value = r[8] << 8 | r[9]
+print("fanOffTimeLast: " + str(value/0.016667) + " minutes")
+
+
+print("========================================")
+r = eval(reqT.get('[8, 40, 5]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+print("FanOn: " + str(r[0]))
+print("day: " + str(r[1]))
+print("chargingOn: " + str(r[2]))
+print("pulsedregime: " + str(r[3]))
+print("balancingOn: " + str(r[4]))
+
+
+quit()
+
+
+
+
 
 # humidity sensor:
 # memory mapping:
