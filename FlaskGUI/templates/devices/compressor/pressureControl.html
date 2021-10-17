@@ -1,0 +1,70 @@
+{% extends '/devices/__devicesBase__.html' %}
+
+{% block content %}
+
+    <script>
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true)
+        {
+            socket.emit('get_value', {name: "configReadout", cmd: '[{{ posts['I2C_ID'] }}, 6, 12]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+            socket.emit('get_value', {name: "sensorReadout", cmd: '[{{ posts['I2C_ID'] }}, 17, 8]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+        }
+    });
+
+    socket.on("value_reply", data => {
+        console.log(data);
+        if(data["name"] == "sensorReadout")
+        {
+            document.getElementById("pressure_A").innerHTML = "Pressure A: " + (((parseFloat((data["value"][0] + (data["value"][1] / 100)))-0.99)*100) * (1/15.75)).toFixed(1) + "bar";
+            document.getElementById("pressure_B").innerHTML = "Pressure B: " + (((parseFloat((data["value"][2] + (data["value"][3] / 100)))-0.97)*100) * (1/1)).toFixed(0) + "bar";
+            document.getElementById("pressure_C").innerHTML = "ADC C: " + (data["value"][4] + (data["value"][5] / 100) + "V");
+            document.getElementById("pressure_D").innerHTML = "ADC D: " + (data["value"][6] + (data["value"][7] / 100) + "V");
+        }
+
+        if(data["name"] == "configReadout")
+        {
+            if(document.getElementById("setLoopIntervalText").value == "?")
+            {
+                document.getElementById("setLoopIntervalText").value = data["value"][0];
+            }
+        }
+    });
+    </script>
+
+    <!-- Put variable read only values here:  -->
+    <!-- These values are updated in the "socket.on("value_reply" script:  -->
+    <div class="container">
+        <h2 class="badge badge-info devices-larger-badge" id="pressure_A"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="pressure_B"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="pressure_C"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="pressure_D"></h2>
+    </div>
+
+
+    <!-- Put variable read & write values here:  -->
+    <!-- These values use a get request to send to server:  -->
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=5,1 />
+            <label for="setI2C">Dev ID:</label><br>
+            <input type="text" id="setI2C" name="0" value="{{ posts['I2C_ID'] }}">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=6,1 />
+            <label for="setLoopIntervalText">Loop interval (x10 ms):</label><br>
+            <input type="text" id="setLoopIntervalText" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+
+
+{% endblock %}

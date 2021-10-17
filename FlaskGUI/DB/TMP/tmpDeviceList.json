@@ -5,7 +5,7 @@
         "FW_ID": "v1",
         "ALERT": "0",
         "PM_IC": "[228, 2, 2, 40]",
-        "TRM_MOD": "[87, 225, 217, 19]",
+        "TRM_MOD": "[162, 225, 217, 19]",
         "DEV_TYPE": "Master",
         "DEV_PAGE": "devices/master/master_v1/master_v1.html",
         "MEM_MAP": "devices/master/master_v1/master_v1.json",
@@ -20,15 +20,15 @@
             "I2C_ID": "99",
             "HW_ID": "[97,86,178,37]",
             "FW_ID": "v1",
-            "DEV_TYPE": "UNKNOWN_DEVICE",
-            "DEV_PAGE": "UNKNOWN_DEVICE",
-            "MEM_MAP": "UNKNOWN_DEVICE",
+            "DEV_TYPE": "CompressorControl",
+            "DEV_PAGE": "devices/compressor/pressureControl.html",
+            "MEM_MAP": "devices/compressor/pressureControl.json",
             "WINDOW_SIZE": [
                 350,
-                300
+                900
             ],
             "DEV_NESTING": -1,
-            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=99&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[97,86,178,37]&FW_ID=v1",
+            "URL": "DEV_PAGE=devices/compressor/pressureControl.html&I2C_ID=99&DEV_TYPE=CompressorControl&HW_ID=[97,86,178,37]&FW_ID=v1",
             "NESTED": "N/A"
         },
         {

@@ -24,8 +24,8 @@ reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
-reqT.get('[99, 6, 1, 5]', "WS")                                         # set the master for WriteSlave
-reqT.get('[99, 7, 10, 2, 52, 1, 75, 1, 7, 1, 2, 0, 0]', "WS")         # set the master for WriteSlave
+reqT.get('[99, 6, 1, 5]', "WS")                                   # set the master for WriteSlave
+reqT.get('[99, 7, 10, 2, 52, 1, 75, 1, 7, 1, 2, 0, 0]', "WS")     # set the master for WriteSlave
 
 
 r = eval(reqT.get('[99, 6, 11]', "RS"))
@@ -36,7 +36,7 @@ print()
 
 
 r = eval(reqT.get('[99, 17, 8]', "RS"))
-print("ID: ", end="")
+print("V: ", end="")
 for i in range(len(r)):
     print(r[i], end=" ")
 print()

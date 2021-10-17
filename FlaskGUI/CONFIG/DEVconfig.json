@@ -62,6 +62,13 @@
       "MEM_MAP": "devices/sensors/SHT3X/SHT3X_v1.json",
       "WINDOW_SIZE": [350,900],
       "DEV_NESTING": -1
+    },
+    "[97,86,178,37,1]": {
+      "DEV_TYPE": "CompressorControl",
+      "DEV_PAGE": "devices/compressor/pressureControl.html",
+      "MEM_MAP": "devices/compressor/pressureControl.json",
+      "WINDOW_SIZE": [350,900],
+      "DEV_NESTING": -1
     }
   }
 }
