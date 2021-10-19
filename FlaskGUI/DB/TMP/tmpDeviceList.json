@@ -3,9 +3,9 @@
         "I2C_ID": "0",
         "HW_ID": "[96, 114, 235, 7]",
         "FW_ID": "v1",
-        "ALERT": "0",
-        "PM_IC": "[228, 2, 2, 40]",
-        "TRM_MOD": "[162, 225, 217, 19]",
+        "ALERT": "65",
+        "PM_IC": "[8, 0, 0, 40]",
+        "TRM_MOD": "[13, 0, 0, 0]",
         "DEV_TYPE": "Master",
         "DEV_PAGE": "devices/master/master_v1/master_v1.html",
         "MEM_MAP": "devices/master/master_v1/master_v1.json",
@@ -15,51 +15,5 @@
         ],
         "URL": "DEV_PAGE=devices/master/master_v1/master_v1.html&I2C_ID=0&DEV_TYPE=Master&HW_ID=[96, 114, 235, 7]&FW_ID=v1"
     },
-    "SLAVES": [
-        {
-            "I2C_ID": "99",
-            "HW_ID": "[97,86,178,37]",
-            "FW_ID": "v1",
-            "DEV_TYPE": "CompressorControl",
-            "DEV_PAGE": "devices/compressor/pressureControl.html",
-            "MEM_MAP": "devices/compressor/pressureControl.json",
-            "WINDOW_SIZE": [
-                350,
-                900
-            ],
-            "DEV_NESTING": -1,
-            "URL": "DEV_PAGE=devices/compressor/pressureControl.html&I2C_ID=99&DEV_TYPE=CompressorControl&HW_ID=[97,86,178,37]&FW_ID=v1",
-            "NESTED": "N/A"
-        },
-        {
-            "I2C_ID": "120",
-            "HW_ID": "[96,150,155,76]",
-            "FW_ID": "v1",
-            "DEV_TYPE": "PSU",
-            "DEV_PAGE": "devices/psu/psu_v1.html",
-            "MEM_MAP": "devices/psu/psu_v1.json",
-            "WINDOW_SIZE": [
-                350,
-                600
-            ],
-            "DEV_NESTING": 12,
-            "URL": "DEV_PAGE=devices/psu/psu_v1.html&I2C_ID=120&DEV_TYPE=PSU&HW_ID=[96,150,155,76]&FW_ID=v1",
-            "NESTED": "None"
-        },
-        {
-            "I2C_ID": "126",
-            "HW_ID": "[96,115,0,56]",
-            "FW_ID": "v1",
-            "DEV_TYPE": "Termination",
-            "DEV_PAGE": "devices/termination/termination_v1.html",
-            "MEM_MAP": "devices/termination/termination_v1.json",
-            "WINDOW_SIZE": [
-                350,
-                600
-            ],
-            "DEV_NESTING": -1,
-            "URL": "DEV_PAGE=devices/termination/termination_v1.html&I2C_ID=126&DEV_TYPE=Termination&HW_ID=[96,115,0,56]&FW_ID=v1",
-            "NESTED": "N/A"
-        }
-    ]
+    "SLAVES": []
 }
