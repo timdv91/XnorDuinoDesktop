@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 import _thread
 import os
+import time
 from pathlib import Path
-from pytimedinput import timedInput
+#from pytimedinput import timedInput
 
 # Define a function for the thread
 def runSerialServer( pThreadName):
@@ -14,8 +15,10 @@ def runSerialServer( pThreadName):
         os.system('/home/tim/PyCharm/XnorDuinoDesktop/bin/python3.8 ' + app_path)
 
         print("Thread encountered an communication issue, restarting in 5 seconds...")
-        userText, timedOut = timedInput("Press any key to abort the restart.")
-        keepRunning = timedOut
+        #userText, timedOut = timedInput("Press any key to abort the restart.")
+        #keepRunning = timedOut
+        time.sleep(3)
+        keepRunning = True
     print("Exiting program loop, press 'ctrl + C' to continue")
     quit()
 

@@ -178,6 +178,8 @@ def create_app():
     # Rerouting for the about button:
     @app.route('/treeView')
     def treeView():
+        global commonDataStruct
+        global autoRefreshDevList_isLocked
         global currentlyOpenedMainPage
         currentlyOpenedMainPage = 'treeView'
 
@@ -331,30 +333,33 @@ class create_thread():
         global commonDataStruct
         global autoRefreshDevList_LockEpoch
         global autoRefreshDevList_isLocked
-        if autoRefreshDevList_LockEpoch < int(time.time()):  # prevent loading deviceList when device is opened
-            autoRefreshDevList_isLocked = False
+        try:
+            if autoRefreshDevList_LockEpoch < int(time.time()):  # prevent loading deviceList when device is opened
+                autoRefreshDevList_isLocked = False
 
-            print("Hardware communication: Started")
-            commonDataStruct['MASTER'] = XRH.getMasterInformation()
-            #print(commonDataStruct)
-            devIdList = []
+                print("Hardware communication: Started")
+                commonDataStruct['MASTER'] = XRH.getMasterInformation()
+                #print(commonDataStruct)
+                devIdList = []
 
-            try:
-                if(commonDataStruct['MASTER']['DEV_TYPE'] == 'Master'): # only scan for local slaves on a 'Master' module.
-                    devIdList = XRH.initDeviceIDScan()
+                try:
+                    if(commonDataStruct['MASTER']['DEV_TYPE'] == 'Master'): # only scan for local slaves on a 'Master' module.
+                        devIdList = XRH.initDeviceIDScan()
 
-                devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
-                if(devicesDictionary != None):
-                    commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
+                    devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
+                    if(devicesDictionary != None):
+                        commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
 
-                TFM.writeDevListToFile(commonDataStruct) # write datastruct with devices to tmpFile
-            except KeyError as e:
-                print(str(e))
+                    TFM.writeDevListToFile(commonDataStruct) # write datastruct with devices to tmpFile
+                except KeyError as e:
+                    print(str(e))
 
-            print("Hardware communication: Completed")
-        else:
-            print("Hardware communication: Locked")
-            autoRefreshDevList_isLocked = True
+                print("Hardware communication: Completed")
+            else:
+                print("Hardware communication: Locked")
+                autoRefreshDevList_isLocked = True
+        except TypeError as e:
+            print(str(e))
 
     # do data acquisition on separated thread:
     def runDAQ(self):
@@ -373,7 +378,7 @@ app = create_app()
 if(app.env == 'development'):
     app.debug = True
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open(dir_path + '/debug/debugScannedDeviceList.json') as f:
+    with open(dir_path + '/DB/TMP/tmpDeviceList.json') as f:
         commonDataStruct['SLAVES'] = json.load(f)
 else:
     create_thread()

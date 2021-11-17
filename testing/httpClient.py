@@ -33,7 +33,7 @@ for i in range(len(r)):
     print(r[i], end=" ")
 print()
 
-reqT.get('[99, 25, 4, 3, 5, 3, 5]', "WS") #30s 5s 30s 5s
+reqT.get('[99, 25, 4, 1, 1, 3, 5]', "WS") #10s 1s 30s 5s
 r = eval(reqT.get('[99, 25, 4]', "RS"))
 print("ID: ", end="")
 for i in range(len(r)):
