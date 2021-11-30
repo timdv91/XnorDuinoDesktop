@@ -23,6 +23,9 @@ class Srv(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        if(XSH.getHWConnectionState() == False):
+            XSH._connectionInit()
+
         content_length = int(self.headers['Content-Length'])  # <--- Gets the size of data
         get_data = self.rfile.read(content_length)  # <--- Gets the data itself
         if(DEV_MODE):
@@ -34,6 +37,9 @@ class Srv(BaseHTTPRequestHandler):
         self.wfile.write(format(rcv).encode('ascii'))
 
     def do_POST(self):
+        if (XSH.getHWConnectionState() == False):
+            XSH._connectionInit()
+
         content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
         post_data = self.rfile.read(content_length) # <--- Gets the data itself
         if(DEV_MODE):

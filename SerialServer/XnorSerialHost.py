@@ -7,30 +7,61 @@ error codes:
     b'\x00\x07' --> Unknown error / connection to hardware error            --> restarts serial connection to hardware
 '''
 
-import serial, time
+import serial, time, copy
 DEV_MODE = False
 
 class XnorSerialHost():
     def __init__(self, pPort, pBautrate=38400):
-        self._connectionInit(pPort, pBautrate)
-        self.isComLocked = False
+        self.PORT = pPort
+        self.BAUT = pBautrate
+        self.isConnectedHW = False
+        self.isComLocked = True
         self.RFmode = False
+        self.RFMAC = None
+        self.resetTimeout = time.time()
 
     def __del__(self):
         self.ser.close()
 
-    def _connectionInit(self, pPort, pBautrate):
-        print("Establishing serial connection to embedded device: ", end=" ")
-        self.ser = serial.Serial(pPort, pBautrate, timeout=.250)
-        time.sleep(2.5)
-        self.ser.write(b'\x01')     # send SOH byte
-        check = self.ser.read(2)    # check if device responds with ACK and EOT bytes
-        if(check == b'\x06\x04'):
-            print("OK")
-        else:
-            print(" ERROR")
-            quit(1)                                                     #Todo: remove quit, try to reconnect to hardware
+    def getHWConnectionState(self):
+        return self.isConnectedHW
 
+    def _connectionInit(self):
+        pPort = self.PORT
+        pBautrate = self.BAUT
+
+        try:
+            print("Establishing serial connection to embedded device: ", end=" ")
+            self.ser = serial.Serial(pPort, pBautrate, timeout=.250)
+            time.sleep(2.5)
+            self.ser.write(b'\x01')     # send SOH byte
+            check = self.ser.read(2)    # check if device responds with ACK and EOT bytes
+            if(check == b'\x06\x04'):
+                print("OK")
+
+                self.ser.flushInput()
+                self.ser.flushOutput()
+
+                self.isComLocked = False
+                self.isConnectedHW = True
+
+                self.RFmode = False
+                if(self.RFMAC != None):
+                    print("Reconnecting to wireless device.")
+                    self.setRFmode(self.RFMAC)
+
+                return True
+            else:
+                print("ERROR ACK and/or EOT byte error upon connection!")
+                self.isConnectedHW = False
+                return b'\x00\x07'
+        except Exception as e:
+            print(str(e))
+
+        self.ser.close()
+        self.isConnectedHW = False
+        return b'\x00\x07'
+        # quit(1)     #Todo: remove quit, try to reconnect to hardware
 
     def _communication(self, pFunction , pData, pDebug=False):
         retVal = b'\x00\x00'
@@ -59,6 +90,10 @@ class XnorSerialHost():
             if ((len(pData) != pData[1] + 2)) and (len(pData) > 2):  # do not check for length on read action
                 print("Write action data length error!")             # Avoid writing invalid data to hardware
                 return b'\x00\x00'                                   # send ascii null null
+
+            if(self.isConnectedHW == False):
+                print("Hardware not connected!")  # Avoid writing invalid data to hardware
+                return b'\x00\x00'
 
             #Lock this function when active:
             if(self.isComLocked == True):
@@ -106,8 +141,12 @@ class XnorSerialHost():
             self.isComLocked = False
             return rcv[:-1]                         # chopchop the EOT char
         except Exception as e:
-            print(str(e))                                                       # todo: Add error message to a log file!
-            return b'\x00\x07'          # unknown error                         # todo: restart server
+            print(str(e))                           # todo: Add error message to a log file!
+
+            self.ser.close()
+            self.isConnectedHW = False
+
+            return b'\x00\x07'                      # unknown error or connection reset
 
     def readSlave(self, pData, pDebug=False):
         # first set the masters registers to init a read request on a slave:
@@ -184,6 +223,9 @@ class XnorSerialHost():
         return self.rawCommunication(pData)
 
     def setRFmode(self, pData):
+        # create mac backup:
+        self.RFMAC = copy.deepcopy(pData)
+
         # hex to dec conversion:
         for i in range(0,len(pData)):
             pData[i] = int(pData[i], 16)
@@ -205,17 +247,23 @@ class XnorSerialHost():
         pData.insert(1, 1)
         pData.insert(2, 10)
         retval = self.rawCommunication(pData)
+
         self.RFmode = False
+        self.RFMAC = None   # clear mac backup
+
         return retval
 
     def resetMode(self, pData):
-        for i in range(0,100,1):
-            print("\n")
+        if(time.time() < self.resetTimeout + 15):
+            print("Manual or automated connection reset canceled, to fast reoccurring...")
+            return None
+
         print("Manual or automated connection reset requested...")
-        time.sleep(2)
-        for i in range(0,100,1):
-            print("\n")
-        quit(2)                                                                 #todo: remove quit restart server
+        self.ser.close()
+        self.isConnectedHW = False
+
+        self.resetTimeout = time.time()
+        return b'\x00\x07'  # unknown error or connection reset
 
 '''
 xsh = XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=19200)
