@@ -10,6 +10,7 @@
             var socket = io.connect('{{ hostIP }}');
             socket.emit('get_value', {name: "reset", cmd: '[0,0]', cmdType: 'reset'});
         }
+
     </script>
 
 
@@ -19,6 +20,13 @@
         <p>Reconnect USB connected hardware</p>
         <INPUT TYPE="button" value="Reconnect" onclick="submitDevReset();" >
     </div>
+    <!--
+    <dev class="zoom">
+        <button onclick="body.style.zoom='100%'">Zoom 100%</button>
+        <button onclick="body.style.zoom='75%'">Zoom 75%</button>
+        <button onclick="body.style.zoom='50%'">Zoom 50%</button>
+    </dev>
+    -->
 
     {% if posts['AUTO_UPDATE_LOCKED'] == True %}
         <p class="badge badge-secondary deviceList_title-larger-badge"> Auto update: paused!</p>

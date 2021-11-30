@@ -1,5 +1,13 @@
-import serial, time
+'''
+error codes:
+    b'\x00\x00' --> write action, data length error / Writing master at wrong index location
+    b'\x00\x18' --> communication locked by another thread
+    b'\x00\x06' --> No ACK received from device error!
+    b'\x00\x04' --> No EOT received from device error!
+    b'\x00\x07' --> Unknown error / connection to hardware error            --> restarts serial connection to hardware
+'''
 
+import serial, time
 DEV_MODE = False
 
 class XnorSerialHost():
@@ -21,7 +29,7 @@ class XnorSerialHost():
             print("OK")
         else:
             print(" ERROR")
-            quit(1)
+            quit(1)                                                     #Todo: remove quit, try to reconnect to hardware
 
 
     def _communication(self, pFunction , pData, pDebug=False):
@@ -46,57 +54,60 @@ class XnorSerialHost():
 
 
     def rawCommunication(self, pData, pDebug=False):
-        time.sleep(.02)
-        if ((len(pData) != pData[1] + 2)) and (len(pData) > 2):  # do not check for length on read action
-            print("Write action data length error!")             # Avoid writing invalid data to hardware
-            return b'\x00\x00'                                   # send ascii null null
+        try:
+            time.sleep(.02)
+            if ((len(pData) != pData[1] + 2)) and (len(pData) > 2):  # do not check for length on read action
+                print("Write action data length error!")             # Avoid writing invalid data to hardware
+                return b'\x00\x00'                                   # send ascii null null
 
-        #Lock this function when active:
-        if(self.isComLocked == True):
-            print("Communication locked by another thread or process!")
-            return b'\x00\x18'                  # Send ascii null and cancel (byte 24).
+            #Lock this function when active:
+            if(self.isComLocked == True):
+                print("Communication locked by another thread or process!")
+                return b'\x00\x18'                  # Send ascii null and cancel (byte 24).
 
-        self.isComLocked = True                 # Make sure each exits from this function resets this flag !!!
+            self.isComLocked = True                 # Make sure each exits from this function resets this flag !!!
 
-        # Start handshaking:
-        sendBytes = b'\x01'
-        self.ser.write(sendBytes)               # Send SOT byte.
-        check = self.ser.read(1)                # Wait for ACK byte
-        if (check != b'\x06'):
-            print("No ACK received from device error!")
+            # Start handshaking:
+            sendBytes = b'\x01'
+            self.ser.write(sendBytes)               # Send SOT byte.
+            check = self.ser.read(1)                # Wait for ACK byte
+            if (check != b'\x06'):
+                print("No ACK received from device error!")
+                self.isComLocked = False
+                return b'\x00\x06'                  # If ACK never received, abort send ascii null and ack (ack error)
+
+
+            # Send the command data after hardware ACK response:
+            if(DEV_MODE):
+                print("Sending data: ", end=": ")
+                print(pData)
+            sendBytes = bytes(pData)
+            self.ser.write(sendBytes)
+
+
+            rcv = None
+            if(len(pData) > 2): # read received data from write action:
+                rcv = (self.ser.read(2))
+            else: # read received data from data request:
+                rcv = (self.ser.read(pData[1] + 1))
+            if(DEV_MODE):
+                print("received data: " , end=": ")
+                print(rcv)
+
+            # check for EOT byte:
+            if(rcv[-1:] != b'\x04'):
+                print("No EOT received from device error!")
+                self.isComLocked = False
+                return b'\x00\x04'                  # If EOT never received, abort send ascii null and EOT (EOT error)
+
+            # Return received data if everything went successfully:
+            if(DEV_MODE):
+                print("Request processed successfully!")
             self.isComLocked = False
-            return b'\x00\x06'                  # If ACK never received, abort send ascii null and ack (ack error)
-
-
-        # Send the command data after hardware ACK response:
-        if(DEV_MODE):
-            print("Sending data: ", end=": ")
-            print(pData)
-        sendBytes = bytes(pData)
-        self.ser.write(sendBytes)
-
-
-        rcv = None
-        if(len(pData) > 2): # read received data from write action:
-            rcv = (self.ser.read(2))
-        else: # read received data from data request:
-            rcv = (self.ser.read(pData[1] + 1))
-        if(DEV_MODE):
-            print("received data: " , end=": ")
-            print(rcv)
-
-        # check for EOT byte:
-        if(rcv[-1:] != b'\x04'):
-            print("No EOT received from device error!")
-            self.isComLocked = False
-            return b'\x00\x04'                  # If EOT never received, abort send ascii null and EOT (EOT error)
-
-        # Return received data if everything went successfully:
-        if(DEV_MODE):
-            print("Request processed successfully!")
-        self.isComLocked = False
-        return rcv[:-1]                         # chopchop the EOT char
-
+            return rcv[:-1]                         # chopchop the EOT char
+        except Exception as e:
+            print(str(e))                                                       # todo: Add error message to a log file!
+            return b'\x00\x07'          # unknown error                         # todo: restart server
 
     def readSlave(self, pData, pDebug=False):
         # first set the masters registers to init a read request on a slave:
@@ -143,9 +154,9 @@ class XnorSerialHost():
     def writeSlave(self, pData, pDebug=False):
         # first set the masters registers to init a read request on a slave:
         dataSize = len(pData) + 1
-        pData.insert(0, 16)  # start writing master register at index 16
-        pData.insert(1, dataSize)  # inform master we're gonna write 4 bytes
-        pData.insert(2, 2)  # set masters register to read request from slave
+        pData.insert(0, 16)             # start writing master register at index 16
+        pData.insert(1, dataSize)       # inform master we're gonna write 4 bytes
+        pData.insert(2, 2)              # set masters register to read request from slave
 
         if (self.RFmode == True):
             dataSize = len(pData) + 1
@@ -204,7 +215,7 @@ class XnorSerialHost():
         time.sleep(2)
         for i in range(0,100,1):
             print("\n")
-        quit(2)
+        quit(2)                                                                 #todo: remove quit restart server
 
 '''
 xsh = XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=19200)

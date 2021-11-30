@@ -9,7 +9,7 @@ import logging
 
 # local libs:
 import XnorSerialHost
-XSH = XnorSerialHost.XnorSerialHost(pPort='/dev/ttyUSB1', pBautrate=38400)
+XSH = XnorSerialHost.XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=38400)
 #XSH = XnorSerialHost.XnorSerialHost(pPort='COM19', pBautrate=38400)
 #XSH = XnorSerialHost.XnorSerialHost(pPort='COM20', pBautrate=38400)
 #XSH = XnorSerialHost.XnorSerialHost(pPort='COM25', pBautrate=38400)

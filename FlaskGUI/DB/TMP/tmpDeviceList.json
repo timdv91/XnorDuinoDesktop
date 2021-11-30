@@ -4,7 +4,7 @@
         "HW_ID": "[96, 114, 235, 7]",
         "FW_ID": "v1",
         "ALERT": "65",
-        "PM_IC": "[8, 0, 0, 27]",
+        "PM_IC": "[8, 0, 0, 25]",
         "TRM_MOD": "[0, 0, 0, 0]",
         "DEV_TYPE": "Master",
         "DEV_PAGE": "devices/master/master_v1/master_v1.html",
@@ -15,5 +15,381 @@
         ],
         "URL": "DEV_PAGE=devices/master/master_v1/master_v1.html&I2C_ID=0&DEV_TYPE=Master&HW_ID=[96, 114, 235, 7]&FW_ID=v1"
     },
-    "SLAVES": []
+    "SLAVES": [
+        {
+            "I2C_ID": "20",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=20&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "40",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=40&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "41",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=41&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "42",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=42&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "43",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=43&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "44",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=44&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "45",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=45&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "46",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=46&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "47",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=47&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "48",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=48&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "49",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=49&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "50",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=50&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "51",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=51&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "52",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=52&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "53",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=53&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "54",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=54&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "55",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=55&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "56",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=56&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "57",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=57&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "24",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=24&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "24",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=24&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "24",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=24&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "24",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=24&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "24",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=24&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        },
+        {
+            "I2C_ID": "24",
+            "HW_ID": "[0]",
+            "FW_ID": "v24",
+            "DEV_TYPE": "UNKNOWN_DEVICE",
+            "DEV_PAGE": "UNKNOWN_DEVICE",
+            "MEM_MAP": "UNKNOWN_DEVICE",
+            "WINDOW_SIZE": [
+                350,
+                300
+            ],
+            "DEV_NESTING": -1,
+            "URL": "DEV_PAGE=devices/unsupported_device.html&I2C_ID=24&DEV_TYPE=UNKNOWN_DEVICE&HW_ID=[0]&FW_ID=v24",
+            "NESTED": "N/A"
+        }
+    ]
 }
