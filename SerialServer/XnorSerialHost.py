@@ -21,7 +21,12 @@ class XnorSerialHost():
         self.resetTimeout = time.time()
 
     def __del__(self):
-        self.ser.close()
+        try:
+            self.ser.close()
+        except AttributeError:
+            None
+        except Exception as e:
+            print(str(e))
 
     def getHWConnectionState(self):
         return self.isConnectedHW

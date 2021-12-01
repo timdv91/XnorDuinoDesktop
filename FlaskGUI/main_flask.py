@@ -74,7 +74,8 @@ def create_app():
     def get_value(data):
         rcvBytes = XRQ.get(str(data['cmd']), str(data['cmdType']))  # set de master for ReadSlave
         if(rcvBytes != None):
-            rcvBytes = eval(rcvBytes)
+            rcvBytes = eval(rcvBytes[0])
+
             rcvList = []
             for i in range(0,len(rcvBytes)):
                 rcvList.append(rcvBytes[i])
@@ -273,7 +274,7 @@ def create_app():
 
             if isValid:
                 print("Valid input!",  writeMethod)
-                rcvBytes = XRQ.get(str(cmd), writeMethod)  # set de master for ReadSlave
+                rcvBytes = XRQ.get(str(cmd), writeMethod)[0]  # set de master for ReadSlave
                 print(rcvBytes)
             else:
                 print("Invalid input!")

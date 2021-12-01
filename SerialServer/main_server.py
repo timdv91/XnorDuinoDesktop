@@ -9,11 +9,7 @@ import logging
 
 # local libs:
 import XnorSerialHost
-XSH = XnorSerialHost.XnorSerialHost(pPort='/dev/ttyUSB0', pBautrate=38400)
-#XSH = XnorSerialHost.XnorSerialHost(pPort='COM19', pBautrate=38400)
-#XSH = XnorSerialHost.XnorSerialHost(pPort='COM20', pBautrate=38400)
-#XSH = XnorSerialHost.XnorSerialHost(pPort='COM25', pBautrate=38400)
-
+XSH = XnorSerialHost.XnorSerialHost(pPort='', pBautrate=0)   # holds the XnorSerialHost object, overwritten in the run function
 DEV_MODE = False
 
 class Srv(BaseHTTPRequestHandler):
@@ -50,9 +46,13 @@ class Srv(BaseHTTPRequestHandler):
         self._set_response()
         self.wfile.write(format(rcv).encode('ascii'))
 
-def run(server_class=HTTPServer, handler_class=Srv, port=8080):
+
+def run(pHWport, pHWbautrate=38400, pSrvPort=8080, server_class=HTTPServer, handler_class=Srv):
+    global XSH
+    XSH = XnorSerialHost.XnorSerialHost(pPort=pHWport, pBautrate=pHWbautrate)
+
     logging.basicConfig(level=logging.INFO)
-    server_address = ('', port)
+    server_address = ('', pSrvPort)
     httpd = server_class(server_address, handler_class)
     logging.info('Starting httpd...\n')
     try:

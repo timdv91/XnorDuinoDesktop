@@ -15,14 +15,15 @@ class xnorbusRequestorHelper():
         retVal = {}
         try:
             # requesting data from master:
-            rcvBytes = eval(self.XRQ.get('[0,14]', "RM"))
+            data = self.XRQ.get('[0,14]', "RM")
+            rcvBytes = eval(data[0])
+            #todo: rcvBytes = eval(self.XRQ.get('[0,14]', "RM"))
+
             rcv = []
             for i in range(len(rcvBytes)):
                 rcv.append(rcvBytes[i])
 
             # moving data in it's place:
-
-
             retVal['I2C_ID'] = str(0)
             retVal['HW_ID'] = str(rcv[0:4])
             retVal['FW_ID'] = 'v' + str(rcv[4:5][0])
@@ -71,7 +72,10 @@ class xnorbusRequestorHelper():
             for dev in range(1, 127, divScanCount):
                 scanList = [16, 3, 3, dev, dev+divScanCount]
                 self.XRQ.get(str(scanList), "WM")
-                rcv = eval(self.XRQ.get('[21,9]', "RM"))
+
+                data = self.XRQ.get('[21,9]', "RM")
+                rcv = eval(data[0])
+                #todo: rcv = eval(self.XRQ.get('[21,9]', "RM"))
 
                 for i in range(len(rcv)):
                     if (rcv[i] != 0 and rcv[i] < 128):
@@ -93,7 +97,6 @@ class xnorbusRequestorHelper():
 
     # builds a device dictionary from the previously scanned IDList:
     def getDevicesInfoDict(self, pDevIdList, pDebug=False):
-
         # getting a jsonDictionary with supported devices and their names:
         dir_path = str(Path(os.path.dirname(os.path.realpath(__file__))).parent.parent)
         with open(dir_path + '/CONFIG/' + self.FILENAME) as f:
@@ -105,7 +108,9 @@ class xnorbusRequestorHelper():
         for devId in pDevIdList:
             try:
                 cmd = [devId, 0, 5]
-                rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))                   # set de master for ReadSlave
+                data = self.XRQ.get(str(cmd), "RS")                   # set de master for ReadSlave
+                rcvBytes = eval(data[0])
+                #todo: rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))                   # set de master for ReadSlave
 
                 # convert byte array to readable list:
                 devInfoArr = []
@@ -176,11 +181,15 @@ class xnorbusRequestorHelper():
                 try:
                     debugPrint += "\tNesting support: YES" + "\n"
                     cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"]), 1]
-                    rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
+                    data = self.XRQ.get(str(cmd), "RS")  # set de master for ReadSlave
+                    rcvBytes = eval(data[0])
+                    #todo: rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
                     debugPrint += "\tConnected slave devices:" + str(int(rcvBytes[0])) + "\n"
                     if(int(rcvBytes[0]) > 0):
                         cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"])+1, int(rcvBytes[0])]
-                        nestedDevIdList_bytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
+                        data = self.XRQ.get(str(cmd), "RS")  # set de master for ReadSlave
+                        nestedDevIdList_bytes = eval(data[0])
+                        #todo: nestedDevIdList_bytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
                         debugPrint += "\tConnected slaves ID's: "
                         nestedDevIdList = []
                         for ids in nestedDevIdList_bytes:

@@ -1,4 +1,4 @@
-import requests
+import requests, time
 
 class xnorbusWebrequestor():
     def __init__(self, pURL):
@@ -7,16 +7,51 @@ class xnorbusWebrequestor():
     def get(self, pData, pPath=""):
         # GET request:
         try:
-            r = requests.get(str(self.URL + "/" + pPath), data=(pData))
-            return r.text
+            counter = 10
+            while(True):
+                counter -= 1
+
+                r = requests.get(str(self.URL + "/" + pPath), data=(pData))
+                hasError = self.hasCommError(r)
+
+                if(hasError == False or counter == 0):
+                    return [r.text, hasError]
+                else:
+                    time.sleep(0.1)
         except requests.exceptions.ConnectionError:
-            return None
+            return None, True
 
 
     def post(self, pData, pPath=""):
         # POST request:
         try:
-            r = requests.post(str(self.URL + "/" + pPath), data=(pData))
-            return r.text
+            counter = 10
+            while(True):
+                counter -= 1
+
+                r = requests.post(str(self.URL + "/" + pPath), data=(pData))
+                hasError = self.hasCommError(r)
+
+                if(hasError == False or counter == 0):
+                    return [r.text, hasError]
+                else:
+                    time.sleep(0.1)
         except requests.exceptions.ConnectionError:
-            return None
+            return None, True
+
+
+    def hasCommError(self, pR):
+        if(pR != None):
+            if(len(eval(pR.text)) <= 2):
+                errorList = []
+                errorList.append(b'\x00\x00')
+                errorList.append(b'\x00\x18')
+                errorList.append(b'\x00\x06')
+                errorList.append(b'\x00\x04')
+                errorList.append(b'\x00\x07')
+
+                if(pR.text in str(errorList)):
+                    print("COMM-ERROR detected: ", pR.text)
+                    return True
+
+        return False
