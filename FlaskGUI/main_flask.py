@@ -72,12 +72,12 @@ def create_app():
     # individual devices pages communication route to read slave devices.
     @socketio.on('get_value')
     def get_value(data):
-        rcvBytes = XRQ.get(str(data['cmd']), str(data['cmdType']))  # set de master for ReadSlave
+        rcvBytes, commErrorCount = XRQ.get(str(data['cmd']), str(data['cmdType']))  # set de master for ReadSlave
         if(rcvBytes != None):
-            rcvBytes = eval(rcvBytes[0])
+            rcvBytes = eval(rcvBytes)
 
             rcvList = []
-            for i in range(0,len(rcvBytes)):
+            for i in range(0, len(rcvBytes)):
                 rcvList.append(rcvBytes[i])
             emit('value_reply', {"name":data['name'], "value": rcvList})
 
@@ -274,8 +274,8 @@ def create_app():
 
             if isValid:
                 print("Valid input!",  writeMethod)
-                rcvBytes = XRQ.get(str(cmd), writeMethod)[0]  # set de master for ReadSlave
-                print(rcvBytes)
+                rcvBytes, commErrorCount = XRQ.get(str(cmd), writeMethod)  # set de master for ReadSlave
+                print(rcvBytes, commErrorCount)
             else:
                 print("Invalid input!")
 

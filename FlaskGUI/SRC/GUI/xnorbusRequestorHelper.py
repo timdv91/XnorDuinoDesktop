@@ -15,8 +15,8 @@ class xnorbusRequestorHelper():
         retVal = {}
         try:
             # requesting data from master:
-            data = self.XRQ.get('[0,14]', "RM")
-            rcvBytes = eval(data[0])
+            data, commErrorCount = self.XRQ.get('[0,14]', "RM")
+            rcvBytes = eval(data)
             #todo: rcvBytes = eval(self.XRQ.get('[0,14]', "RM"))
 
             rcv = []
@@ -73,8 +73,8 @@ class xnorbusRequestorHelper():
                 scanList = [16, 3, 3, dev, dev+divScanCount]
                 self.XRQ.get(str(scanList), "WM")
 
-                data = self.XRQ.get('[21,9]', "RM")
-                rcv = eval(data[0])
+                data, commErrorCount = self.XRQ.get('[21,9]', "RM")
+                rcv = eval(data)
                 #todo: rcv = eval(self.XRQ.get('[21,9]', "RM"))
 
                 for i in range(len(rcv)):
@@ -108,8 +108,8 @@ class xnorbusRequestorHelper():
         for devId in pDevIdList:
             try:
                 cmd = [devId, 0, 5]
-                data = self.XRQ.get(str(cmd), "RS")                   # set de master for ReadSlave
-                rcvBytes = eval(data[0])
+                data, commErrorCount = self.XRQ.get(str(cmd), "RS")                   # set de master for ReadSlave
+                rcvBytes = eval(data)
                 #todo: rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))                   # set de master for ReadSlave
 
                 # convert byte array to readable list:
@@ -181,14 +181,14 @@ class xnorbusRequestorHelper():
                 try:
                     debugPrint += "\tNesting support: YES" + "\n"
                     cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"]), 1]
-                    data = self.XRQ.get(str(cmd), "RS")  # set de master for ReadSlave
-                    rcvBytes = eval(data[0])
+                    data, commErrorCount = self.XRQ.get(str(cmd), "RS")  # set de master for ReadSlave
+                    rcvBytes = eval(data)
                     #todo: rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
                     debugPrint += "\tConnected slave devices:" + str(int(rcvBytes[0])) + "\n"
                     if(int(rcvBytes[0]) > 0):
                         cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"])+1, int(rcvBytes[0])]
-                        data = self.XRQ.get(str(cmd), "RS")  # set de master for ReadSlave
-                        nestedDevIdList_bytes = eval(data[0])
+                        data, commErrorCount = self.XRQ.get(str(cmd), "RS")  # set de master for ReadSlave
+                        nestedDevIdList_bytes = eval(data)
                         #todo: nestedDevIdList_bytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
                         debugPrint += "\tConnected slaves ID's: "
                         nestedDevIdList = []

@@ -7,7 +7,7 @@ class xnorbusWebrequestor():
     def get(self, pData, pPath=""):
         # GET request:
         try:
-            counter = 10
+            counter = 11
             while(True):
                 counter -= 1
 
@@ -15,11 +15,11 @@ class xnorbusWebrequestor():
                 hasError = self.hasCommError(r)
 
                 if(hasError == False or counter == 0):
-                    return [r.text, hasError]
+                    return r.text, counter
                 else:
                     time.sleep(0.1)
         except requests.exceptions.ConnectionError:
-            return None, True
+            return None, 0
 
 
     def post(self, pData, pPath=""):
@@ -33,11 +33,11 @@ class xnorbusWebrequestor():
                 hasError = self.hasCommError(r)
 
                 if(hasError == False or counter == 0):
-                    return [r.text, hasError]
+                    return r.text, counter
                 else:
                     time.sleep(0.1)
         except requests.exceptions.ConnectionError:
-            return None, True
+            return None, 0
 
 
     def hasCommError(self, pR):
