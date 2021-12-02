@@ -1,5 +1,7 @@
 import requests, time
 
+ERR_COUNT_MAX = 10
+
 class xnorbusWebrequestor():
     def __init__(self, pURL):
         self.URL = pURL
@@ -7,16 +9,15 @@ class xnorbusWebrequestor():
     def get(self, pData, pPath=""):
         # GET request:
         try:
-            counter = 11
+            ErrorCounter = ERR_COUNT_MAX
             while(True):
-                counter -= 1
-
                 r = requests.get(str(self.URL + "/" + pPath), data=(pData))
                 hasError = self.hasCommError(r)
 
-                if(hasError == False or counter == 0):
-                    return r.text, counter
+                if(hasError == False or ErrorCounter == 0):
+                    return r.text, (ERR_COUNT_MAX - ErrorCounter)
                 else:
+                    ErrorCounter -= 1
                     time.sleep(0.1)
         except requests.exceptions.ConnectionError:
             return None, 0
@@ -25,16 +26,15 @@ class xnorbusWebrequestor():
     def post(self, pData, pPath=""):
         # POST request:
         try:
-            counter = 10
+            ErrorCounter = ERR_COUNT_MAX
             while(True):
-                counter -= 1
-
                 r = requests.post(str(self.URL + "/" + pPath), data=(pData))
                 hasError = self.hasCommError(r)
 
-                if(hasError == False or counter == 0):
-                    return r.text, counter
+                if(hasError == False or ErrorCounter == 0):
+                    return r.text, (ERR_COUNT_MAX - ErrorCounter)
                 else:
+                    ErrorCounter -= 1
                     time.sleep(0.1)
         except requests.exceptions.ConnectionError:
             return None, 0
@@ -44,7 +44,7 @@ class xnorbusWebrequestor():
         if(pR != None):
             if(len(eval(pR.text)) <= 2):
                 errorList = []
-                errorList.append(b'\x00\x00')
+                #errorList.append(b'\x00\x00')
                 errorList.append(b'\x00\x18')
                 errorList.append(b'\x00\x06')
                 errorList.append(b'\x00\x04')

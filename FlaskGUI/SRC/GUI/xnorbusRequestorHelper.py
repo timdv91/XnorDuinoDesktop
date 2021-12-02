@@ -13,11 +13,11 @@ class xnorbusRequestorHelper():
             supportedDevicesDictionary = json.load(f)
 
         retVal = {}
+        commErrorCount = 0
         try:
             # requesting data from master:
             data, commErrorCount = self.XRQ.get('[0,14]', "RM")
             rcvBytes = eval(data)
-            #todo: rcvBytes = eval(self.XRQ.get('[0,14]', "RM"))
 
             rcv = []
             for i in range(len(rcvBytes)):
@@ -62,12 +62,13 @@ class xnorbusRequestorHelper():
             print(str(e) + ",  returning 'None' value")
             self.XRQ.get('[0,0]', "reset")
 
-        return retVal
+        return retVal, commErrorCount
 
     # uses the scan function (function 3) implemented on the master_embedded device to scan for slaves:
     def initDeviceIDScan(self, pDebug=False):
         retVal = []
         divScanCount = 12
+        commErrorCountTotal = 0
         try:
             for dev in range(1, 127, divScanCount):
                 scanList = [16, 3, 3, dev, dev+divScanCount]
@@ -75,7 +76,7 @@ class xnorbusRequestorHelper():
 
                 data, commErrorCount = self.XRQ.get('[21,9]', "RM")
                 rcv = eval(data)
-                #todo: rcv = eval(self.XRQ.get('[21,9]', "RM"))
+                commErrorCountTotal += commErrorCount
 
                 for i in range(len(rcv)):
                     if (rcv[i] != 0 and rcv[i] < 128):
@@ -88,12 +89,12 @@ class xnorbusRequestorHelper():
                     print("")
         except TypeError as e:
             print(str(e) + ",  returning 'None' value")
-            None
+            return None, -1
         except Exception as e:
             print(str(e) + ",  returning 'None' value")
-            None
+            return None, -1
 
-        return retVal
+        return retVal, commErrorCountTotal
 
     # builds a device dictionary from the previously scanned IDList:
     def getDevicesInfoDict(self, pDevIdList, pDebug=False):
@@ -105,12 +106,13 @@ class xnorbusRequestorHelper():
         # getting the hardware identifiers from each slave device:
         returnDict = {}
         devicesList = []
+        commErrorCountTotal = 0
         for devId in pDevIdList:
             try:
                 cmd = [devId, 0, 5]
                 data, commErrorCount = self.XRQ.get(str(cmd), "RS")                   # set de master for ReadSlave
                 rcvBytes = eval(data)
-                #todo: rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))                   # set de master for ReadSlave
+                commErrorCountTotal += commErrorCount
 
                 # convert byte array to readable list:
                 devInfoArr = []
@@ -165,12 +167,13 @@ class xnorbusRequestorHelper():
             devicesList.append(deviceDict)
 
         returnDict['SLAVES'] = devicesList
-        return returnDict
+        return returnDict, commErrorCountTotal
 
 
     def getDevicesNestingDict(self, pDevicesDict, pDebug=False):
         devicesDictLocal = pDevicesDict
         debugPrint = ""
+        commErrorCountTotal = 0
         for i in range(0, len(pDevicesDict)):
             device = pDevicesDict[i]
             debugPrint += "Device: " + str(device["DEV_TYPE"]) + "\n"
@@ -183,13 +186,15 @@ class xnorbusRequestorHelper():
                     cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"]), 1]
                     data, commErrorCount = self.XRQ.get(str(cmd), "RS")  # set de master for ReadSlave
                     rcvBytes = eval(data)
-                    #todo: rcvBytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
+                    commErrorCountTotal += commErrorCount
+
                     debugPrint += "\tConnected slave devices:" + str(int(rcvBytes[0])) + "\n"
                     if(int(rcvBytes[0]) > 0):
                         cmd = [int(device["I2C_ID"]), int(device["DEV_NESTING"])+1, int(rcvBytes[0])]
                         data, commErrorCount = self.XRQ.get(str(cmd), "RS")  # set de master for ReadSlave
                         nestedDevIdList_bytes = eval(data)
-                        #todo: nestedDevIdList_bytes = eval(self.XRQ.get(str(cmd), "RS"))  # set de master for ReadSlave
+                        commErrorCountTotal += commErrorCount
+
                         debugPrint += "\tConnected slaves ID's: "
                         nestedDevIdList = []
                         for ids in nestedDevIdList_bytes:
@@ -208,7 +213,7 @@ class xnorbusRequestorHelper():
 
         if(pDebug):
             print(str(debugPrint))
-        return devicesDictLocal
+        return devicesDictLocal, commErrorCountTotal
 
 
 

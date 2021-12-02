@@ -339,19 +339,28 @@ class create_thread():
                 autoRefreshDevList_isLocked = False
 
                 print("Hardware communication: Started")
-                commonDataStruct['MASTER'] = XRH.getMasterInformation()
-                #print(commonDataStruct)
-                devIdList = []
+                dataStructMaster, commErrorCount = XRH.getMasterInformation()
+                if(commErrorCount == 0):
+                    commonDataStruct['MASTER'] = dataStructMaster       # copy from buffer into main struct
+                else:
+                    commonDataStruct = {}       # clear main hardware struct when master doesn't response
 
+                devIdList = []
+                commErrorCount = 0
                 try:
                     if(commonDataStruct['MASTER']['DEV_TYPE'] == 'Master'): # only scan for local slaves on a 'Master' module.
-                        devIdList = XRH.initDeviceIDScan()
+                        devIdList, commErrorCount = XRH.initDeviceIDScan()
+                        if(commErrorCount == 0 and devIdList != None):
+                            devicesDictionary, commErrorCount = XRH.getDevicesInfoDict(devIdList, pDebug=False)
+                            if(commErrorCount == 0 and devicesDictionary != None):
+                                commonDataStructSlaves, commErrorCount = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
+                                if(commErrorCount == 0 and commonDataStructSlaves != None):
+                                    commonDataStruct['SLAVES'] = commonDataStructSlaves     # only update main struct when all errorchecks have passed
+                                    TFM.writeDevListToFile(commonDataStruct)                # write datastruct with devices to tmpFile
 
-                    devicesDictionary = XRH.getDevicesInfoDict(devIdList, pDebug=False)
-                    if(devicesDictionary != None):
-                        commonDataStruct['SLAVES'] = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
+                    if(commErrorCount > 0):
+                        print("Communication error detected, ignoring potentially corrupted data!")
 
-                    TFM.writeDevListToFile(commonDataStruct) # write datastruct with devices to tmpFile
                 except KeyError as e:
                     print(str(e))
 
@@ -385,8 +394,5 @@ else:
     create_thread()
 
 app.run(host=HOST_IP, port=HOST_PORT) # set HOST_IP and HOST_PORT on top of this page!
-
-
-
 
 
