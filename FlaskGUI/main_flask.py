@@ -354,7 +354,7 @@ class create_thread():
                             devIdList, commErrorCount = XRH.initDeviceIDScan()
 
                     # Get device information dictionary (do not nest with above for wireless devices which are not a master):
-                    if(commErrorCount == 0):
+                    if(commErrorCount == 0):   # do not check 'devIdList = None', it could prevent non master devices from being shown in the GUI.
                         if autoRefreshDevList_LockEpoch < int(time.time()):                                             # skip code when window has been opened (pauze autorefresh)
                             devicesDictionary, commErrorCount = XRH.getDevicesInfoDict(devIdList, pDebug=False)
                             if(commErrorCount == 0 and devicesDictionary != None):
