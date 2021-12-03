@@ -348,16 +348,22 @@ class create_thread():
                 devIdList = []
                 commErrorCount = 0
                 try:
-                    if(commonDataStruct['MASTER']['DEV_TYPE'] == 'Master'): # only scan for local slaves on a 'Master' module.
-                        devIdList, commErrorCount = XRH.initDeviceIDScan()
-                        if(commErrorCount == 0 and devIdList != None):
+                    # Scan slave devices only when supported by device (named 'MASTER'):
+                    if(commonDataStruct['MASTER']['DEV_TYPE'] == 'Master'):
+                        if autoRefreshDevList_LockEpoch < int(time.time()):                                             # skip code when window has been opened (pauze autorefresh)
+                            devIdList, commErrorCount = XRH.initDeviceIDScan()
+
+                    # Get device information dictionary (do not nest with above for wireless devices which are not a master):
+                    if(commErrorCount == 0):
+                        if autoRefreshDevList_LockEpoch < int(time.time()):                                             # skip code when window has been opened (pauze autorefresh)
                             devicesDictionary, commErrorCount = XRH.getDevicesInfoDict(devIdList, pDebug=False)
                             if(commErrorCount == 0 and devicesDictionary != None):
-                                commonDataStructSlaves, commErrorCount = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
-                                if(commErrorCount == 0 and commonDataStructSlaves != None):
-                                    commonDataStruct['SLAVES'] = commonDataStructSlaves     # only update main struct when all errorchecks have passed
-                                    TFM.writeDevListToFile(commonDataStruct)                # write datastruct with devices to tmpFile
+                                if autoRefreshDevList_LockEpoch < int(time.time()):                                     # skip code when window has been opened (pauze autorefresh)
+                                    commonDataStructSlaves, commErrorCount = XRH.getDevicesNestingDict(devicesDictionary['SLAVES'], pDebug=False)
+                                    if(commErrorCount == 0 and commonDataStructSlaves != None):
+                                        commonDataStruct['SLAVES'] = commonDataStructSlaves     # only update main struct when all errorchecks have passed
 
+                    TFM.writeDevListToFile(commonDataStruct)   # write datastruct with devices to tmpFile
                     if(commErrorCount > 0):
                         print("Communication error detected, ignoring potentially corrupted data!")
 
