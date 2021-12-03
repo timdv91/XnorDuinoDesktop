@@ -1,4 +1,4 @@
-from FlaskGUI.SRC.xnorbusWebrequestor import xnorbusWebrequestor
+from FlaskGUI.SRC.HardWare.xnorbusWebrequestor import xnorbusWebrequestor
 from FlaskGUI.SRC.GUI.xnorbusRequestorHelper import xnorbusRequestorHelper
 from flask import Flask, render_template
 from flask import request
