@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
-"""
-Very simple HTTP server in python for logging requests
-Usage::
-    ./main_server.py [<port>]
-"""
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
+from SerialServer.XnorSerialHost import XnorSerialHost
 
-# local libs:
-import XnorSerialHost
-XSH = XnorSerialHost.XnorSerialHost(pPort='', pBautrate=0)   # holds the XnorSerialHost object, overwritten in the run function
+XSH = XnorSerialHost(pPort='', pBautrate=0)   # holds the XnorSerialHost object, overwritten in the run function
 DEV_MODE = False
 
 class Srv(BaseHTTPRequestHandler):
@@ -49,7 +43,8 @@ class Srv(BaseHTTPRequestHandler):
 
 def run(pHWport, pHWbautrate=38400, pSrvPort=8080, server_class=HTTPServer, handler_class=Srv):
     global XSH
-    XSH = XnorSerialHost.XnorSerialHost(pPort=pHWport, pBautrate=pHWbautrate)
+    XSH = XnorSerialHost(pPort=pHWport, pBautrate=pHWbautrate)
+    #XSH = XnorSerialHost.XnorSerialHost(pPort=pHWport, pBautrate=pHWbautrate)
 
     logging.basicConfig(level=logging.INFO)
     server_address = ('', pSrvPort)

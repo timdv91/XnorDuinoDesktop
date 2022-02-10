@@ -1,11 +1,5 @@
 from sys import argv
-import os
-from pathlib import Path
-import time
-
-# local libs:
-import main_server
-
+import SerialServer.main_server as main_server
 
 class main():
     def __init__(self):
@@ -19,7 +13,8 @@ class main():
         elif len(argv) == 4:
             main_server.run(pHWport=argv[1], pHWbautrate=int(argv[2]), pSrvPort=int(argv[3]))
         else:
-            main_server.run(pHWport='/dev/ttyUSB0', pHWbautrate=38400, pSrvPort=8080)
+            main_server.run(pHWport='COM24', pHWbautrate=38400, pSrvPort=8080)
+            #main_server.run(pHWport='/dev/ttyUSB0', pHWbautrate=38400, pSrvPort=8080)
 
 if __name__ == '__main__':
     main()
