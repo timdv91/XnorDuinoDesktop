@@ -151,7 +151,7 @@ def create_app():
         devicesDictionary['AUTO_UPDATE_LOCKED'] = globVars.autoRefreshDevList_isLocked
         return render_template('deviceList.html', posts=devicesDictionary)
 
-    # Rerouting for the about button:
+    # Page that shows treeView.html, this page inherits content from the __base__.html file:
     @app.route('/treeView')
     def treeView():
         globVars.currentlyOpenedMainPage = 'treeView'

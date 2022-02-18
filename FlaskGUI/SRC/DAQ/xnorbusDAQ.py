@@ -18,3 +18,4 @@ class xnorbusDAQ():
         dir_path = str(Path(os.path.dirname(os.path.realpath(__file__))).parent.parent)
         with open(dir_path + '/CONFIG/' + self.FILENAME, 'w') as f:
             json.dump(pData, f, ensure_ascii=False, indent=4)
+
