@@ -78,3 +78,11 @@ class ThreadedBackgroundWorker():
         print("Under construction...")
         #configData = XDAQ.readConfigFromFile()
         #print(configData['DATABASE'])
+
+        #Temporary patch jobs, as usual is the case with unrealistic deadlines:
+        try:
+            from testing.DAQtesting.LGR2daq import HumidityLogger
+            HL = HumidityLogger()
+        except Exception as e:
+            print(str(e))
+
