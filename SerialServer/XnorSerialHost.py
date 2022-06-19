@@ -91,7 +91,9 @@ class XnorSerialHost():
 
     def rawCommunication(self, pData, pDebug=False):
         try:
-            time.sleep(.02)
+            time.sleep(.1)  #--> Use on 10Khz I2C clock
+            #time.sleep(.05)  #--> Use on 100Khz I2C clock
+            #time.sleep(.02)  #--> Use on non RTOS device
             if ((len(pData) != pData[1] + 2)) and (len(pData) > 2):  # do not check for length on read action
                 print("Write action data length error!")             # Avoid writing invalid data to hardware
                 return b'\x00\x00'                                   # send ascii null null

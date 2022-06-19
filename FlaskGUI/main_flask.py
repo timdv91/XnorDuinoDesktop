@@ -28,7 +28,8 @@ HOST_PORT = 5000
 # =========================================================
 # variables that are accessible from anywhere
 class GlobVars():
-    POOL_TIME = 5  # Delay between device list (thread) refreshes: (in sec)
+    POOL_TIME = 10  # Delay between device list (thread) refreshes: (in sec)                                            --> Use on 10Khz I2C clock
+    #POOL_TIME = 5  # Delay between device list (thread) refreshes: (in sec)                                            --> Use on 100Khz I2C clock
     commonDataStruct = {}  # global struct that stores the deviceList parameters
     dataLock = threading.Lock()  # lock to control access to variable
 
@@ -38,7 +39,8 @@ class GlobVars():
 
     # check the serial load on serial port
     autoRefreshDevList_LockEpoch = 0  # contains the epoch when autorefresh of deviceList gets paused.
-    autoRefreshDevList_LockDuration = 3  # contains the amount of seconds autorefresh lists should stay paused
+    autoRefreshDevList_LockDuration = 8  # contains the amount of seconds autorefresh lists should stay paused          --> Use on 10Khz I2C clock
+    #autoRefreshDevList_LockDuration = 3  # contains the amount of seconds autorefresh lists should stay paused         --> Use on 100Khz I2C clock
     autoRefreshDevList_isLocked = True  # if True deviceList will extend pause state with <lockdurations> seconds
     # =========================================================
 globVars = GlobVars()
