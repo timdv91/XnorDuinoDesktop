@@ -25,8 +25,10 @@ reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
 #reqT.get('[127, 5, 1, 69]', "WS")
-reqT.get('[69, 6, 2, 125, 125]', "WS")
-#reqT.get('[99, 15, 2, 2, 2]', "WS") # timed ctrl: (inverted) 3, (normal) 2
+#reqT.get('[69, 9, 2, 0, 125]', "WS")
+reqT.get('[69, 11, 3, 1, 125, 125]', "WS")
+
+
 
 quit()
 

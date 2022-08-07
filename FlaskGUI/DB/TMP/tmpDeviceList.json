@@ -4,8 +4,8 @@
         "HW_ID": "[96, 114, 235, 7]",
         "FW_ID": "v1",
         "ALERT": "0",
-        "PM_IC": "[189, 25, 20, 40]",
-        "TRM_MOD": "[14, 187, 215, 27]",
+        "PM_IC": "[190, 2, 1, 40]",
+        "TRM_MOD": "[31, 188, 213, 27]",
         "DEV_TYPE": "Master",
         "DEV_PAGE": "devices/master/master_v1/master_v1.html",
         "MEM_MAP": "devices/master/master_v1/master_v1.json",
@@ -30,11 +30,11 @@
             "DEV_NESTING": 12,
             "URL": "DEV_PAGE=devices/psu/psu_v1.html&I2C_ID=20&DEV_TYPE=PSU&HW_ID=[96,150,155,76]&FW_ID=v1",
             "NESTED": [
-                69
+                47
             ]
         },
         {
-            "I2C_ID": "69",
+            "I2C_ID": "47",
             "HW_ID": "[98,239,167,194]",
             "FW_ID": "v1",
             "DEV_TYPE": "LedLightDriver",
@@ -45,7 +45,7 @@
                 900
             ],
             "DEV_NESTING": -1,
-            "URL": "DEV_PAGE=devices/ledlights/LedLightDriver_v1/LedLightDriver_v1.html&I2C_ID=69&DEV_TYPE=LedLightDriver&HW_ID=[98,239,167,194]&FW_ID=v1",
+            "URL": "DEV_PAGE=devices/ledlights/LedLightDriver_v1/LedLightDriver_v1.html&I2C_ID=47&DEV_TYPE=LedLightDriver&HW_ID=[98,239,167,194]&FW_ID=v1",
             "NESTED": "N/A"
         },
         {

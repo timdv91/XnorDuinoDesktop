@@ -8,27 +8,40 @@
         console.log(data);
         if(data == true)
         {
-            socket.emit('get_value', {name: "datarequest", cmd: '[{{ posts['I2C_ID'] }}, 6, 2]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+            socket.emit('get_value', {name: "datarequest", cmd: '[{{ posts['I2C_ID'] }}, 6, 8]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
         }
     });
 
 
     socket.on("value_reply", data => {
         console.log(data);
-        document.getElementById("cur_light_intensity").innerHTML = "Current Light Intensity: " + (data["value"][0]);
-        document.getElementById("cur_light_temperature").innerHTML = "Current Light Temperature: " + (data["value"][1]);
-
-        //document.getElementById("ext_vcc").innerHTML = "External voltage: " + (data["value"][5] /10) + "V";
-        //document.getElementById("temperature").innerHTML = "Temperature: " + data["value"][6] + "°C";
-
+        document.getElementById("cur_Reed_Contact_State").innerHTML = "Current REED-CONTACT State: " + (data["value"][0]);
+        document.getElementById("cur_room_temperature").innerHTML = "Current Room Temperature: " + (data["value"][1]-50) + "." + (data["value"][2]);
+        document.getElementById("cur_light_intensity").innerHTML = "Current Light Intensity: " + (data["value"][3]);
+        document.getElementById("cur_light_temperature").innerHTML = "Current Light Temperature: " + (data["value"][4]);
         if(document.getElementById("setLightIntensityText").value == "?")
         {
-            document.getElementById("setLightIntensityText").value = data["value"][0];
+            document.getElementById("setLightIntensityText").value = data["value"][3];
         }
 
         if(document.getElementById("setLightTemperatureText").value == "?")
         {
-            document.getElementById("setLightTemperatureText").value = data["value"][1];
+            document.getElementById("setLightTemperatureText").value = data["value"][4];
+        }
+
+        if(document.getElementById("setAutoModeConfigText").value == "?")
+        {
+            document.getElementById("setAutoModeConfigText").value = data["value"][5];
+        }
+
+        if(document.getElementById("setAutoModeLightIntensityText").value == "?")
+        {
+            document.getElementById("setAutoModeLightIntensityText").value = data["value"][6];
+        }
+
+        if(document.getElementById("setAutoModeLightKelvinText").value == "?")
+        {
+            document.getElementById("setAutoModeLightKelvinText").value = data["value"][7];
         }
 
     });
@@ -37,8 +50,13 @@
     <!-- Put variable read only values here:  -->
     <!-- These values are updated in the "socket.on("value_reply" script:  -->
     <div class="container">
+        <h2 class="badge badge-info devices-larger-badge" id="cur_Reed_Contact_State"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_room_temperature"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="cur_light_intensity"></h2>
         <h2 class="badge badge-info devices-larger-badge" id="cur_light_temperature"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_auto_function"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_auto_mode_light_intensity_preset"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_auto_mode_kelvin_tempSensor_preset"></h2>
     </div>
 
 
@@ -57,7 +75,7 @@
     <div class="container">
         <form action="/devices_write">
             <input type='hidden' name='posts' value="{{ posts }}" />
-            <input type='hidden' name='cmd' value=6,1 />
+            <input type='hidden' name='cmd' value=9,1 />
             <label for="setLightIntensityText">Light Intensity (0-255):</label><br>
             <input type="text" id="setLightIntensityText" name="0" value="?">
             <input type="submit" value="Set">
@@ -67,9 +85,39 @@
     <div class="container">
         <form action="/devices_write">
             <input type='hidden' name='posts' value="{{ posts }}" />
-            <input type='hidden' name='cmd' value=7,1 />
-            <label for="setLightTemperatureText">Light Intensity (0-255):</label><br>
+            <input type='hidden' name='cmd' value=10,1 />
+            <label for="setLightTemperatureText">Light Kelvin (0-255):</label><br>
             <input type="text" id="setLightTemperatureText" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=11,1 />
+            <label for="setAutoModeConfigText">Auto mode config:</label><br>
+            <input type="text" id="setAutoModeConfigText" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=12,1 />
+            <label for="setAutoModeLightIntensityText">Auto mode Light intensity config:</label><br>
+            <input type="text" id="setAutoModeLightIntensityText" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=13,1 />
+            <label for="setAutoModeLightKelvinText">Auto temperature adjust (Set at which temperature light should be 1800K):</label><br>
+            <input type="text" id="setAutoModeLightKelvinText" name="0" value="?">
             <input type="submit" value="Set">
         </form>
     </div>
