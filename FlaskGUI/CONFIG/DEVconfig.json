@@ -49,6 +49,13 @@
       "WINDOW_SIZE": [350,900],
       "DEV_NESTING": -1
     },
+      "[98,239,167,194,1]": {
+      "DEV_TYPE": "LedLightDriver",
+      "DEV_PAGE": "devices/ledlights/LedLightDriver_v1/LedLightDriver_v1.html",
+      "MEM_MAP": "devices/ledlights/LedLightDriver_v1/LedLightDriver_v1.json",
+      "WINDOW_SIZE": [350,900],
+      "DEV_NESTING": -1
+    },
     "[97,19,246,148,1]": {
       "DEV_TYPE": "Fan Controller (pwm)",
       "DEV_PAGE": "devices/fanController/fanController_v1.html",

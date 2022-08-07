@@ -1,0 +1,77 @@
+{% extends '/devices/__devicesBase__.html' %}
+
+{% block content %}
+
+    <script>
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true)
+        {
+            socket.emit('get_value', {name: "datarequest", cmd: '[{{ posts['I2C_ID'] }}, 6, 2]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+        }
+    });
+
+
+    socket.on("value_reply", data => {
+        console.log(data);
+        document.getElementById("cur_light_intensity").innerHTML = "Current Light Intensity: " + (data["value"][0]);
+        document.getElementById("cur_light_temperature").innerHTML = "Current Light Temperature: " + (data["value"][1]);
+
+        //document.getElementById("ext_vcc").innerHTML = "External voltage: " + (data["value"][5] /10) + "V";
+        //document.getElementById("temperature").innerHTML = "Temperature: " + data["value"][6] + "°C";
+
+        if(document.getElementById("setLightIntensityText").value == "?")
+        {
+            document.getElementById("setLightIntensityText").value = data["value"][0];
+        }
+
+        if(document.getElementById("setLightTemperatureText").value == "?")
+        {
+            document.getElementById("setLightTemperatureText").value = data["value"][1];
+        }
+
+    });
+    </script>
+
+    <!-- Put variable read only values here:  -->
+    <!-- These values are updated in the "socket.on("value_reply" script:  -->
+    <div class="container">
+        <h2 class="badge badge-info devices-larger-badge" id="cur_light_intensity"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_light_temperature"></h2>
+    </div>
+
+
+    <!-- Put variable read & write values here:  -->
+    <!-- These values use a get request to send to server:  -->
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=5,1 />
+            <label for="setI2C">Dev ID:</label><br>
+            <input type="text" id="setI2C" name="0" value="{{ posts['I2C_ID'] }}">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=6,1 />
+            <label for="setLightIntensityText">Light Intensity (0-255):</label><br>
+            <input type="text" id="setLightIntensityText" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=7,1 />
+            <label for="setLightTemperatureText">Light Intensity (0-255):</label><br>
+            <input type="text" id="setLightTemperatureText" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+{% endblock %}

@@ -4,8 +4,8 @@
         "HW_ID": "[96, 114, 235, 7]",
         "FW_ID": "v1",
         "ALERT": "0",
-        "PM_IC": "[2, 0, 0, 40]",
-        "TRM_MOD": "[154, 0, 176, 19]",
+        "PM_IC": "[189, 25, 20, 40]",
+        "TRM_MOD": "[14, 187, 215, 27]",
         "DEV_TYPE": "Master",
         "DEV_PAGE": "devices/master/master_v1/master_v1.html",
         "MEM_MAP": "devices/master/master_v1/master_v1.json",
@@ -30,70 +30,22 @@
             "DEV_NESTING": 12,
             "URL": "DEV_PAGE=devices/psu/psu_v1.html&I2C_ID=20&DEV_TYPE=PSU&HW_ID=[96,150,155,76]&FW_ID=v1",
             "NESTED": [
-                45,
-                122
+                69
             ]
         },
         {
-            "I2C_ID": "45",
-            "HW_ID": "[97,9,89,94]",
+            "I2C_ID": "69",
+            "HW_ID": "[98,239,167,194]",
             "FW_ID": "v1",
-            "DEV_TYPE": "SHT3X",
-            "DEV_PAGE": "devices/sensors/SHT3X/SHT3X_v1.html",
-            "MEM_MAP": "devices/sensors/SHT3X/SHT3X_v1.json",
+            "DEV_TYPE": "LedLightDriver",
+            "DEV_PAGE": "devices/ledlights/LedLightDriver_v1/LedLightDriver_v1.html",
+            "MEM_MAP": "devices/ledlights/LedLightDriver_v1/LedLightDriver_v1.json",
             "WINDOW_SIZE": [
                 350,
                 900
             ],
             "DEV_NESTING": -1,
-            "URL": "DEV_PAGE=devices/sensors/SHT3X/SHT3X_v1.html&I2C_ID=45&DEV_TYPE=SHT3X&HW_ID=[97,9,89,94]&FW_ID=v1",
-            "NESTED": "N/A"
-        },
-        {
-            "I2C_ID": "121",
-            "HW_ID": "[96,150,155,76]",
-            "FW_ID": "v1",
-            "DEV_TYPE": "PSU",
-            "DEV_PAGE": "devices/psu/psu_v1.html",
-            "MEM_MAP": "devices/psu/psu_v1.json",
-            "WINDOW_SIZE": [
-                350,
-                600
-            ],
-            "DEV_NESTING": 12,
-            "URL": "DEV_PAGE=devices/psu/psu_v1.html&I2C_ID=121&DEV_TYPE=PSU&HW_ID=[96,150,155,76]&FW_ID=v1",
-            "NESTED": [
-                123
-            ]
-        },
-        {
-            "I2C_ID": "122",
-            "HW_ID": "[96,173,28,232]",
-            "FW_ID": "v1",
-            "DEV_TYPE": "INA219",
-            "DEV_PAGE": "devices/sensors/INA219/INA219_v1.html",
-            "MEM_MAP": "devices/sensors/INA219/INA219_v1.json",
-            "WINDOW_SIZE": [
-                350,
-                600
-            ],
-            "DEV_NESTING": -1,
-            "URL": "DEV_PAGE=devices/sensors/INA219/INA219_v1.html&I2C_ID=122&DEV_TYPE=INA219&HW_ID=[96,173,28,232]&FW_ID=v1",
-            "NESTED": "N/A"
-        },
-        {
-            "I2C_ID": "123",
-            "HW_ID": "[96,191,146,12]",
-            "FW_ID": "v1",
-            "DEV_TYPE": "CV50",
-            "DEV_PAGE": "devices/sensors/CV50/CV50_v1.html",
-            "MEM_MAP": "devices/sensors/CV50/CV50_v1.json",
-            "WINDOW_SIZE": [
-                500,
-                825
-            ],
-            "DEV_NESTING": -1,
-            "URL": "DEV_PAGE=devices/sensors/CV50/CV50_v1.html&I2C_ID=123&DEV_TYPE=CV50&HW_ID=[96,191,146,12]&FW_ID=v1",
+            "URL": "DEV_PAGE=devices/ledlights/LedLightDriver_v1/LedLightDriver_v1.html&I2C_ID=69&DEV_TYPE=LedLightDriver&HW_ID=[98,239,167,194]&FW_ID=v1",
             "NESTED": "N/A"
         },
         {
