@@ -66,7 +66,7 @@ class XnorSerialHost():
         self.ser.close()
         self.isConnectedHW = False
         return b'\x00\x07'
-        # quit(1)     #Todo: remove quit, try to reconnect to hardware
+        # quit(1)                                   #Todo: remove quit, try to reconnect to hardware
 
     def _communication(self, pFunction , pData, pDebug=False):
         retVal = b'\x00\x00'
