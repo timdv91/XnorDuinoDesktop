@@ -80,9 +80,9 @@ class ThreadedBackgroundWorker():
         #print(configData['DATABASE'])
 
         #Temporary patch jobs, as usual is the case with unrealistic deadlines:
-        try:
-            from testing.DAQtesting.LGR2daq import HumidityLogger
-            HL = HumidityLogger()
-        except Exception as e:
-            print(str(e))
+        #try:
+        #    from testing.DAQtesting.LGR2daq import HumidityLogger
+        #    HL = HumidityLogger()
+        #except Exception as e:
+        #    print(str(e))
 
