@@ -6,3 +6,4 @@
 .idea/
 config/
 testing/DAQtesting/json
+FlaskGUI/DB/TMP/tmpDeviceList.json
