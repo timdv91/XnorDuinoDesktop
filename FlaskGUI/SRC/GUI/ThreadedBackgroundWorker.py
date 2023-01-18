@@ -1,5 +1,5 @@
-import SRC.GUI.DeviceScan as DeviceScan
-import atexit, threading
+from SRC.GUI.DeviceScan import DeviceScan                                   # Can be ignored if this import causes an error, needs to be like this to function outside IDE.
+import atexit, threading                                                    # TODO: Find out why above line causes error in IDE, but has to be like to function outside IDE.
 import time
 
 class ThreadedBackgroundWorker():
