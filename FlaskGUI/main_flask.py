@@ -1,6 +1,6 @@
-from FlaskGUI.SRC.GUI.ThreadedBackgroundWorker import ThreadedBackgroundWorker
-from FlaskGUI.SRC.GUI.FrontEndDataHandler import DeviceListLoader, TreeViewLoader, DevicesPageLoader, DevicesPageWriter
-from FlaskGUI.SRC.HardWare.xnorbusWebrequestor import xnorbusWebrequestor
+from SRC.GUI.ThreadedBackgroundWorker import ThreadedBackgroundWorker
+from SRC.GUI.FrontEndDataHandler import DeviceListLoader, TreeViewLoader, DevicesPageLoader, DevicesPageWriter
+from SRC.HardWare.xnorbusWebrequestor import xnorbusWebrequestor
 from SRC.GUI.xnorbusRequestorHelper import xnorbusRequestorHelper
 from SRC.DAQ.xnorbusDAQ import xnorbusDAQ
 from SRC.TMP.temporaryFileManager import temporaryFileManager

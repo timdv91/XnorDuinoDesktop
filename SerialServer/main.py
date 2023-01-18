@@ -1,5 +1,5 @@
 from sys import argv
-import SerialServer.main_server as main_server
+import main_server as main_server
 
 class main():
     def __init__(self):

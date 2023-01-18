@@ -1,4 +1,4 @@
-from FlaskGUI.SRC.GUI.DeviceScan import DeviceScan
+import SRC.GUI.DeviceScan as DeviceScan
 import atexit, threading
 import time
 

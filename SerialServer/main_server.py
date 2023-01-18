@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import logging
-from SerialServer.XnorSerialHost import XnorSerialHost
+from XnorSerialHost import XnorSerialHost
 
 XSH = XnorSerialHost(pPort='', pBautrate=0)   # holds the XnorSerialHost object, overwritten in the run function
 DEV_MODE = False
