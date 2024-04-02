@@ -1,3 +1,8 @@
+body {
+  background-color: #121212;
+  color: #d2d2d4;
+}
+
 .devices-larger-badge {
     font-size: 1.3em;
 }
