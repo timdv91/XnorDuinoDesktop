@@ -50,9 +50,16 @@
       "DEV_NESTING": -1
     },
       "[98,239,167,194,1]": {
-      "DEV_TYPE": "LedLightDriver",
+      "DEV_TYPE": "LedLightDriver_v1",
       "DEV_PAGE": "devices/ledlights/LedLightDriver_v1/LedLightDriver_v1.html",
       "MEM_MAP": "devices/ledlights/LedLightDriver_v1/LedLightDriver_v1.json",
+      "WINDOW_SIZE": [450,900],
+      "DEV_NESTING": -1
+    },
+      "[101,93,27,241,1]": {
+      "DEV_TYPE": "LedLightDriver_v2",
+      "DEV_PAGE": "devices/ledlights/LedLightDriver_v2/LedLightDriver_v2.html",
+      "MEM_MAP": "devices/ledlights/LedLightDriver_v2/LedLightDriver_v2.json",
       "WINDOW_SIZE": [450,900],
       "DEV_NESTING": -1
     },

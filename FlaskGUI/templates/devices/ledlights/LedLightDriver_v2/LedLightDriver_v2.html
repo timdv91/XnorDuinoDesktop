@@ -1,0 +1,261 @@
+{% extends '/devices/__devicesBase__.html' %}
+
+{% block content %}
+
+    <script>
+    // If server has locked the autorefresh, start own communication:
+    socket.on("isLocked", data => {
+        console.log(data);
+        if(data == true)
+        {
+            socket.emit('get_value', {name: "datarequest", cmd: '[{{ posts['I2C_ID'] }}, 9, 13]', cmdType: 'RS'});  // only send data when server has locked autoRefresh
+        }
+    });
+
+
+    socket.on("value_reply", data => {
+        console.log(data);
+        document.getElementById("cur_linked_mode").innerHTML = "Link mode: " + (data["value"][0]);
+
+        document.getElementById("cur_ssr_state_chA").innerHTML = "CH-A SSR state: " + (data["value"][1]);
+        document.getElementById("cur_lightTemp_chA").innerHTML = "CH-A Light temperature: " + (data["value"][2]);
+        document.getElementById("cur_lightIntensity_chA").innerHTML = "CH-A Light intensity: " + (data["value"][3]);
+
+        document.getElementById("cur_ssr_state_chB").innerHTML = "CH-B SSR state: " + (data["value"][4]);
+        document.getElementById("cur_lightTemp_chB").innerHTML = "CH-B Light temperature: " + (data["value"][5]);
+        document.getElementById("cur_lightIntensity_chB").innerHTML = "CH-B Light intensity: " + (data["value"][6]);
+
+        document.getElementById("cur_ssr_state_chC").innerHTML = "CH-C SSR state: " + (data["value"][7]);
+        document.getElementById("cur_lightTemp_chC").innerHTML = "CH-C Light temperature: " + (data["value"][8]);
+        document.getElementById("cur_lightIntensity_chC").innerHTML = "CH-C Light intensity: " + (data["value"][9]);
+
+        document.getElementById("cur_ssr_state_chD").innerHTML = "CH-D SSR state: " + (data["value"][10]);
+        document.getElementById("cur_lightTemp_chD").innerHTML = "CH-D Light temperature: " + (data["value"][11]);
+        document.getElementById("cur_lightIntensity_chD").innerHTML = "CH-D Light intensity: " + (data["value"][12]);
+
+        if(document.getElementById("setLinkedMode").value == "?")
+        {
+            document.getElementById("setLinkedMode").value = data["value"][0];
+        }
+
+        if(document.getElementById("setSSR_chA").value == "?")
+        {
+            document.getElementById("setSSR_chA").value = data["value"][1];
+        }
+        if(document.getElementById("setLightTemperatureText_chA").value == "?")
+        {
+            document.getElementById("setLightTemperatureText_chA").value = data["value"][2];
+        }
+        if(document.getElementById("setLightIntensityText_chA").value == "?")
+        {
+            document.getElementById("setLightIntensityText_chA").value = data["value"][3];
+        }
+
+        if(document.getElementById("setSSR_chB").value == "?")
+        {
+            document.getElementById("setSSR_chB").value = data["value"][4];
+        }
+        if(document.getElementById("setLightTemperatureText_chB").value == "?")
+        {
+            document.getElementById("setLightTemperatureText_chB").value = data["value"][5];
+        }
+        if(document.getElementById("setLightIntensityText_chB").value == "?")
+        {
+            document.getElementById("setLightIntensityText_chB").value = data["value"][6];
+        }
+
+        if(document.getElementById("setSSR_chC").value == "?")
+        {
+            document.getElementById("setSSR_chC").value = data["value"][7];
+        }
+        if(document.getElementById("setLightTemperatureText_chC").value == "?")
+        {
+            document.getElementById("setLightTemperatureText_chC").value = data["value"][8];
+        }
+        if(document.getElementById("setLightIntensityText_chC").value == "?")
+        {
+            document.getElementById("setLightIntensityText_chC").value = data["value"][9];
+        }
+
+        if(document.getElementById("setSSR_chD").value == "?")
+        {
+            document.getElementById("setSSR_chD").value = data["value"][10];
+        }
+        if(document.getElementById("setLightTemperatureText_chD").value == "?")
+        {
+            document.getElementById("setLightTemperatureText_chD").value = data["value"][11];
+        }
+        if(document.getElementById("setLightIntensityText_chD").value == "?")
+        {
+            document.getElementById("setLightIntensityText_chD").value = data["value"][12];
+        }
+
+    });
+    </script>
+
+    <!-- Put variable read only values here:  -->
+    <!-- These values are updated in the "socket.on("value_reply" script:  -->
+    <div class="container">
+
+        <h2 class="badge badge-info devices-larger-badge" id="cur_ssr_state_chA"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_lightTemp_chA"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_lightIntensity_chA"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_ssr_state_chB"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_lightTemp_chB"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_lightIntensity_chB"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_ssr_state_chC"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_lightTemp_chC"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_lightIntensity_chC"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_ssr_state_chD"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_lightTemp_chD"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_lightIntensity_chD"></h2>
+        <h2 class="badge badge-info devices-larger-badge" id="cur_linked_mode"></h2>
+    </div>
+
+
+    <!-- Put variable read & write values here:  -->
+    <!-- These values use a get request to send to server:  -->
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=5,1 />
+            <label for="setI2C">Dev ID:</label><br>
+            <input type="text" id="setI2C" name="0" value="{{ posts['I2C_ID'] }}">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=9,1 />
+            <label for="setLinkedMode">Set Linked Mode (001=link brightness, 010=link temperature, 100=efficiency mode):</label><br>
+            <input type="text" id="setLinkedMode" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=10,1 />
+            <label for="setSSR_chA">CH-A SSR (0-1):</label><br>
+            <input type="text" id="setSSR_chA" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+     <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=11,1 />
+            <label for="setLightTemperatureText_chA">CH-A Light Temperature (0-255):</label><br>
+            <input type="text" id="setLightTemperatureText_chA" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=12,1 />
+            <label for="setLightIntensityText_chA">CH-A Light Intensity (0-255):</label><br>
+            <input type="text" id="setLightIntensityText_chA" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=13,1 />
+            <label for="setSSR_chB">CH-B SSR (0-1):</label><br>
+            <input type="text" id="setSSR_chB" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=14,1 />
+            <label for="setLightTemperatureText_chB">CH-B Light Temperature (0-255):</label><br>
+            <input type="text" id="setLightTemperatureText_chB" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=15,1 />
+            <label for="setLightIntensityText_chB">CH-B Light Intensity (0-255):</label><br>
+            <input type="text" id="setLightIntensityText_chB" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=16,1 />
+            <label for="setSSR_chC">CH-C SSR (0-1):</label><br>
+            <input type="text" id="setSSR_chC" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=17,1 />
+            <label for="setLightTemperatureText_chC">CH-C Light Temperature (0-255):</label><br>
+            <input type="text" id="setLightTemperatureText_chC" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=18,1 />
+            <label for="setLightIntensityText_chC">CH-C Light Intensity (0-255):</label><br>
+            <input type="text" id="setLightIntensityText_chC" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=19,1 />
+            <label for="setSSR_chD">CH-D SSR (0-1):</label><br>
+            <input type="text" id="setSSR_chD" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=20,1 />
+            <label for="setLightTemperatureText_chD">CH-D Light Temperature (0-255):</label><br>
+            <input type="text" id="setLightTemperatureText_chD" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+    <div class="container">
+        <form action="/devices_write">
+            <input type='hidden' name='posts' value="{{ posts }}" />
+            <input type='hidden' name='cmd' value=21,1 />
+            <label for="setLightIntensityText_chD">CH-D Light Intensity (0-255):</label><br>
+            <input type="text" id="setLightIntensityText_chD" name="0" value="?">
+            <input type="submit" value="Set">
+        </form>
+    </div>
+
+
+
+{% endblock %}
