@@ -7,7 +7,7 @@ error codes:
     b'\x00\x07' --> Unknown error / connection to hardware error            --> restarts serial connection to hardware
 '''
 
-import serial, time, copy
+import serial, time, copy, json, os
 DEV_MODE = False
 
 class XnorSerialHost():
@@ -74,10 +74,14 @@ class XnorSerialHost():
             retVal = self.rawCommunication(pData)
         elif(pFunction == "/RS"):
             retVal = self.readSlave(pData)
+        elif (pFunction == "/RSC"):
+            retVal = self.readSlaveCached(pData)
         elif(pFunction == "/RM"):
             retVal = self.readMaster(pData)
         elif(pFunction == "/WS"):
             retVal = self.writeSlave(pData)
+        elif(pFunction == "/WSC"):
+            retVal = self.writeSlaveCached(pData)
         elif(pFunction == "/WM"):
             retVal = self.writeMaster(pData)
         elif(pFunction == "/setRFmode"):
@@ -88,7 +92,8 @@ class XnorSerialHost():
             retVal = self.resetMode(pData)
         return retVal
 
-
+    # ============================ Raw communication with hardware: ======================================
+    # ====================================================================================================
     def rawCommunication(self, pData, pDebug=False):
         try:
             time.sleep(.1)  #--> Use on 10Khz I2C clock
@@ -155,6 +160,28 @@ class XnorSerialHost():
 
             return b'\x00\x07'                      # unknown error or connection reset
 
+
+    # ============================ Read / Write Slave hardware devices: ====================================
+    # ======================================================================================================
+    def writeSlave(self, pData, pDebug=False):
+        # first set the masters registers to init a read request on a slave:
+        dataSize = len(pData) + 1
+        pData.insert(0, 16)             # start writing master register at index 16
+        pData.insert(1, dataSize)       # inform master we're gonna write 4 bytes
+        pData.insert(2, 2)              # set masters register to read request from slave
+
+        if (self.RFmode == True):
+            dataSize = len(pData) + 1
+            pData.insert(0, 16)
+            pData.insert(1, dataSize)
+            pData.insert(2, 11)
+
+        if(DEV_MODE):
+            print(pData)
+        retval = self.rawCommunication(pData)
+        return retval
+
+
     def readSlave(self, pData, pDebug=False):
         # first set the masters registers to init a read request on a slave:
         pData.insert(0, 16)     # start writing master register at index 16
@@ -187,6 +214,17 @@ class XnorSerialHost():
         retval = self.rawCommunication([20, int(pData[-1])])
         return retval
 
+    def readSlaveCached(self, pData, pDebug=False):
+        self.readSlave(pData, pDebug)
+
+    def writeSlaveCached(self, pData, pDebug=False):
+        self.writeSlave(pData, pDebug)
+
+
+
+    # ============================ Read / Write Master hardware device: ====================================
+    # ======================================================================================================
+
     def readMaster(self, pData, pDebug=False):
         if(self.RFmode == True):
             pData.insert(0, 16)
@@ -196,24 +234,6 @@ class XnorSerialHost():
             pData = [20, pData[4]]
 
         return self.rawCommunication(pData)
-
-    def writeSlave(self, pData, pDebug=False):
-        # first set the masters registers to init a read request on a slave:
-        dataSize = len(pData) + 1
-        pData.insert(0, 16)             # start writing master register at index 16
-        pData.insert(1, dataSize)       # inform master we're gonna write 4 bytes
-        pData.insert(2, 2)              # set masters register to read request from slave
-
-        if (self.RFmode == True):
-            dataSize = len(pData) + 1
-            pData.insert(0, 16)
-            pData.insert(1, dataSize)
-            pData.insert(2, 11)
-
-        if(DEV_MODE):
-            print(pData)
-        retval = self.rawCommunication(pData)
-        return retval
 
     def writeMaster(self, pData, pDebug=False):
         if(pData[0] <= 4):           # master is only writable starting from index 9!
@@ -228,6 +248,10 @@ class XnorSerialHost():
         if(DEV_MODE):
             print(pData)
         return self.rawCommunication(pData)
+
+
+    # ============================ Configure RF device usage: ==============================================
+    # ======================================================================================================
 
     def setRFmode(self, pData):
         # create mac backup:
@@ -259,6 +283,10 @@ class XnorSerialHost():
         self.RFMAC = None   # clear mac backup
 
         return retval
+
+
+    # ============================ Autoreset USB Master, during to communication errors or firmware lockup: ====================================
+    # ==========================================================================================================================================
 
     def resetMode(self, pData):
         if(time.time() < self.resetTimeout + 15):
