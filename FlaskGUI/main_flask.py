@@ -2,21 +2,18 @@ from SRC.GUI.ThreadedBackgroundWorker import ThreadedBackgroundWorker
 from SRC.GUI.FrontEndDataHandler import DeviceListLoader, TreeViewLoader, DevicesPageLoader, DevicesPageWriter
 from SRC.HardWare.xnorbusWebrequestor import xnorbusWebrequestor
 from SRC.GUI.xnorbusRequestorHelper import xnorbusRequestorHelper
-from SRC.TMP.temporaryFileManager import temporaryFileManager
 from SRC.GUI.IP import IP
 
 from flask import Flask, render_template
 from flask import request
 import threading
 from flask_socketio import SocketIO, emit
-import json, os
 import time
 import copy
 
 XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 
 XRH = xnorbusRequestorHelper(XRQ, "DEVconfig.json")
-TFM = temporaryFileManager("tmpDeviceList.json")
 
 HOST_IP = IP().get_ip()
 HOST_PORT = 5000
@@ -146,14 +143,11 @@ def create_app():
 # ========================================== Flask launcher: ===========================================
 # ======================================================================================================
 app = create_app()
-#app.env = 'development'
 
 if(app.env == 'development'):
     app.debug = True
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open(dir_path + '/DB/TMP/tmpDeviceList.json') as f:
-        globVars.commonDataStruct['SLAVES'] = json.load(f)
 else:
-    ThreadedBackgroundWorker(globVars, XRH, TFM)
+    ThreadedBackgroundWorker(globVars, XRH)
 
-app.run(host=HOST_IP, port=HOST_PORT) # set HOST_IP and HOST_PORT on top of this page!
+# set HOST_IP and HOST_PORT on top of this page!
+app.run(host=HOST_IP, port=HOST_PORT)

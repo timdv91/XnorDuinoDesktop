@@ -4,10 +4,9 @@ import time
 
 class ThreadedBackgroundWorker():
     # Create new thread to run background tasks asynchronously:
-    def __init__(self, pGlobVars, pXRH, pTFM):
+    def __init__(self, pGlobVars, pXRH):
         self.globVars = pGlobVars
         self.XRH = pXRH
-        self.TFM = pTFM
 
         print("Starting thread creation")
         # Create your thread
@@ -55,8 +54,6 @@ class ThreadedBackgroundWorker():
                     devIdList = DS.getMasterSlavesIdList(self.globVars.commonDataStruct)
                     devDictionary = DS.getSlavesInfo(devIdList)
                     self.globVars.commonDataStruct = DS.getNestingChildDevices(self.globVars.commonDataStruct, devDictionary)
-
-                    self.TFM.writeDevListToFile(self.globVars.commonDataStruct)   # write datastruct with devices to tmpFile
 
                     if(DS.getErrorStats() > 0):
                         print("Communication error detected, ignoring potentially corrupted data!")
