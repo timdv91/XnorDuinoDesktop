@@ -82,7 +82,7 @@ class XnorSerialHost():
         elif(pFunction == "/WS"):
             retVal = self.writeSlaveCached(pData)       # Always write to slave using cache, to avoid update issues
         elif(pFunction == "/WSC"):
-            retVal = self.writeSlaveCached(pData)
+            retVal = self.writeSlaveCached(pData)       # Always write to slave using cache, to avoid update issues
         elif(pFunction == "/WM"):
             retVal = self.writeMaster(pData)
         elif(pFunction == "/setRFmode"):
