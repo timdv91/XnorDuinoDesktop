@@ -4,10 +4,9 @@ import time
 
 class ThreadedBackgroundWorker():
     # Create new thread to run background tasks asynchronously:
-    def __init__(self, pGlobVars, pXRH, pXDAQ, pTFM):
+    def __init__(self, pGlobVars, pXRH, pTFM):
         self.globVars = pGlobVars
         self.XRH = pXRH
-        self.XDAQ = pXDAQ
         self.TFM = pTFM
 
         print("Starting thread creation")
@@ -33,10 +32,10 @@ class ThreadedBackgroundWorker():
         # Do your stuff with commonDataStruct Here
             print("Thread started: ", threading.get_ident())
             if(self.globVars.currentlyOpenedMainPage in self.globVars.runThreadOnLoadedPages):          # prevent loading deviceList when page is not loaded
-                self.globVars.currentlyOpenedMainPage = None                              # clear the currentlyOpenedMainPage to prevent auto updates after page is closed!
-                self.runBusDeviceScan()                                     # On each refresh of the page this value is restored automatically for next update.
+                self.globVars.currentlyOpenedMainPage = None                                            # clear the currentlyOpenedMainPage to prevent auto updates after page is closed!
+                self.runBusDeviceScan()                                                                 # On each refresh of the page this value is restored automatically for next update.
             else:
-                self.runDAQ()                                               # When the XnorDuino configurator is not working, execute DAQ
+                None                                                                                    # Here we can execute stuff, whenever the GUI is inactive.
 
             print("Thread ended: ", threading.get_ident())
             # Set the next thread to happen
@@ -71,18 +70,3 @@ class ThreadedBackgroundWorker():
                 self.globVars.autoRefreshDevList_isLocked = True
         except TypeError as e:
             print(str(e))
-
-    # do data acquisition on separated thread:
-    def runDAQ(self):
-        print("No configuration page opened, running DAQ execution...")
-        print("Under construction...")
-        #configData = XDAQ.readConfigFromFile()
-        #print(configData['DATABASE'])
-
-        #Temporary patch jobs, as usual is the case with unrealistic deadlines:
-        #try:
-        #    from testing.DAQtesting.LGR2daq import HumidityLogger
-        #    HL = HumidityLogger()
-        #except Exception as e:
-        #    print(str(e))
-

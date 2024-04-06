@@ -2,7 +2,6 @@ from SRC.GUI.ThreadedBackgroundWorker import ThreadedBackgroundWorker
 from SRC.GUI.FrontEndDataHandler import DeviceListLoader, TreeViewLoader, DevicesPageLoader, DevicesPageWriter
 from SRC.HardWare.xnorbusWebrequestor import xnorbusWebrequestor
 from SRC.GUI.xnorbusRequestorHelper import xnorbusRequestorHelper
-from SRC.DAQ.xnorbusDAQ import xnorbusDAQ
 from SRC.TMP.temporaryFileManager import temporaryFileManager
 from SRC.GUI.IP import IP
 
@@ -14,12 +13,9 @@ import json, os
 import time
 import copy
 
-#XRQ = xnorbusWebrequestor('http://192.168.1.65:8080')
-#XRQ = xnorbusWebrequestor('http://192.168.1.28:8080')
 XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 
 XRH = xnorbusRequestorHelper(XRQ, "DEVconfig.json")
-XDAQ = xnorbusDAQ(XRQ, "DAQconfig.json")
 TFM = temporaryFileManager("tmpDeviceList.json")
 
 HOST_IP = IP().get_ip()
@@ -93,51 +89,6 @@ def create_app():
         globVars.currentlyOpenedMainPage = 'about'
         return render_template('about.html')
 
-    # ============================ DAQ page Get and Post requests: =========================
-    # ======================================================================================================
-
-    # Rerouting for the about button:
-    @app.route('/dataAcquisition')
-    def dataAcquisition():                                                      #TODO: CLEAN UP THIS MESS!
-        globVars.currentlyOpenedMainPage = 'dataAcquisition'
-        if(len(globVars.commonDataStruct) <= 0):
-            globVars.commonDataStruct = TFM.readDevListFromFile()
-        DAQConfig = XDAQ.readConfigFromFile()
-        return render_template('dataAcquisition.html', posts=DAQConfig, devices=globVars.commonDataStruct)
-
-    # Rerouting for the about button:
-    @app.route('/dataAcquisition_write')
-    def dataAcquisition_write():                                                #TODO: CLEAN UP THIS MESS!
-        globVars.currentlyOpenedMainPage = 'dataAcquisition'
-
-        if request.method == 'GET':
-            DAQConfig = eval(request.args.getlist('posts')[0])  # Why inside an array? Check this later on?
-
-            if(request.args['cmd'] == "config"):
-                DAQConfig['DATABASE']['URL'] = request.args['ServerIP']
-                DAQConfig['DATABASE']['PORT'] = request.args['ServerPort']
-                DAQConfig['DATABASE']['USER'] = request.args['DatabaseUser']
-                DAQConfig['DATABASE']['PASS'] = request.args['DatabasePass']
-
-                # Fix the nonsensical crap an HTML checkbox brings with it:
-                checkBoxState = None
-                try:
-                    checkBoxState = request.args['DatabaseEncrypted']
-                    if(checkBoxState != False):
-                        checkBoxState = True
-                except:
-                    checkBoxState = False
-
-                DAQConfig['DATABASE']['ENCRYPTION'] = checkBoxState
-
-            elif(request.args['cmd'] == "DAQSettings"):
-                print("Add daq rules here to daqConfig file")
-            else:
-                print("ERROR: '/dataAcquisition_write' - Unknown option")
-
-            XDAQ.writeConfigToFile(DAQConfig)
-        return render_template('dataAcquisition.html', posts=DAQConfig, devices=globVars.commonDataStruct)
-
     # ============================ DeviceList and TreeView Get and Post requests: ==============================
     # ======================================================================================================
 
@@ -203,6 +154,6 @@ if(app.env == 'development'):
     with open(dir_path + '/DB/TMP/tmpDeviceList.json') as f:
         globVars.commonDataStruct['SLAVES'] = json.load(f)
 else:
-    ThreadedBackgroundWorker(globVars, XRH, XDAQ, TFM)
+    ThreadedBackgroundWorker(globVars, XRH, TFM)
 
 app.run(host=HOST_IP, port=HOST_PORT) # set HOST_IP and HOST_PORT on top of this page!
