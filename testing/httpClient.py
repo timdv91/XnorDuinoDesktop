@@ -24,6 +24,23 @@ reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
+r = eval(reqT.get('[20, 10, 1]', "RSC"))
+print("ID: ", end="")
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+reqT.get('[20, 10, 1, 143]', "WSC")
+
+r = eval(reqT.get('[20, 10, 1]', "RSC"))
+print("ID: ", end="")
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+quit()
+
+
 
 r = eval(reqT.get('[20, 0, 5]', "RSC"))
 print("ID: ", end="")
