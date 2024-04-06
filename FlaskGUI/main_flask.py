@@ -12,7 +12,6 @@ import time
 import copy
 
 XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
-
 XRH = xnorbusRequestorHelper(XRQ, "DEVconfig.json")
 
 HOST_IP = IP().get_ip()
