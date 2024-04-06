@@ -14,6 +14,7 @@ class XnorSerialHost():
     def __init__(self, pPort, pBautrate=38400):
         self.PORT = pPort
         self.BAUT = pBautrate
+        self.TMP_CacheFilePath = '/tmp/XnorDuinoSerialServerCache.json'
         self.isConnectedHW = False
         self.isComLocked = True
         self.RFmode = False
@@ -214,13 +215,52 @@ class XnorSerialHost():
         retval = self.rawCommunication([20, int(pData[-1])])
         return retval
 
-    def readSlaveCached(self, pData, pDebug=False):
-        self.readSlave(pData, pDebug)
+    def readSlaveCached(self, pData, pDebug=False):                          # Todo: Disable cached mode on Windows, as path doesn't exist!
+        if self.RFmode == True:                                              # ReadSlave cached doesn't support RF mode yet.
+            return self.readSlave(pData, pDebug)
 
-    def writeSlaveCached(self, pData, pDebug=False):
-        self.writeSlave(pData, pDebug)
+        jsonCache = None
+        try:
+            f = open(self.TMP_CacheFilePath)
+            jsonCache = json.load(f)
+            f.close()
 
+            pDataBuf = copy.deepcopy(pData)
+            pDataBuf.insert(0,16)
+            pDataBuf.insert(1,4)
+            pDataBuf.insert(2,1)
+            retVal = jsonCache[str(pDataBuf)]
+        except KeyError:
+            retVal = self.readSlave(pData, pDebug)
+            if jsonCache == None:
+                f = open(self.TMP_CacheFilePath)
+                jsonCache = json.load(f)
+                f.close()
 
+            jsonCache[str(pData)] = str(retVal)
+            json_obj = json.dumps(jsonCache, indent=4)
+            with open(self.TMP_CacheFilePath, "w") as outfile:
+                outfile.write(json_obj)
+
+        except FileNotFoundError:
+            retVal = self.readSlave(pData, pDebug)
+            dictBuf = {}
+            dictBuf[str(pData)] = str(retVal)
+            json_obj = json.dumps(dictBuf, indent=4)
+            with open(self.TMP_CacheFilePath, "w") as outfile:
+                outfile.write(json_obj)
+
+        return retVal
+
+    def writeSlaveCached(self, pData, pDebug=False):                            # Todo: Disable cached mode on Windows, as path doesn't exist!
+        if self.RFmode == True:                                                 # WriteSlaveCached doesn't support RF mode yet.
+            return self.writeSlave(pData, pDebug)
+
+        retVal = None
+        if os.path.exists(self.TMP_CacheFilePath) == False:
+            retVal = self.writeSlave(pData, pDebug)
+
+        return retVal
 
     # ============================ Read / Write Master hardware device: ====================================
     # ======================================================================================================
