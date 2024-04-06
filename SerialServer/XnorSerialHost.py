@@ -80,7 +80,7 @@ class XnorSerialHost():
         elif(pFunction == "/RM"):
             retVal = self.readMaster(pData)
         elif(pFunction == "/WS"):
-            retVal = self.writeSlave(pData)
+            retVal = self.writeSlaveCached(pData)       # Always write to slave using cache, to avoid update issues
         elif(pFunction == "/WSC"):
             retVal = self.writeSlaveCached(pData)
         elif(pFunction == "/WM"):
@@ -162,8 +162,8 @@ class XnorSerialHost():
             return b'\x00\x07'                      # unknown error or connection reset
 
 
-    # ============================ Read / Write Slave hardware devices: ====================================
-    # ======================================================================================================
+    # ============================ Write Slave hardware devices: ====================================
+    # ===============================================================================================
     def writeSlave(self, pData, pDebug=False):
         # first set the masters registers to init a read request on a slave:
         dataSize = len(pData) + 1
@@ -182,7 +182,37 @@ class XnorSerialHost():
         retval = self.rawCommunication(pData)
         return retval
 
+    def writeSlaveCached(self, pData, pDebug=False):                            # Todo: Disable cached mode on Windows, as path doesn't exist!
+        if self.RFmode == True or pData[2] > 1:                                 # WriteSlaveCached doesn't support RF mode yet, nor does it support multiple simultanious byte writes..
+            return self.writeSlave(pData, pDebug)
 
+        pDataBuf = copy.deepcopy(pData)                                         # writeSlave() adds data to pData, thus we need a deepcopy
+        try:                                                                    # Try to open the json cache file
+            f = open(self.TMP_CacheFilePath)
+            jsonCache = json.load(f)
+            f.close()
+
+            retVal = self.writeSlave(pData, pDebug)                             # Write data to the slave
+            if retVal == b'':                                                   # If slave write went successfully, then write data to cache file
+                jsonCache[str(pDataBuf[:-1])] = str(bytes([pDataBuf[-1]]))      # Remove the last value from pDataBuf to obtain the dict key, use the last byte as actual 'value'
+                json_obj = json.dumps(jsonCache, indent=4)                      # Convert to json and write to file
+                with open(self.TMP_CacheFilePath, "w") as outfile:
+                    outfile.write(json_obj)
+
+        except FileNotFoundError:                                               # If the json file doesn't exist, create one before writing to cache
+            retVal = self.writeSlave(pData, pDebug)
+            if retVal == b'':
+                dictBuf = {}
+                dictBuf[str(pDataBuf[:-1])] = str(bytes([pDataBuf[-1]]))
+                json_obj = json.dumps(dictBuf, indent=4)
+                with open(self.TMP_CacheFilePath, "w") as outfile:
+                    outfile.write(json_obj)
+
+
+        return retVal
+
+    # ============================ Read Slave hardware devices: ====================================
+    # ==============================================================================================
     def readSlave(self, pData, pDebug=False):
         # first set the masters registers to init a read request on a slave:
         pData.insert(0, 16)     # start writing master register at index 16
@@ -244,35 +274,6 @@ class XnorSerialHost():
                 outfile.write(json_obj)
 
         return retVal                                                        # Return the end value
-
-    def writeSlaveCached(self, pData, pDebug=False):                            # Todo: Disable cached mode on Windows, as path doesn't exist!
-        if self.RFmode == True or pData[2] > 1:                                 # WriteSlaveCached doesn't support RF mode yet, nor does it support multiple simultanious byte writes..
-            return self.writeSlave(pData, pDebug)
-
-        pDataBuf = copy.deepcopy(pData)                                         # writeSlave() adds data to pData, thus we need a deepcopy
-        try:                                                                    # Try to open the json cache file
-            f = open(self.TMP_CacheFilePath)
-            jsonCache = json.load(f)
-            f.close()
-
-            retVal = self.writeSlave(pData, pDebug)                             # Write data to the slave
-            if retVal == b'':                                                   # If slave write went successfully, then write data to cache file
-                jsonCache[str(pDataBuf[:-1])] = str(bytes([pDataBuf[-1]]))      # Remove the last value from pDataBuf to obtain the dict key, use the last byte as actual 'value'
-                json_obj = json.dumps(jsonCache, indent=4)                      # Convert to json and write to file
-                with open(self.TMP_CacheFilePath, "w") as outfile:
-                    outfile.write(json_obj)
-
-        except FileNotFoundError:                                               # If the json file doesn't exist, create one before writing to cache
-            retVal = self.writeSlave(pData, pDebug)
-            if retVal == b'':
-                dictBuf = {}
-                dictBuf[str(pDataBuf[:-1])] = str(bytes([pDataBuf[-1]]))
-                json_obj = json.dumps(dictBuf, indent=4)
-                with open(self.TMP_CacheFilePath, "w") as outfile:
-                    outfile.write(json_obj)
-
-
-        return retVal
 
     # ============================ Read / Write Master hardware device: ====================================
     # ======================================================================================================

@@ -30,7 +30,7 @@ for i in range(len(r)):
     print(r[i], end=" ")
 print()
 
-reqT.get('[20, 10, 1, 143]', "WSC")
+reqT.get('[20, 10, 1, 144]', "WS")
 
 r = eval(reqT.get('[20, 10, 1]', "RSC"))
 print("ID: ", end="")
