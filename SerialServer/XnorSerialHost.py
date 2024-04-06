@@ -219,38 +219,31 @@ class XnorSerialHost():
         if self.RFmode == True:                                              # ReadSlave cached doesn't support RF mode yet.
             return self.readSlave(pData, pDebug)
 
-        jsonCache = None
-        try:
+        pDataBuf = copy.deepcopy(pData)                                      # readSlave() adds data to pData, thus we need a deepcopy
+        jsonCache = None                                                     # Variable we store the json cache inside
+        try:                                                                 # Try to read json cache file, and find the dictionary key
             f = open(self.TMP_CacheFilePath)
             jsonCache = json.load(f)
             f.close()
-
-            pDataBuf = copy.deepcopy(pData)
-            pDataBuf.insert(0,16)
-            pDataBuf.insert(1,4)
-            pDataBuf.insert(2,1)
             retVal = jsonCache[str(pDataBuf)]
-        except KeyError:
-            retVal = self.readSlave(pData, pDebug)
-            if jsonCache == None:
-                f = open(self.TMP_CacheFilePath)
-                jsonCache = json.load(f)
-                f.close()
 
-            jsonCache[str(pData)] = str(retVal)
+        except KeyError:                                                     # If the json file doesn't contain our dictionary key, then read slave device and add key to json file.
+            retVal = self.readSlave(pData, pDebug)
+
+            jsonCache[str(pDataBuf)] = str(retVal)
             json_obj = json.dumps(jsonCache, indent=4)
             with open(self.TMP_CacheFilePath, "w") as outfile:
                 outfile.write(json_obj)
 
-        except FileNotFoundError:
+        except FileNotFoundError:                                            # If the json file doesn't exist, then read slave device and add key to a new json file.
             retVal = self.readSlave(pData, pDebug)
             dictBuf = {}
-            dictBuf[str(pData)] = str(retVal)
+            dictBuf[str(pDataBuf)] = str(retVal)
             json_obj = json.dumps(dictBuf, indent=4)
             with open(self.TMP_CacheFilePath, "w") as outfile:
                 outfile.write(json_obj)
 
-        return retVal
+        return retVal                                                        # Return the end value
 
     def writeSlaveCached(self, pData, pDebug=False):                            # Todo: Disable cached mode on Windows, as path doesn't exist!
         if self.RFmode == True:                                                 # WriteSlaveCached doesn't support RF mode yet.
