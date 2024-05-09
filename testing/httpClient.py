@@ -19,10 +19,36 @@ class requestTest():
 
 # compressor pressure sensors with relay controls:
 
-reqT = requestTest('http://127.0.0.1:8080')
+reqT = requestTest('http://192.168.1.69:8080')
+#reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://0.0.0.0:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
+
+
+id = '60'
+reqT.get('['+id+', 12, 1, 32]', "WS")
+quit()
+
+
+while True:
+    reqT.get('['+id+', 12, 1, 32]', "WS")
+    r = eval(reqT.get('['+id+', 12, 1]', "RSC"))
+    print("ID: ", end="")
+    for i in range(len(r)):
+        print(r[i], end=" ")
+    print()
+
+    reqT.get('['+id+', 12, 1, 64]', "WS")
+    r = eval(reqT.get('['+id+', 12, 1]', "RSC"))
+    print("ID: ", end="")
+    for i in range(len(r)):
+        print(r[i], end=" ")
+    print()
+
+
+quit()
+
 
 r = eval(reqT.get('[20, 10, 1]', "RSC"))
 print("ID: ", end="")
