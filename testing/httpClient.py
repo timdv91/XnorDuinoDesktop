@@ -26,8 +26,10 @@ reqT = requestTest('http://192.168.1.69:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
 
-id = '60'
-reqT.get('['+id+', 12, 1, 32]', "WS")
+id1 = '50'
+id2 = '60'
+reqT.get('['+id1+', 12, 1, 64]', "WS")
+reqT.get('['+id2+', 12, 1, 64]', "WS")
 quit()
 
 
