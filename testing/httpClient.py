@@ -2,6 +2,14 @@ import requests
 import time
 import random
 
+class convertIntToBytes:
+    def __init__(self):
+        None
+
+    def conv(self, pIntVal):
+        y1, y2, y3, y4 = (pIntVal & 0xFFFFFFFF).to_bytes(4, 'little')  # Use 'big' for big-endian; on 3.11+, you can omit it entirely, with 'big' being the default
+        return y1, y2
+
 class requestTest():
     def __init__(self, pURL):
         self.URL = pURL
@@ -19,11 +27,83 @@ class requestTest():
 
 # compressor pressure sensors with relay controls:
 
-reqT = requestTest('http://192.168.1.69:8080')
+reqT = requestTest('http://192.168.1.39:8080')
 #reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://0.0.0.0:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
+
+#reqT.get('[127, 9, 1, 64]', "WS")  # 10s 1s 30s 5s
+
+
+y1, y2 = convertIntToBytes().conv(200)
+reqT.get('[127, 11, 3, 90, ' + str(y2) + ', ' + str(y1) + ']', "WS")  # 10s 1s 30s 5s
+time.sleep(1)
+y1, y2 = convertIntToBytes().conv(-200)
+reqT.get('[127, 11, 3, 90, ' + str(y2) + ', ' + str(y1) + ']', "WS")  # 10s 1s 30s 5s
+
+time.sleep(1)
+
+y1, y2 = convertIntToBytes().conv(50)
+reqT.get('[127, 11, 3, 30, ' + str(y2) + ', ' + str(y1) + ']', "WS")  # 10s 1s 30s 5s
+time.sleep(1)
+y1, y2 = convertIntToBytes().conv(-50)
+reqT.get('[127, 11, 3, 30, ' + str(y2) + ', ' + str(y1) + ']', "WS")  # 10s 1s 30s 5s
+
+time.sleep(1)
+
+y1, y2 = convertIntToBytes().conv(-25)
+reqT.get('[127, 11, 3, 5, ' + str(y2) + ', ' + str(y1) + ']', "WS")  # 10s 1s 30s 5s
+time.sleep(3)
+y1, y2 = convertIntToBytes().conv(25)
+reqT.get('[127, 11, 3, 5, ' + str(y2) + ', ' + str(y1) + ']', "WS")  # 10s 1s 30s 5s
+time.sleep(3)
+
+y1, y2 = convertIntToBytes().conv(400)
+reqT.get('[127, 11, 3, 60, ' + str(y2) + ', ' + str(y1) + ']', "WS")  # 10s 1s 30s 5s
+time.sleep(3)
+y1, y2 = convertIntToBytes().conv(-400)
+reqT.get('[127, 11, 3, 255, ' + str(y2) + ', ' + str(y1) + ']', "WS")  # 10s 1s 30s 5s
+time.sleep(1)
+
+quit()
+reqT.get('[127, 11, 2, 1, 200]', "WS")  # 10s 1s 30s 5s
+r = eval(reqT.get('[127, 9, 4]', "RS"))
+print("ID: ", end="")
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+time.sleep(1)
+
+
+quit()
+for i in range(0, 200):
+    print(i)
+    reqT.get('[127, 11, 2, 30, 1]', "WS")  # 10s 1s 30s 5s
+    time.sleep(2)
+quit()
+
+while True:
+    reqT.get('[127, 11, 2, 180, 200]', "WS") #10s 1s 30s 5s
+    time.sleep(1)
+    reqT.get('[127, 11, 2, 180, 100]', "WS") #10s 1s 30s 5s
+    time.sleep(1)
+    reqT.get('[127, 11, 2, 180, 10]', "WS")  # 10s 1s 30s 5s
+    time.sleep(1)
+    reqT.get('[127, 11, 2, 180, 190]', "WS")  # 10s 1s 30s 5s
+    time.sleep(1)
+    reqT.get('[127, 11, 2, 180, 200]', "WS") #10s 1s 30s 5s
+    time.sleep(1)
+    reqT.get('[127, 11, 2, 180, 100]', "WS") #10s 1s 30s 5s
+    time.sleep(1)
+    r = eval(reqT.get('[127, 10, 3]', "RS"))
+    print("ID: ", end="")
+    for i in range(len(r)):
+        print(r[i], end=" ")
+    print()
+
+    time.sleep(5)
+quit()
 
 
 id1 = '50'
