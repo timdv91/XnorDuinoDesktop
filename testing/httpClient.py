@@ -1,6 +1,7 @@
 import requests
 import time
 import random
+import struct
 
 class convertIntToBytes:
     def __init__(self):
@@ -33,9 +34,73 @@ reqT = requestTest('http://192.168.1.39:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
-#reqT.get('[127, 9, 1, 64]', "WS")  # 10s 1s 30s 5s
+
+# Configure stepper driver:
+reqT.get('[127, 11, 2, 15, 64]', "WS")  # 10s 1s 30s 5s
+time.sleep(1)
+
+# set steps to take on stepper driver:
+y1, y2 = convertIntToBytes().conv(1200)
+reqT.get('[127, 13, 3, 120, ' + str(y2) + ', ' + str(y1) + ']', "WS")
+#time.sleep(1)
+#reqT.get('[127, 13, 1, 160]', "WS")  # 10s 1s 30s 5s
+time.sleep(10)
+
+# set steps to take on stepper driver:
+y1, y2 = convertIntToBytes().conv(-1200)
+reqT.get('[127, 13, 3, 120, ' + str(y2) + ', ' + str(y1) + ']', "WS")
+#time.sleep(1)
+#reqT.get('[127, 13, 1, 160]', "WS")  # 10s 1s 30s 5s
+time.sleep(1)
+
+# read registers from stepper driver:
+r = eval(reqT.get('[127, 6, 10]', "RS"))
+for i in range(len(r)):
+    print(r[i], end=" ")
+print()
+
+vccADC = r[2]<<8 | r[3]
+vcc = vccADC*(20/751)
+print(vccADC)
+print(vcc)
+
+print()
+
+stepsToHome = r[0]<<8 | r[1]
+print(stepsToHome)
 
 
+
+
+
+
+'''
+/* Bus memory layout: 
+ *   1 to 5 - Occupied by XnorBusMemoryMap
+ *   6 - EMPTY
+ *   7 - EMPTY
+ *   8 - EMPTY
+ *  10 - STEPS of stepper motor (divided by 4)
+ *  11 - Hold timeout after standstill (0 = indef)
+ *  12 - Hold current
+ *  13 - SPEED
+ *  14 - 15: float split in 4 bytes with degrees of rotation ??
+ */
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+quit()
 y1, y2 = convertIntToBytes().conv(200)
 reqT.get('[127, 11, 3, 90, ' + str(y2) + ', ' + str(y1) + ']', "WS")  # 10s 1s 30s 5s
 time.sleep(1)
