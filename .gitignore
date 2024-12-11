@@ -5,5 +5,5 @@
 *.iml
 .idea/
 config/
-testing/DAQtesting/json
+0Testing/DAQtesting/json
 FlaskGUI/DB/TMP/tmpDeviceList.json
