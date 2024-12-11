@@ -28,12 +28,29 @@ class requestTest():
 
 # compressor pressure sensors with relay controls:
 
-reqT = requestTest('http://192.168.1.39:8080')
+reqT = requestTest('http://192.168.1.64:8080')
 #reqT = requestTest('http://127.0.0.1:8080')
 #reqT = requestTest('http://0.0.0.0:8080')
 #reqT = requestTest('http://192.168.5.45:8080')
 #reqT = requestTest('http://192.168.1.51:8080')
 
+'''
+# Testing XbeeServer
+reqT = requestTest('http://192.168.1.64:8081')
+r = reqT.get('["0013A20041BD0FBA","set_io_configuration()","IOLine.DIO12", "IOMode.DIGITAL_OUT_LOW"]', "W")
+print(r)
+r = reqT.get('["0013A20041BD0FBA","get_io_configuration()","IOLine.DIO12"]', "R")
+print(r)
+r = reqT.get('["0013A20041BD0FBA","set_pwm_duty_cycle()","IOLine.DIO10_PWM0", "50"]', "W")
+print(r)
+r = reqT.get('["0013A20041BD0FBA","get_pwm_duty_cycle()","IOLine.DIO10_PWM0"]', "R")
+print(r)
+'''
+
+
+
+
+quit()
 
 # Configure stepper driver:
 reqT.get('[127, 11, 2, 15, 64]', "WS")  # 10s 1s 30s 5s
