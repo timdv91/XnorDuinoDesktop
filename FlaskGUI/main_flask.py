@@ -10,6 +10,7 @@ import threading
 from flask_socketio import SocketIO, emit
 import time
 import copy
+import os
 
 XRQ = xnorbusWebrequestor('http://127.0.0.1:8080')
 XRH = xnorbusRequestorHelper(XRQ, "DEVconfig.json")
@@ -143,10 +144,11 @@ def create_app():
 # ======================================================================================================
 app = create_app()
 
-if(app.env == 'development'):
+if os.environ.get("FLASK_ENV") == "development":
     app.debug = True
 else:
     ThreadedBackgroundWorker(globVars, XRH)
+
 
 # set HOST_IP and HOST_PORT on top of this page!
 app.run(host=HOST_IP, port=HOST_PORT)
