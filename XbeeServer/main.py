@@ -14,7 +14,7 @@ class main():
             main_server.run(pHWport=argv[1], pHWbautrate=int(argv[2]), pSrvPort=int(argv[3]))
         else:
             #main_server.run(pHWport='COM25', pHWbautrate=38400, pSrvPort=8080)
-            main_server.run(pHWport='/dev/ttyUSB0', pHWbautrate=9600, pSrvPort=8081)
+            main_server.run(pHWport='/dev/ttyUSB1', pHWbautrate=9600, pSrvPort=8081)
 
 if __name__ == '__main__':
     main()
