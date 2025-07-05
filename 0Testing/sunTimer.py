@@ -23,7 +23,7 @@ class SunInfo():
         self.SUN = Sun(lat, lon)
         self.BRUSSELS_TZ = tz.gettz('Europe/Brussels')
 
-    def getSunSet(self, pDate, pOffsetHours=24):   # Note: Offsethours fixes bug in sunset library.
+    def getSunSet(self, pDate, pOffsetHours=0):   # Note: Offsethours fixes bug in sunset library.
         sunset_utc = self.SUN.get_sunset_time(pDate)
         sunset_brussels = sunset_utc.astimezone(self.BRUSSELS_TZ)
         today_ss = sunset_brussels + datetime.timedelta(hours=pOffsetHours)
