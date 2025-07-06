@@ -64,6 +64,8 @@ class LightControl():
         #r = self.REQ.get('["' + "0013A200409A0E7C" + '","set_io_configuration()","IOLine.DIO3_AD2", "IOMode.DIGITAL_OUT_LOW"]', "W")
 
 
+# ======================== Main ==========================
+
 class Main():
     def __init__(self):
         wichelen_lat = 51.0060797
@@ -142,20 +144,3 @@ class Main():
         return False
 
 Main()
-
-
-
-
-'''
-    def setLightsOffSunSet(self, pSunSetTime, pTurnOnDelay=15, pTurnOffTimeout=120, pTransmitTimeout=15):
-        epoch_time_now = datetime.datetime.now().timestamp()
-        epoch_time_off = (pSunSetTime + datetime.timedelta(minutes=pTurnOnDelay + pTurnOffTimeout)).timestamp()
-        epoch_time_out = (pSunSetTime + datetime.timedelta(minutes=pTurnOnDelay + pTurnOffTimeout + pTransmitTimeout)).timestamp()
-
-        print("\t- Lights configured off-time: " + str((pSunSetTime + datetime.timedelta(minutes=pTurnOnDelay + pTurnOffTimeout))))
-        print("\t- Transmit timeout off-time: " + str(pSunSetTime + datetime.timedelta(minutes=pTurnOnDelay + pTurnOffTimeout + pTransmitTimeout)))
-        if epoch_time_now > epoch_time_off and epoch_time_now < epoch_time_out:
-            print("\t- Sunset over: Turn lights off!")
-            LC = LightControl()
-            LC.turnLightOff()
-'''
