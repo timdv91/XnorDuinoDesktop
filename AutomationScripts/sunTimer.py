@@ -4,6 +4,7 @@ from datetime import timedelta
 import requests
 from dateutil import tz
 from suntime import Sun, SunTimeException
+import calendar
 
 class requestTest():
     def __init__(self, pURL):
@@ -95,7 +96,7 @@ class Main():
 
         print("Sunset auto configuration: ")
         self.setLightsOnSunSet(sunSetTime)      # Turn lights on when sun goes under
-        self.setLightsOffTimer(00)              # Turn lights of at static time, for example midnight
+        self.setLightsOffTimer(offTimeHour=00)              # Turn lights of at static time, for example midnight
 
 
     # Turn lights on in the morning:
@@ -106,13 +107,14 @@ class Main():
 
         # Do not turn lights on in morning, during summer months:
         if curMonth > pSummerStartMonth and curMonth < pSummerEndMonth:  # Summer months only
-            print("\t- Sunrise on-time disabled from april to september! Now: " + str(curMonth))
+            print("\t- Sunrise on-time disabled from " + str(calendar.month_name[pSummerStartMonth+1]) + " to " + str(calendar.month_name[pSummerEndMonth-1]) + "! Now: " + str(calendar.month_name[curMonth]))
             return False
 
-        print("\t- Turn lights on at " + str(onTimeHour) + ":00! Time now: " + str(curHour) + ":" + str(curMin))
-        print("\t- Turn lights on-timeout at " + str(onTimeHour) + ":" + str(pTransmitTimeout))
+        print("\t- It's winter! Turning lights on before sunrise is enabled!")
+        print("\t\t- Turn lights on at " + str(onTimeHour) + ":00! Time now: " + str(curHour) + ":" + str(curMin))
+        print("\t\t- Turn lights on-timeout at " + str(onTimeHour) + ":" + str(pTransmitTimeout))
         if curHour == onTimeHour and curMin < pTransmitTimeout:
-            print("\t- Morning, turn lights on!")
+            print("\t\t- Morning, turn lights on!")
             LC = LightControl()
             LC.turnLightOn()
             return True
@@ -125,15 +127,15 @@ class Main():
         epoch_time_off = (pSunRiseTime + datetime.timedelta(minutes=pTurnOffDelay)).timestamp()
         epoch_time_out = (pSunRiseTime + datetime.timedelta(minutes=pTurnOffDelay + pTransmitTimeout)).timestamp()
 
-        print("\t- Lights configured off-time: " + str(pSunRiseTime + datetime.timedelta(minutes=pTurnOffDelay)))
-        print("\t- Transmit timeout off-time: " + str(pSunRiseTime + datetime.timedelta(minutes=pTurnOffDelay + pTransmitTimeout)))
-        print("\t- Current time: " + str(datetime.datetime.fromtimestamp(epoch_time_now)))
-
         # Do not turn lights on in morning, during summer months:
         curMonth = datetime.datetime.now().month
         if curMonth > pSummerStartMonth and curMonth < pSummerEndMonth:   # Summer
-            print("\t- Sunrise off-time disabled from april to september!")
+            print("\t- Sunrise off-time disabled from " + str(calendar.month_name[pSummerStartMonth+1]) + " to " + str(calendar.month_name[pSummerEndMonth-1]) + "! Now: " + str(calendar.month_name[curMonth]))
             return False
+
+        print("\t- It's winter! Turning lights off after sunrise is enabled!")
+        print("\t\t- Lights configured off-time: " + str(pSunRiseTime + datetime.timedelta(minutes=pTurnOffDelay)))
+        print("\t\t- Transmit timeout off-time: " + str(pSunRiseTime + datetime.timedelta(minutes=pTurnOffDelay + pTransmitTimeout)))
 
         if epoch_time_now > epoch_time_off and epoch_time_now < epoch_time_out:
             print("Sunrise: Turn lights off!")
