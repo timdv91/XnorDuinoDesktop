@@ -86,8 +86,8 @@ class Main():
         sunSetTime = SI.getSunSet(datetime.datetime.now()) + datetime.timedelta(days=1)
 
         print("Auto sunrise/sunset calculation: ")
-        print("\t- Sunrise today: " + str(sunRiseTime) + " (epoch:" + str(sunRiseTime.timestamp()) + ")")
-        print("\t- Sunset today: " + str(sunSetTime) + " (epoch:" + str(sunSetTime.timestamp()) + ")")
+        print("\t- Sunrise today: " + str(sunRiseTime - timedelta(days=1)) + " (epoch:" + str(sunRiseTime.timestamp()) + ")")
+        print("\t- Sunset today: " + str(sunSetTime - timedelta(days=1)) + " (epoch:" + str(sunSetTime.timestamp()) + ")")
 
         # Perform light actions:
         print("Sunrise auto configuration: ")
@@ -124,8 +124,8 @@ class Main():
     def setLightsOffSunRise(self, pSunRiseTime, pTurnOffDelay=15, pTransmitTimeout=15, pSummerStartMonth=3, pSummerEndMonth=10):
         # Do turn lights off during sunrise, in the winter months:
         epoch_time_now = datetime.datetime.now().timestamp()
-        epoch_time_off = (pSunRiseTime + datetime.timedelta(minutes=pTurnOffDelay)).timestamp()
-        epoch_time_out = (pSunRiseTime + datetime.timedelta(minutes=pTurnOffDelay + pTransmitTimeout)).timestamp()
+        epoch_time_off = (pSunRiseTime - timedelta(days=1) + datetime.timedelta(minutes=pTurnOffDelay)).timestamp()
+        epoch_time_out = (pSunRiseTime - timedelta(days=1) + datetime.timedelta(minutes=pTurnOffDelay + pTransmitTimeout)).timestamp()
 
         # Do not turn lights on in morning, during summer months:
         curMonth = datetime.datetime.now().month
@@ -134,11 +134,11 @@ class Main():
             return False
 
         print("\t- It's winter! Turning lights off after sunrise is enabled!")
-        print("\t\t- Lights configured off-time: " + str(pSunRiseTime + datetime.timedelta(minutes=pTurnOffDelay)))
-        print("\t\t- Transmit timeout off-time: " + str(pSunRiseTime + datetime.timedelta(minutes=pTurnOffDelay + pTransmitTimeout)))
+        print("\t\t- Lights configured off-time: " + str(pSunRiseTime - timedelta(days=1) + datetime.timedelta(minutes=pTurnOffDelay)))
+        print("\t\t- Transmit timeout off-time: " + str(pSunRiseTime - timedelta(days=1) + datetime.timedelta(minutes=pTurnOffDelay + pTransmitTimeout)))
 
         if epoch_time_now > epoch_time_off and epoch_time_now < epoch_time_out:
-            print("Sunrise: Turn lights off!")
+            print("\t\t- Sunrise: Turn lights off!")
             LC = LightControl()
             LC.turnLightOff()
             return True
@@ -149,11 +149,11 @@ class Main():
     # Turn lights on in the evening:
     def setLightsOnSunSet(self, pSunSetTime, pTurnOnDelay=15, pTransmitTimeout=15):
         epoch_time_now = datetime.datetime.now().timestamp()
-        epoch_time_on = (pSunSetTime + datetime.timedelta(minutes=pTurnOnDelay)).timestamp()
-        epoch_time_out = (pSunSetTime + datetime.timedelta(minutes=pTurnOnDelay + pTransmitTimeout)).timestamp()
+        epoch_time_on = (pSunSetTime - timedelta(days=1) + datetime.timedelta(minutes=pTurnOnDelay)).timestamp()
+        epoch_time_out = (pSunSetTime - timedelta(days=1) + datetime.timedelta(minutes=pTurnOnDelay + pTransmitTimeout)).timestamp()
 
-        print("\t- Lights configured on-time: " + str(pSunSetTime + datetime.timedelta(minutes=pTurnOnDelay)))
-        print("\t- Transmit timeout on-time: " + str(pSunSetTime + datetime.timedelta(minutes=pTurnOnDelay + pTransmitTimeout)))
+        print("\t- Lights configured on-time: " + str(pSunSetTime - timedelta(days=1) + datetime.timedelta(minutes=pTurnOnDelay)))
+        print("\t- Transmit timeout on-time: " + str(pSunSetTime - timedelta(days=1) + datetime.timedelta(minutes=pTurnOnDelay + pTransmitTimeout)))
 
         if epoch_time_now > epoch_time_on and epoch_time_now < epoch_time_out:
             print("\t- Sunset: Turn lights on!")
