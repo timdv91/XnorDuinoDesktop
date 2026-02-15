@@ -75,12 +75,16 @@ class XnorBUS():
 class Main():
     def __init__(self, pSetPoint = 18):
         self.SETPOINT = pSetPoint
+        self.GH = GasHeater()
+
+    def __del__(self):
+        self.GH.setHeaterState(False)
+        print("Heater was turned of during shutdown of script!")
 
     def tempGuard(self):
-        GH = GasHeater()
         TT = XnorBUS()
 
-        if GH.getConnectedState() == False:
+        if self.GH.getConnectedState() == False:
             print("Error connecting to gas heater!")
             return
 
@@ -91,16 +95,17 @@ class Main():
 
         print("Setpoint temperature: ", self.SETPOINT ,"°C")
         print("Current temperature:  ", temp ,"°C")
-        if temp < self.SETPOINT and GH.getHeaterState() == False:
+
+        heaterOn = self.GH.getHeaterState()
+        if temp < self.SETPOINT and heaterOn == False:
             print("\t- Action required -> Turning on gas heater!")
-            GH.setHeaterState(True)
-        elif temp > self.SETPOINT and GH.getHeaterState() == True:
+            self.GH.setHeaterState(True)
+        elif temp > self.SETPOINT and heaterOn == True:
             print("\t- Action required -> Turning off gas heater!")
-            GH = GasHeater()
-            GH.setHeaterState(False)
+            self.GH.setHeaterState(False)
         else:
             print("\t - No actions required, heater is ", end="")
-            if GH.getHeaterState() == True:
+            if heaterOn == True:
                 print("on!")
             else:
                 print("off!")
