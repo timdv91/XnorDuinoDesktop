@@ -103,4 +103,4 @@ class requestTest():
         return r.text
 
 
-PrusaAutomation(pURL_Printer="http://192.168.1.67:80/api/printer", pURL_Xnorduino="http://192.168.1.69:8080")
+PrusaAutomation(pURL_Printer="http://192.168.2.8:80/api/printer", pURL_Xnorduino="http://192.168.2.9:8080")
