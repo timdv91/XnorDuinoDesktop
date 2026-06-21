@@ -6,12 +6,12 @@ class PrusaAutomation:
         self.XNORDUINO_URL = pURL_Xnorduino
 
         prusaJsonDict = self._getPrinterData()
-        if prusaJsonDict == None:
-            print("Printer not online! Exiting...")
-            quit()
-
-        self._setFanController(prusaJsonDict)
         self._setLedController(prusaJsonDict)
+
+        if prusaJsonDict == None:
+            print("Printer not online! Exiting withing setting fan controller state...")
+            quit()
+        self._setFanController(prusaJsonDict)
 
     def _getPrinterData(self):
         # Read info from printer:
@@ -52,13 +52,13 @@ class PrusaAutomation:
 
 
     def _setLedController(self, pPrusaJsonDict):
-        if pPrusaJsonDict == None:
-            return
-
         # Read rooflight intensity and temperature from gateway cache:
         reqT = requestTest(self.XNORDUINO_URL)
         roofLightIntensity = eval(reqT.get('[50, 12, 1]', "RSC"))[0]
         roofLightTemperature = eval(reqT.get('[50, 11, 1]', "RSC"))[0]
+
+        print("roof light intensity: ", roofLightIntensity)
+        print("roof temperature: ", roofLightTemperature)
 
         # Set 3D printer light intensity and temperature:
         idleIntensity = 228
@@ -70,24 +70,40 @@ class PrusaAutomation:
         printerLED_Intensity = eval(reqT.get(str(newVal_intensity), "RSC"))[0]
         printerLED_Temperature = eval(reqT.get(str(newVal_temperature), "RSC"))[0]
 
+        print("printer led intensity: ", printerLED_Intensity)
+        print("printer led temperature: ", printerLED_Temperature)
+
         # Update ledController slave module temperature setting:
         if int(printerLED_Temperature) != (roofLightTemperature):
             print("Updating light temperature setting.")
             newVal_temperature.append(roofLightTemperature)
             reqT.get(str(newVal_temperature), "WS")
 
-        # Update ledController slave module intensity setting:
-        isPrinting = pPrusaJsonDict["state"]["flags"]["printing"]
-        if isPrinting == False and printerLED_Intensity != idleIntensity:
-            print("Printing done, updating led light intensity.")
-            newVal_intensity.append(idleIntensity)
-            reqT.get(str(newVal_intensity), "WS")
-        elif isPrinting == True and printerLED_Intensity != printingIntensity:
-            print("Printing started, updating led light intensity.")
-            newVal_intensity.append(printingIntensity)
-            reqT.get(str(newVal_intensity), "WS")
+        if pPrusaJsonDict != None:
+            print("Printer online, setting LED's based on printer state: ")
+
+            # Update ledController slave module intensity setting:
+            isPrinting = pPrusaJsonDict["state"]["flags"]["printing"]
+            if isPrinting == False and printerLED_Intensity != idleIntensity:
+                print("Printing done, updating led light intensity.")
+                newVal_intensity.append(idleIntensity)
+                reqT.get(str(newVal_intensity), "WS")
+            elif isPrinting == True and printerLED_Intensity != printingIntensity:
+                print("Printing started, updating led light intensity.")
+                newVal_intensity.append(printingIntensity)
+                reqT.get(str(newVal_intensity), "WS")
+            else:
+                print("LED value already set, no need for changes.")
+
         else:
-            print("LED value already set, no need for changes.")
+            print("Printer offline, setting LED's based on roof light state: ")
+            # Update ledController slave module temperature setting:
+            if int(printerLED_Intensity) != (roofLightIntensity):
+                print("Updating light temperature setting based on roof light state.")
+                newVal_intensity.append(roofLightIntensity)
+                reqT.get(str(newVal_intensity), "WS")
+
+
 class requestTest():
     def __init__(self, pURL):
         self.URL = pURL
