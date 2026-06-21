@@ -73,7 +73,7 @@ class XnorBUS():
 
 
 class Main():
-    def __init__(self, pSetPoint = 18):
+    def __init__(self, pSetPoint = 21):
         self.SETPOINT = pSetPoint
         self.GH = GasHeater()
 
@@ -112,7 +112,7 @@ class Main():
 
 
 
-main = Main()
+main = Main(pSetPoint=19)
 while True:
     main.tempGuard()
     time.sleep(30)
